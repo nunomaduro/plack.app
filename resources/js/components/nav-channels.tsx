@@ -34,7 +34,7 @@ export function NavChannels({ workspace }: { workspace: CurrentWorkspace }) {
                 {workspace.channels.map((channel) => {
                     const href = channelShow({
                         workspace: workspace.slug,
-                        channel: channel.id,
+                        channel: channel.slug,
                     });
 
                     return (
@@ -57,7 +57,7 @@ export function NavChannels({ workspace }: { workspace: CurrentWorkspace }) {
             </SidebarMenu>
 
             <CreateChannelDialog
-                workspace={workspace.slug}
+                workspaceSlug={workspace.slug}
                 open={createOpen}
                 onOpenChange={setCreateOpen}
             />

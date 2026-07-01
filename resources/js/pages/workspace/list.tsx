@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import CreateWorkspaceDialog from '@/components/create-workspace-dialog';
+import DeleteWorkspaceDialog from '@/components/delete-workspace-dialog';
 import EditWorkspaceDialog from '@/components/edit-workspace-dialog';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
@@ -70,7 +71,14 @@ export default function WorkspaceList({
                                     {workspace.name}
                                 </Link>
 
-                                <EditWorkspaceDialog workspace={workspace} />
+                                <div className="flex items-center gap-1">
+                                    <EditWorkspaceDialog
+                                        workspace={workspace}
+                                    />
+                                    <DeleteWorkspaceDialog
+                                        workspace={workspace}
+                                    />
+                                </div>
                             </li>
                         ))}
                     </ul>

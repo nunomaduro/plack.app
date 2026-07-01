@@ -17,13 +17,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 type Props = {
-    workspace: string;
+    workspaceSlug: string;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
 };
 
 export default function CreateChannelDialog({
-    workspace,
+    workspaceSlug,
     open: controlledOpen,
     onOpenChange,
 }: Props) {
@@ -49,7 +49,7 @@ export default function CreateChannelDialog({
                 </DialogDescription>
 
                 <Form
-                    {...ChannelController.store.form(workspace)}
+                    {...ChannelController.store.form(workspaceSlug)}
                     options={{
                         preserveScroll: true,
                     }}

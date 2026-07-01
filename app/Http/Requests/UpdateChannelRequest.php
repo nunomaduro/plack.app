@@ -36,7 +36,9 @@ final class UpdateChannelRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:80',
-                Rule::unique(Channel::class)->where('workspace_id', $channel->workspace_id)->ignore($channel->id),
+                Rule::unique(Channel::class, 'name')
+                    ->where('workspace_id', $channel->workspace_id)
+                    ->ignore($channel->id),
             ],
         ];
     }

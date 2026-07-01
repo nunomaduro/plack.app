@@ -36,7 +36,7 @@ export default function WorkspaceShow({
                         No channels yet.
                     </p>
 
-                    <CreateChannelDialog workspace={workspace.slug} />
+                    <CreateChannelDialog workspaceSlug={workspace.slug} />
                 </div>
             </div>
         </AppLayout>

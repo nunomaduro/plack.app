@@ -26,7 +26,7 @@ final class CreateChannelRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:80',
-                Rule::unique(Channel::class)->where('workspace_id', $workspace->id),
+                Rule::unique(Channel::class, 'name')->where('workspace_id', $workspace->id),
             ],
         ];
     }

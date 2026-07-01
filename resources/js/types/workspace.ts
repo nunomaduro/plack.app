@@ -1,6 +1,7 @@
 export type Channel = {
     id: string;
     name: string;
+    slug: string;
 };
 
 export type WorkspaceSummary = {

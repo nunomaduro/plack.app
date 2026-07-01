@@ -15,6 +15,7 @@ type Workspace = {
 type Channel = {
     id: string;
     name: string;
+    slug: string;
     workspace: Workspace;
 };
 
@@ -32,7 +33,10 @@ export default function ChannelShow({ channel }: { channel: Channel }) {
         },
         {
             title: channel.name,
-            href: channelShow({ workspace: workspace.id, channel: channel.id }),
+            href: channelShow({
+                workspace: workspace.slug,
+                channel: channel.slug,
+            }),
         },
     ];
 
@@ -48,7 +52,7 @@ export default function ChannelShow({ channel }: { channel: Channel }) {
                     />
 
                     <EditChannelDialog
-                        workspaceId={workspace.id}
+                        workspaceSlug={workspace.slug}
                         channel={channel}
                     />
                 </div>

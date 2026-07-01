@@ -22,7 +22,7 @@ final class ChannelFactory extends Factory
     {
         return [
             'workspace_id' => Workspace::factory(),
-            'name' => $this->faker->name(),
+            'name' => fake()->name(),
         ];
     }
 }

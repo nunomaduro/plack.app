@@ -19,13 +19,14 @@ import { Label } from '@/components/ui/label';
 type Channel = {
     id: string;
     name: string;
+    slug: string;
 };
 
 export default function EditChannelDialog({
-    workspaceId,
+    workspaceSlug,
     channel,
 }: {
-    workspaceId: string;
+    workspaceSlug: string;
     channel: Channel;
 }) {
     const [open, setOpen] = useState(false);
@@ -45,8 +46,8 @@ export default function EditChannelDialog({
 
                 <Form
                     {...ChannelController.update.form({
-                        workspace: workspaceId,
-                        channel: channel.id,
+                        workspace: workspaceSlug,
+                        channel: channel.slug,
                     })}
                     options={{
                         preserveScroll: true,

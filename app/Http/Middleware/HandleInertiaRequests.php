@@ -50,7 +50,7 @@ final class HandleInertiaRequests extends Middleware
                     'id' => $currentWorkspace->id,
                     'name' => $currentWorkspace->name,
                     'slug' => $currentWorkspace->slug,
-                    'channels' => $currentWorkspace->channels()->oldest()->get(['id', 'name']),
+                    'channels' => $currentWorkspace->channels()->oldest()->get(['id', 'name', 'slug']),
                 ]
                 : null,
         ];
