@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -28,6 +29,8 @@ final class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::twoFactorChallengeView(fn () => Inertia::render('user-two-factor-authentication-challenge/show'));
         Fortify::confirmPasswordView(fn () => Inertia::render('user-password-confirmation/create'));
+
+        RedirectIfAuthenticated::redirectUsing(fn (): string => route('workspace.index'));
     }
 
     private function bootRateLimitingDefaults(): void

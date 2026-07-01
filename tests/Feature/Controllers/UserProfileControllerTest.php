@@ -9,7 +9,7 @@ it('renders profile edit page', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)
-        ->fromRoute('dashboard')
+        ->fromRoute('workspace.index')
         ->get(route('user-profile.edit'));
 
     $response->assertOk()

@@ -30,7 +30,7 @@ it('may create a session', function (): void {
             'password' => 'password',
         ]);
 
-    $response->assertRedirectToRoute('dashboard');
+    $response->assertRedirectToRoute('workspace.index');
 
     $this->assertAuthenticatedAs($user);
 });
@@ -48,7 +48,7 @@ it('may create a session with remember me', function (): void {
             'remember' => true,
         ]);
 
-    $response->assertRedirectToRoute('dashboard');
+    $response->assertRedirectToRoute('workspace.index');
 
     $this->assertAuthenticatedAs($user);
 });
@@ -115,7 +115,7 @@ it('may destroy a session', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)
-        ->fromRoute('dashboard')
+        ->fromRoute('workspace.index')
         ->post(route('logout'));
 
     $response->assertRedirect('/');
@@ -127,10 +127,10 @@ it('redirects authenticated users away from login', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)
-        ->fromRoute('dashboard')
+        ->fromRoute('workspace.index')
         ->get(route('login'));
 
-    $response->assertRedirectToRoute('dashboard');
+    $response->assertRedirectToRoute('workspace.index');
 });
 
 it('throttles login attempts after too many failures', function (): void {
@@ -184,7 +184,7 @@ it('clears rate limit after successful login', function (): void {
             'password' => 'password',
         ]);
 
-    $response->assertRedirectToRoute('dashboard');
+    $response->assertRedirectToRoute('workspace.index');
     $this->assertAuthenticatedAs($user);
 });
 

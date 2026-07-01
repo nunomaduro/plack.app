@@ -23,6 +23,19 @@ it('may have workspaces', function (): void {
         );
 });
 
+it('can show a workspace', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane']);
+
+    $this->actingAs($user)->get(route('workspace.show', $workspace))
+        ->assertStatus(200)
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('workspace/show')
+            ->where('workspace.id', $workspace->id)
+            ->where('workspace.name', 'Hashane')
+        );
+});
+
 it('can create workspace', function (): void {
     $user = User::factory()->create();
 

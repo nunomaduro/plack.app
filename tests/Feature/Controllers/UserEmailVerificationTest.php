@@ -22,10 +22,10 @@ it('may verify email', function (): void {
 
     expect($user->refresh()->hasVerifiedEmail())->toBeTrue();
 
-    $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    $response->assertRedirect(route('workspace.index', absolute: false).'?verified=1');
 });
 
-it('redirects to dashboard if already verified', function (): void {
+it('redirects to workspaces if already verified', function (): void {
     $user = User::factory()->create([
         'email_verified_at' => now(),
     ]);
@@ -40,7 +40,7 @@ it('redirects to dashboard if already verified', function (): void {
         ->fromRoute('verification.notice')
         ->get($verificationUrl);
 
-    $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    $response->assertRedirect(route('workspace.index', absolute: false).'?verified=1');
 });
 
 it('requires valid signature', function (): void {

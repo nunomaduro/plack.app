@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.5.0",
+        "bentonow/bento-laravel-sdk": "^1.3",
         "inertiajs/inertia-laravel": "v3.0.6",
         "laravel/fortify": "^1.37.2",
         "laravel/framework": "^13.18.0",

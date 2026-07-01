@@ -17,17 +17,22 @@ use Inertia\Inertia;
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
-    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
-
     // Workspaces...
     Route::get('workspaces', [WorkspaceController::class, 'index'])->name('workspace.index');
 
     Route::post('workspaces', [WorkspaceController::class, 'store'])
         ->name('workspace.store');
-    Route::patch('workspaces/{workspace}', [WorkspaceController::class, 'update'])
-        ->name('workspace.update');
-    Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
-        ->name('workspace.destroy');
+
+    Route::middleware(['workspace.access'])->group(function (): void {
+        Route::get('workspaces/{workspace}', [WorkspaceController::class, 'show'])
+            ->name('workspace.show');
+
+        Route::patch('workspaces/{workspace}', [WorkspaceController::class, 'update'])
+            ->name('workspace.update');
+      
+        Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
+            ->name('workspace.destroy');
+    });
 });
 
 Route::middleware('auth')->group(function (): void {
@@ -89,7 +94,7 @@ Route::middleware('auth')->group(function (): void {
 
     // User Email Verification...
     Route::get('verify-email/{id}/{hash}', [UserEmailVerificationController::class, 'update'])
-        ->middleware(['signed', 'throttle:6,1'])
+        ->middleware(['bento.signature', 'signed', 'throttle:6,1'])
         ->name('verification.verify');
 
     // Session...

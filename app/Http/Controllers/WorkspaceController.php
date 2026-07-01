@@ -29,6 +29,13 @@ final readonly class WorkspaceController
         ]);
     }
 
+    public function show(#[CurrentUser] User $user, Workspace $workspace): Response
+    {
+        return Inertia::render('workspace/show', [
+            'workspace' => $workspace,
+        ]);
+    }
+
     public function store(
         CreateWorkspaceRequest $request,
         #[CurrentUser] User $user,

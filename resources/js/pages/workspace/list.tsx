@@ -4,7 +4,7 @@ import EditWorkspaceDialog from '@/components/edit-workspace-dialog';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import { index } from '@/routes/workspace';
+import { index, show } from '@/routes/workspace';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -62,9 +62,12 @@ export default function WorkspaceList({
                                 key={workspace.id}
                                 className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                             >
-                                <span className="font-medium">
+                                <Link
+                                    href={show(workspace.id)}
+                                    className="font-medium hover:underline"
+                                >
                                     {workspace.name}
-                                </span>
+                                </Link>
 
                                 <EditWorkspaceDialog workspace={workspace} />
                             </li>

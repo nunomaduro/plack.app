@@ -26,7 +26,7 @@ it('may register a new user', function (): void {
             'password_confirmation' => 'password1234',
         ]);
 
-    $response->assertRedirectToRoute('dashboard');
+    $response->assertRedirectToRoute('workspace.index');
 
     $user = User::query()->where('email', 'test@example.com')->first();
 
@@ -180,8 +180,8 @@ it('redirects authenticated users away from registration', function (): void {
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)
-        ->fromRoute('dashboard')
+        ->fromRoute('workspace.index')
         ->get(route('register'));
 
-    $response->assertRedirectToRoute('dashboard');
+    $response->assertRedirectToRoute('workspace.index');
 });

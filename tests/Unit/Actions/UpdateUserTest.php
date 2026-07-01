@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Actions\UpdateUser;
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
 
 it('may update a user', function (): void {

@@ -17,14 +17,14 @@ final readonly class UserEmailVerificationNotificationController
     public function create(Request $request, #[CurrentUser] User $user): Response|RedirectResponse
     {
         return $user->hasVerifiedEmail()
-            ? redirect()->intended(route('dashboard', absolute: false))
+            ? redirect()->intended(route('workspace.index', absolute: false))
             : Inertia::render('user-email-verification-notification/create', ['status' => $request->session()->get('status')]);
     }
 
     public function store(#[CurrentUser] User $user, CreateUserEmailVerificationNotification $action): RedirectResponse
     {
         if ($user->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false));
+            return redirect()->intended(route('workspace.index', absolute: false));
         }
 
         $action->handle($user);

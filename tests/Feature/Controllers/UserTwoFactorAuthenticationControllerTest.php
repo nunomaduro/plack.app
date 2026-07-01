@@ -9,7 +9,7 @@ it('renders two factor authentication page', function (): void {
 
     $this->actingAs($user)->session(['auth.password_confirmed_at' => time()]);
 
-    $response = $this->fromRoute('dashboard')
+    $response = $this->fromRoute('workspace.index')
         ->get(route('two-factor.show'));
 
     $response->assertOk()
@@ -23,7 +23,7 @@ it('shows two factor disabled when not enabled', function (): void {
 
     $this->actingAs($user)->session(['auth.password_confirmed_at' => time()]);
 
-    $response = $this->fromRoute('dashboard')
+    $response = $this->fromRoute('workspace.index')
         ->get(route('two-factor.show'));
 
     $response->assertOk()
@@ -41,7 +41,7 @@ it('shows two factor enabled when enabled', function (): void {
 
     $this->actingAs($user)->session(['auth.password_confirmed_at' => time()]);
 
-    $response = $this->fromRoute('dashboard')
+    $response = $this->fromRoute('workspace.index')
         ->get(route('two-factor.show'));
 
     $response->assertOk()

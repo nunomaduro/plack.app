@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 
 it('renders forgot password page', function (): void {
@@ -70,8 +70,8 @@ it('redirects authenticated users away from forgot password', function (): void 
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)
-        ->fromRoute('dashboard')
+        ->fromRoute('workspace.index')
         ->get(route('password.request'));
 
-    $response->assertRedirectToRoute('dashboard');
+    $response->assertRedirectToRoute('workspace.index');
 });
