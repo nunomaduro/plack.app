@@ -20,6 +20,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
 
     // Workspaces...
+    Route::get('workspaces', [WorkspaceController::class, 'index'])->name('workspace.index');
+
     Route::post('workspaces', [WorkspaceController::class, 'store'])
         ->name('workspace.store');
     Route::patch('workspaces/{workspace}', [WorkspaceController::class, 'update'])

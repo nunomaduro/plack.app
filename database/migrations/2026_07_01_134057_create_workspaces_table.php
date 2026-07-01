@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('workspaces', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuidFor(User::class);
+            $table->foreignUuidFor(User::class)->index();
             $table->string('name');
             $table->timestamps();
         });
