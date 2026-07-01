@@ -5,43 +5,43 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonInterface;
-use Database\Factories\ChannelFactory;
+use Database\Factories\MessageFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property-read string $id
- * @property-read string $workspace_id
- * @property-read string $name
+ * @property-read string $channel_id
+ * @property-read string $user_id
+ * @property-read string $body
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-final class Channel extends Model
+final class Message extends Model
 {
     /**
-     * @use HasFactory<ChannelFactory>
+     * @use HasFactory<MessageFactory>
      */
     use HasFactory;
 
     use HasUuids;
 
     /**
-     * @return BelongsTo<Workspace, $this>
+     * @return BelongsTo<Channel, $this>
      */
-    public function workspace(): BelongsTo
+    public function channel(): BelongsTo
     {
-        return $this->belongsTo(Workspace::class);
+        return $this->belongsTo(Channel::class);
     }
 
     /**
-     * @return HasMany<Message, $this>
+     * @return BelongsTo<User, $this>
      */
-    public function messages(): HasMany
+    public function sender(): BelongsTo
     {
-        return $this->hasMany(Message::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -51,8 +51,9 @@ final class Channel extends Model
     {
         return [
             'id' => 'string',
-            'workspace_id' => 'string',
-            'name' => 'string',
+            'channel_id' => 'string',
+            'user_id' => 'string',
+            'body' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
