@@ -96,7 +96,7 @@
         ],
         "test:unit": "XDEBUG_MODE=\"coverage\" pest --parallel --coverage --exactly=100.0",
         "test:types": [
-            "phpstan",
+            "phpstan --memory-limit=-1",
             "bun run test:types"
         ],
         "test": [
