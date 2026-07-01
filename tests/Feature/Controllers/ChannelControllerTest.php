@@ -8,20 +8,22 @@ use App\Models\Workspace;
 use Inertia\Support\SessionKey;
 use Inertia\Testing\AssertableInertia as Assert;
 
-it('lists channels on the workspace', function (): void {
+it('shares the workspace channels for the sidebar', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create();
 
-    Channel::factory()
+    $channels = Channel::factory()
         ->count(3)
         ->for($workspace)
         ->create();
 
-    $this->actingAs($user)->get(route('workspace.show', $workspace))
+    $this->actingAs($user)->get(route('channel.show', [$workspace, $channels->first()]))
         ->assertStatus(200)
         ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('workspace/show')
-            ->has('workspace.channels', 3)
+            ->component('channel/show')
+            ->has('navWorkspaces')
+            ->where('currentWorkspace.slug', $workspace->slug)
+            ->has('currentWorkspace.channels', 3)
         );
 });
 

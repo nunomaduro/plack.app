@@ -1,27 +1,15 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import CreateChannelDialog from '@/components/create-channel-dialog';
-import EditChannelDialog from '@/components/edit-channel-dialog';
 import Heading from '@/components/heading';
 import AppLayout from '@/layouts/app-layout';
-import { show as channelShow } from '@/routes/channel';
 import { index, show } from '@/routes/workspace';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, WorkspaceSummary } from '@/types';
 
-type Channel = {
-    id: string;
-    name: string;
-    slug: string;
-};
-
-type Workspace = {
-    id: string;
-    name: string;
-    channels: Channel[];
-};
-
-export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
-    const channels = workspace.channels;
-
+export default function WorkspaceShow({
+    workspace,
+}: {
+    workspace: WorkspaceSummary;
+}) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Workspaces',
@@ -38,53 +26,17 @@ export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
             <Head title={workspace.name} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <Heading
-                        title={workspace.name}
-                        description="Connect channels to this workspace."
-                    />
-                </div>
+                <Heading
+                    title={workspace.name}
+                    description="Create a channel to start the conversation."
+                />
 
-                <div className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                        <Heading variant="small" title="Channels" />
+                <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-sidebar-border/70 p-12 dark:border-sidebar-border">
+                    <p className="text-sm text-muted-foreground">
+                        No channels yet.
+                    </p>
 
-                        <CreateChannelDialog workspaceId={workspace.id} />
-                    </div>
-
-                    {channels.length === 0 ? (
-                        <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-sidebar-border/70 p-12 dark:border-sidebar-border">
-                            <p className="text-sm text-muted-foreground">
-                                No channels connected yet.
-                            </p>
-
-                            <CreateChannelDialog workspaceId={workspace.id} />
-                        </div>
-                    ) : (
-                        <ul className="flex flex-col gap-2">
-                            {channels.map((channel) => (
-                                <li
-                                    key={channel.id}
-                                    className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
-                                >
-                                    <Link
-                                        href={channelShow({
-                                            workspace: workspace.id,
-                                            channel: channel.id,
-                                        })}
-                                        className="font-medium hover:underline"
-                                    >
-                                        {channel.name}
-                                    </Link>
-
-                                    <EditChannelDialog
-                                        workspaceId={workspace.id}
-                                        channel={channel}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <CreateChannelDialog workspace={workspace.slug} />
                 </div>
             </div>
         </AppLayout>

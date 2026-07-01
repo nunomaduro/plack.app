@@ -9,6 +9,7 @@ import type { BreadcrumbItem } from '@/types';
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
 };
 
 type Channel = {
@@ -27,7 +28,7 @@ export default function ChannelShow({ channel }: { channel: Channel }) {
         },
         {
             title: workspace.name,
-            href: workspaceShow(workspace.id),
+            href: workspaceShow(workspace.slug),
         },
         {
             title: channel.name,

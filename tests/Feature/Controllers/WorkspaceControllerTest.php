@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Channel;
 use App\Models\User;
 use App\Models\Workspace;
 use Inertia\Support\SessionKey;
@@ -23,7 +24,7 @@ it('may have workspaces', function (): void {
         );
 });
 
-it('can show a workspace', function (): void {
+it('shows the empty state when the workspace has no channels', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane']);
 
@@ -33,7 +34,20 @@ it('can show a workspace', function (): void {
             ->component('workspace/show')
             ->where('workspace.id', $workspace->id)
             ->where('workspace.name', 'Hashane')
+            ->where('workspace.slug', $workspace->slug)
         );
+});
+
+it('redirects to the first channel when the workspace has channels', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+
+    $firstChannel = Channel::factory()->for($workspace)->create(['created_at' => now()->subMinutes(2)]);
+    Channel::factory()->for($workspace)->create(['created_at' => now()->subMinute()]);
+    Channel::factory()->for($workspace)->create(['created_at' => now()]);
+
+    $this->actingAs($user)->get(route('workspace.show', $workspace))
+        ->assertRedirect(route('channel.show', [$workspace, $firstChannel]));
 });
 
 it('can create workspace', function (): void {

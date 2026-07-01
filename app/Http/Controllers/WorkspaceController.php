@@ -14,7 +14,6 @@ use App\Models\User;
 use App\Models\Workspace;
 use App\Queries\ListWorkspace;
 use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -30,10 +29,16 @@ final readonly class WorkspaceController
         ]);
     }
 
-    public function show(#[CurrentUser] User $user, Workspace $workspace): Response
+    public function show(#[CurrentUser] User $user, Workspace $workspace): Response|RedirectResponse
     {
+        $firstChannel = $workspace->channels()->oldest()->first();
+
+        if ($firstChannel !== null) {
+            return redirect()->route('channel.show', [$workspace, $firstChannel]);
+        }
+
         return Inertia::render('workspace/show', [
-            'workspace' => $workspace->load(['channels' => fn (HasMany $channels) => $channels->latest()]),
+            'workspace' => $workspace->only('id', 'name', 'slug'),
         ]);
     }
 

@@ -16,21 +16,32 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+type Props = {
+    workspace: string;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+};
+
 export default function CreateChannelDialog({
-    workspaceId,
-}: {
-    workspaceId: string;
-}) {
-    const [open, setOpen] = useState(false);
+    workspace,
+    open: controlledOpen,
+    onOpenChange,
+}: Props) {
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const isControlled = controlledOpen !== undefined;
+    const open = isControlled ? controlledOpen : uncontrolledOpen;
+    const setOpen = onOpenChange ?? setUncontrolledOpen;
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button>
-                    <Plus />
-                    New channel
-                </Button>
-            </DialogTrigger>
+            {!isControlled && (
+                <DialogTrigger asChild>
+                    <Button>
+                        <Plus />
+                        New channel
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent>
                 <DialogTitle>Create channel</DialogTitle>
                 <DialogDescription>
@@ -38,7 +49,7 @@ export default function CreateChannelDialog({
                 </DialogDescription>
 
                 <Form
-                    {...ChannelController.store.form(workspaceId)}
+                    {...ChannelController.store.form(workspace)}
                     options={{
                         preserveScroll: true,
                     }}
