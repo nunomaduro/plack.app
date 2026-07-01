@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-final readonly class ListWorkspace
+final readonly class ListOwnedWorkspaces
 {
     /**
      * @return LengthAwarePaginator<int, Workspace>
@@ -16,7 +16,7 @@ final readonly class ListWorkspace
     public function get(User $user): LengthAwarePaginator
     {
         return $user
-            ->workspaces()
+            ->ownedWorkspaces()
             ->paginate(10);
     }
 }

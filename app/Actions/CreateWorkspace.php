@@ -11,7 +11,7 @@ final readonly class CreateWorkspace
 {
     public function handle(User $user, string $name): Workspace
     {
-        return $user->workspaces()->create([
+        return $user->ownedWorkspaces()->create([
             'name' => $name,
         ]);
     }
