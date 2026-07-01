@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\CreateBookmarkController;
+use App\Http\Controllers\DeleteBookmarkController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotificationController;
@@ -18,6 +20,13 @@ use Inertia\Inertia;
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
+    // Bookmarks...
+    Route::post('bookmarks', CreateBookmarkController::class)
+        ->name('bookmark.store');
+
+    Route::delete('bookmarks/{bookmark}', DeleteBookmarkController::class)
+        ->name('bookmark.destroy');
+
     // Workspaces...
     Route::get('workspaces', [WorkspaceController::class, 'index'])->name('workspace.index');
 
