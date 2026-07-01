@@ -74,6 +74,61 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * @return HasMany<Preference, $this>
+     */
+    public function preferences(): HasMany
+    {
+        return $this->hasMany(Preference::class);
+    }
+
+    /**
+     * Create or update one of the user's preferences.
+     *
+     * Preferences are stored as a per-user key/value pair. When a preference
+     * with the given name already exists for the user, its value is updated;
+     * otherwise a new preference record is created.
+     *
+     * @param  string  $name  The preference key (max 60 characters).
+     * @param  string  $value  The preference value (max 250 characters).
+     * @param  string|null  $defaultValue  Optional default value stored alongside the preference.
+     */
+    public function updateOrCreatePreference(string $name, string $value, ?string $defaultValue = null): Preference
+    {
+        return $this->preferences()->updateOrCreate(
+            ['name' => $name],
+            ['value' => $value, 'default_value' => $defaultValue],
+        );
+    }
+
+    /**
+     * Get the value of one of the user's preferences by name.
+     *
+     * When the preference exists its stored value is returned. Otherwise the
+     * preference's default value is used, falling back to an empty string when
+     * neither is available.
+     *
+     * @param  string  $name  The preference key to read.
+     * @return string The resolved preference value.
+     */
+    public function getPreference(string $name): string
+    {
+        $preference = $this->preferences()->where('name', $name)->first();
+
+        return $preference?->value ?? $preference?->default_value ?? '';
+    }
+
+    /**
+     * Delete one of the user's preferences by name.
+     *
+     * @param  string  $name  The preference key to remove.
+     * @return bool True when a matching preference was deleted, false otherwise.
+     */
+    public function deletePreference(string $name): bool
+    {
+        return (bool) $this->preferences()->where('name', $name)->delete();
+    }
+
+    /**
      * Send the email verification notification.
      */
     public function sendEmailVerificationNotification(): void
