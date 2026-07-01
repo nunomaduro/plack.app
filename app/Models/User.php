@@ -8,10 +8,11 @@ use App\Notifications\ResetPassword;
 use App\Notifications\VerifyEmail;
 use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,7 +37,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
     'two_factor_secret',
     'two_factor_recovery_codes',
 ])]
-final class User extends Authenticatable implements MustVerifyEmail
+final class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
@@ -68,9 +69,17 @@ final class User extends Authenticatable implements MustVerifyEmail
     /**
      * @return HasMany<Workspace, $this>
      */
-    public function workspaces(): HasMany
+    public function ownedWorkspaces(): HasMany
     {
         return $this->hasMany(Workspace::class);
+    }
+
+    /**
+     * @return BelongsToMany<Workspace, $this>
+     */
+    public function memberWorkspaces(): BelongsToMany
+    {
+        return $this->belongsToMany(Workspace::class, 'workspace_user')->withTimestamps();
     }
 
     /**
