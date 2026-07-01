@@ -10,14 +10,17 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 
 /**
  * @property-read string $id
  * @property-read string $workspace_id
  * @property-read string $name
+ * @property-read string $slug
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
+#[Sluggable(from: 'name', scope: 'workspace_id', onUpdating: true)]
 final class Channel extends Model
 {
     /**
@@ -26,6 +29,11 @@ final class Channel extends Model
     use HasFactory;
 
     use HasUuids;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     /**
      * @return BelongsTo<Workspace, $this>
@@ -44,6 +52,7 @@ final class Channel extends Model
             'id' => 'string',
             'workspace_id' => 'string',
             'name' => 'string',
+            'slug' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

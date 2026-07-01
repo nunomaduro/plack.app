@@ -16,6 +16,7 @@ type Channel = {
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
     channels: Channel[];
 };
 
@@ -49,7 +50,7 @@ export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
                     <div className="flex items-center justify-between">
                         <Heading variant="small" title="Channels" />
 
-                        <CreateChannelDialog workspaceId={workspace.id} />
+                        <CreateChannelDialog workspaceSlug={workspace.slug} />
                     </div>
 
                     {channels.length === 0 ? (
@@ -58,7 +59,9 @@ export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
                                 No channels connected yet.
                             </p>
 
-                            <CreateChannelDialog workspaceId={workspace.id} />
+                            <CreateChannelDialog
+                                workspaceSlug={workspace.slug}
+                            />
                         </div>
                     ) : (
                         <ul className="flex flex-col gap-2">
@@ -69,8 +72,8 @@ export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
                                 >
                                     <Link
                                         href={channelShow({
-                                            workspace: workspace.id,
-                                            channel: channel.id,
+                                            workspace: workspace.slug,
+                                            channel: channel.slug,
                                         })}
                                         className="font-medium hover:underline"
                                     >
@@ -78,7 +81,7 @@ export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
                                     </Link>
 
                                     <EditChannelDialog
-                                        workspaceId={workspace.id}
+                                        workspaceSlug={workspace.slug}
                                         channel={channel}
                                     />
                                 </li>

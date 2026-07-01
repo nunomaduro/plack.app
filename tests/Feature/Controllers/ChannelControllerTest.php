@@ -59,16 +59,47 @@ it('can create a channel', function (): void {
     $channels = $workspace->channels;
 
     expect($channels->count())->toBe(1)
-        ->and($channels->first()->name)->toBe('general');
+        ->and($channels->first()->name)->toBe('general')
+        ->and($channels->first()->slug)->toBe('general');
+});
+
+it('infers the slug from the name and ignores a provided slug', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+
+    $response = $this->actingAs($user)->post(route('channel.store', $workspace), [
+        'name' => 'Product Updates',
+        'slug' => 'custom-slug',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    expect($workspace->channels()->first()->slug)->toBe('product-updates');
+});
+
+it('generates a unique slug per workspace when the name is taken', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+    Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
+
+    $response = $this->actingAs($user)->post(route('channel.store', $workspace), [
+        'name' => 'general',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    expect($workspace->channels()->where('slug', 'general-2')->exists())->toBeTrue();
 });
 
 it('validates the channel name', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create();
 
-    $this->actingAs($user)->post(route('channel.store', $workspace), [
+    $response = $this->actingAs($user)->post(route('channel.store', $workspace), [
         'name' => 'ab',
-    ])->assertSessionHasErrors('name');
+    ]);
+
+    $response->assertSessionHasErrors('name');
 
     expect($workspace->channels()->count())->toBe(0);
 });
@@ -84,7 +115,8 @@ it('can update a channel name', function (): void {
 
     $response->assertRedirectBack();
 
-    expect($channel->refresh()->name)->toBe('random');
+    expect($channel->refresh()->name)->toBe('random')
+        ->and($channel->slug)->toBe('random');
 });
 
 it('can delete a channel', function (): void {

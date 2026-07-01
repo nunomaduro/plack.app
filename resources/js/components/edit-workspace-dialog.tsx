@@ -39,7 +39,7 @@ export default function EditWorkspaceDialog({
             <DialogContent>
                 <DialogTitle>Edit workspace</DialogTitle>
                 <DialogDescription>
-                    Update the name of your workspace.
+                    Update the name and slug of your workspace.
                 </DialogDescription>
 
                 <Form
@@ -65,6 +65,20 @@ export default function EditWorkspaceDialog({
                                 />
 
                                 <InputError message={errors.name} />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="slug">Workspace slug</Label>
+
+                                <Input
+                                    id="slug"
+                                    name="slug"
+                                    defaultValue={workspace.slug}
+                                    placeholder="my-workspace"
+                                    autoComplete="off"
+                                />
+
+                                <InputError message={errors.slug} />
                             </div>
 
                             <DialogFooter className="gap-2">

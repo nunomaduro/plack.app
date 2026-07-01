@@ -60,8 +60,9 @@ final readonly class WorkspaceController
         UpdateWorkspace $updateWorkspace,
     ): RedirectResponse {
         $name = $request->string('name')->value();
+        $slug = $request->string('slug')->value();
 
-        $updateWorkspace->handle($workspace, $name);
+        $updateWorkspace->handle($workspace, $name, $slug);
 
         Inertia::flash('toast', [
             'type' => 'success',

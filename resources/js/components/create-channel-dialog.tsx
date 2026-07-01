@@ -17,9 +17,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 export default function CreateChannelDialog({
-    workspaceId,
+    workspaceSlug,
 }: {
-    workspaceId: string;
+    workspaceSlug: string;
 }) {
     const [open, setOpen] = useState(false);
 
@@ -38,7 +38,7 @@ export default function CreateChannelDialog({
                 </DialogDescription>
 
                 <Form
-                    {...ChannelController.store.form(workspaceId)}
+                    {...ChannelController.store.form(workspaceSlug)}
                     options={{
                         preserveScroll: true,
                     }}
