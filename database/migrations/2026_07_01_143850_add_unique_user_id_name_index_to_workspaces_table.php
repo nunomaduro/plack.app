@@ -23,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('workspaces', function (Blueprint $table): void {
-            $table->dropUnique(['user_id', 'name']);
-        });
+        //
     }
 };
