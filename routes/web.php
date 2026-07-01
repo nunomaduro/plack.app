@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AcceptWorkspaceInvitationController;
+use App\Http\Controllers\DeclineWorkspaceInvitationController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotificationController;
@@ -10,7 +12,10 @@ use App\Http\Controllers\UserEmailVerificationNotificationController;
 use App\Http\Controllers\UserPasswordController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserTwoFactorAuthenticationController;
+use App\Http\Controllers\WorkspaceChannelController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\WorkspaceInvitationController;
+use App\Http\Controllers\WorkspaceMemberController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,6 +28,11 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('workspaces', [WorkspaceController::class, 'store'])
         ->name('workspace.store');
 
+    Route::middleware(['workspace.member'])->group(function (): void {
+        Route::get('workspaces/{workspace}/channels', WorkspaceChannelController::class)
+            ->name('workspace.channels');
+    });
+
     Route::middleware(['workspace.access'])->group(function (): void {
         Route::get('workspaces/{workspace}', [WorkspaceController::class, 'show'])
             ->name('workspace.show');
@@ -32,8 +42,27 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
         Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
             ->name('workspace.destroy');
+
+        Route::post('workspaces/{workspace}/invitations', [WorkspaceInvitationController::class, 'store'])
+            ->name('workspace.invitations.store');
+
+        Route::delete('workspaces/{workspace}/invitations/{invitation}', [WorkspaceInvitationController::class, 'destroy'])
+            ->name('workspace.invitations.destroy');
+
+        Route::delete('workspaces/{workspace}/members/{user}', [WorkspaceMemberController::class, 'destroy'])
+            ->name('workspace.members.destroy');
     });
+
+    // Workspace Invitations...
+    Route::post('invitations/{invitation}/accept', AcceptWorkspaceInvitationController::class)
+        ->name('invitations.accept');
+
+    Route::delete('invitations/{invitation}', DeclineWorkspaceInvitationController::class)
+        ->name('invitations.decline');
 });
+
+Route::get('invitations/{invitation}', [WorkspaceInvitationController::class, 'show'])
+    ->name('invitations.show');
 
 Route::middleware('auth')->group(function (): void {
     // User...

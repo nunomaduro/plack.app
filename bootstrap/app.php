@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\EnsureCanAccessWorkspace;
+use App\Http\Middleware\EnsureIsWorkspaceMember;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'workspace.access' => EnsureCanAccessWorkspace::class,
+            'workspace.member' => EnsureIsWorkspaceMember::class,
         ]);
 
         $middleware->web(append: [

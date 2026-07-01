@@ -4,35 +4,48 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Models\Workspace;
+use App\Models\WorkspaceInvitation;
 use Inertia\Support\SessionKey;
 use Inertia\Testing\AssertableInertia as Assert;
 
-it('may have workspaces', function (): void {
+it('splits owned, member, and pending workspaces', function (): void {
     $user = User::factory()->create();
 
-    Workspace::factory()
-        ->count(5)
-        ->for($user, 'owner')
-        ->create();
+    Workspace::factory()->count(2)->for($user, 'owner')->create();
+
+    $memberWorkspace = Workspace::factory()->create();
+    $memberWorkspace->members()->attach($user);
+
+    $pending = WorkspaceInvitation::factory()->create(['email' => $user->email]);
+    WorkspaceInvitation::factory()->expired()->create(['email' => $user->email]);
 
     $this->actingAs($user)->get('workspaces')
         ->assertStatus(200)
         ->assertInertia(fn (Assert $page): Assert => $page
             ->component('workspace/list')
-            ->has('workspaces.data', 5)
+            ->has('ownedWorkspaces.data', 2)
+            ->has('memberWorkspaces', 1)
+            ->has('pendingInvitations', 1)
+            ->where('pendingInvitations.0.code', $pending->code)
         );
 });
 
-it('can show a workspace', function (): void {
+it('shows the workspace settings page', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane']);
+
+    $workspace->members()->attach(User::factory()->create());
+    WorkspaceInvitation::factory()->for($workspace)->create(['email' => 'pending@example.com']);
 
     $this->actingAs($user)->get(route('workspace.show', $workspace))
         ->assertStatus(200)
         ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('workspace/show')
+            ->component('workspace/settings')
             ->where('workspace.id', $workspace->id)
             ->where('workspace.name', 'Hashane')
+            ->where('owner.id', $user->id)
+            ->has('members', 1)
+            ->has('invitations', 1)
         );
 });
 
@@ -51,7 +64,7 @@ it('can create workspace', function (): void {
             ],
         ]);
 
-    $workspaces = $user->workspaces;
+    $workspaces = $user->ownedWorkspaces;
 
     expect($workspaces->count())->toBe(1)
         ->and($workspaces->first()->name)->toBe('Test Workspace');
@@ -64,7 +77,7 @@ it('validates the workspace name', function (): void {
         'name' => 'ab',
     ])->assertSessionHasErrors('name');
 
-    expect($user->workspaces()->count())->toBe(0);
+    expect($user->ownedWorkspaces()->count())->toBe(0);
 });
 
 it('cannot create a workspace with a name already used by the user', function (): void {
@@ -75,7 +88,7 @@ it('cannot create a workspace with a name already used by the user', function ()
         'name' => 'Test Workspace',
     ])->assertSessionHasErrors('name');
 
-    expect($user->workspaces()->count())->toBe(1);
+    expect($user->ownedWorkspaces()->count())->toBe(1);
 });
 
 it('allows different users to create workspaces with the same name', function (): void {
@@ -87,7 +100,7 @@ it('allows different users to create workspaces with the same name', function ()
         'name' => 'Test Workspace',
     ])->assertSessionHasNoErrors();
 
-    expect($user->workspaces()->count())->toBe(1);
+    expect($user->ownedWorkspaces()->count())->toBe(1);
 });
 
 it('can update workspace name', function (): void {
@@ -109,7 +122,7 @@ it('can delete a workspace', function (): void {
 
     $response = $this->actingAs($user)->delete(route('workspace.destroy', $workspace));
 
-    $response->assertRedirectBack()
+    $response->assertRedirect(route('workspace.index'))
         ->assertSessionHas(SessionKey::FLASH_DATA, [
             'toast' => [
                 'type' => 'success',
@@ -117,16 +130,15 @@ it('can delete a workspace', function (): void {
             ],
         ]);
 
-    expect($user->workspaces()->count())->toBe(0);
+    expect(Workspace::query()->whereKey($workspace->id)->exists())->toBeFalse();
 });
 
-it('cannot delete a workspace owned by another user', function (): void {
+it('can not delete a workspace if not owner', function (): void {
     $user = User::factory()->create();
-    $otherUser = User::factory()->create();
-    $workspace = Workspace::factory()->for($otherUser, 'owner')->create();
+    $workspace = Workspace::factory()->create();
 
     $this->actingAs($user)->delete(route('workspace.destroy', $workspace))
-        ->assertNotFound();
+        ->assertStatus(404);
 
-    expect($otherUser->workspaces()->count())->toBe(1);
+    expect(Workspace::query()->whereKey($workspace->id)->exists())->toBeTrue();
 });

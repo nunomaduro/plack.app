@@ -12,7 +12,9 @@ use App\Http\Requests\DeleteWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Queries\ListWorkspace;
+use App\Models\WorkspaceInvitation;
+use App\Queries\ListOwnedWorkspaces;
+use App\Queries\ListPendingWorkspaceInvitations;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -20,19 +22,30 @@ use Inertia\Response;
 
 final readonly class WorkspaceController
 {
-    public function index(#[CurrentUser] User $user, ListWorkspace $listWorkspace): Response
-    {
-        $workspaces = $listWorkspace->get($user);
-
+    public function index(
+        #[CurrentUser] User $user,
+        ListOwnedWorkspaces $listOwnedWorkspaces,
+        ListPendingWorkspaceInvitations $listPendingWorkspaceInvitations,
+    ): Response {
         return Inertia::render('workspace/list', [
-            'workspaces' => $workspaces,
+            'ownedWorkspaces' => $listOwnedWorkspaces->get($user),
+            'memberWorkspaces' => $user->memberWorkspaces()->get(['workspaces.id', 'workspaces.name']),
+            'pendingInvitations' => $listPendingWorkspaceInvitations->get($user),
         ]);
     }
 
-    public function show(#[CurrentUser] User $user, Workspace $workspace): Response
+    public function show(Workspace $workspace): Response
     {
-        return Inertia::render('workspace/show', [
-            'workspace' => $workspace,
+        $workspace->load(['owner', 'members', 'invitations']);
+
+        return Inertia::render('workspace/settings', [
+            'workspace' => $workspace->only('id', 'name'),
+            'owner' => $workspace->owner->only('id', 'name', 'email'),
+            'members' => $workspace->members->map->only('id', 'name', 'email')->values(),
+            'invitations' => $workspace->invitations->map(fn (WorkspaceInvitation $invitation): array => [
+                'code' => $invitation->code,
+                'email' => $invitation->email,
+            ])->values(),
         ]);
     }
 
@@ -82,6 +95,6 @@ final readonly class WorkspaceController
             'message' => __('Workspace deleted.'),
         ]);
 
-        return back();
+        return to_route('workspace.index');
     }
 }
