@@ -23,12 +23,12 @@ it('deletes the user owned workspaces, channels, and every message the user sent
 
     $workspace = Workspace::factory()->for($user, 'owner')->create();
     $channel = Channel::factory()->for($workspace)->create();
-    $ownedMessage = Message::factory()->for($channel)->for($user, 'sender')->create();
+    $ownedMessage = Message::factory()->for($channel)->for($user, 'user')->create();
 
     $otherUser = User::factory()->create();
     $otherWorkspace = Workspace::factory()->for($otherUser, 'owner')->create();
     $otherChannel = Channel::factory()->for($otherWorkspace)->create();
-    $sentElsewhere = Message::factory()->for($otherChannel)->for($user, 'sender')->create();
+    $sentElsewhere = Message::factory()->for($otherChannel)->for($user, 'user')->create();
 
     $action = resolve(DeleteUser::class);
 

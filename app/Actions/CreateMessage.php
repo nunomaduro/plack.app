@@ -8,12 +8,12 @@ use App\Models\Channel;
 use App\Models\Message;
 use App\Models\User;
 
-final readonly class SendMessage
+final readonly class CreateMessage
 {
-    public function handle(Channel $channel, User $sender, string $body): Message
+    public function handle(Channel $channel, User $user, string $body): Message
     {
         return $channel->messages()->create([
-            'user_id' => $sender->id,
+            'user_id' => $user->id,
             'body' => $body,
         ]);
     }

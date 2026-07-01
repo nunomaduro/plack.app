@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Channel;
+use App\Models\Message;
 use App\Models\User;
 use App\Models\Workspace;
 use Inertia\Support\SessionKey;
@@ -30,6 +31,13 @@ it('can show a channel', function (): void {
     $workspace = Workspace::factory()->for($user, 'owner')->create();
     $channel = Channel::factory()->for($workspace)->create(['name' => 'general']);
 
+    $author = User::factory()->create();
+    Message::factory()
+        ->count(2)
+        ->for($channel)
+        ->for($author, 'user')
+        ->create();
+
     $this->actingAs($user)->get(route('channel.show', [$workspace, $channel]))
         ->assertStatus(200)
         ->assertInertia(fn (Assert $page): Assert => $page
@@ -37,6 +45,8 @@ it('can show a channel', function (): void {
             ->where('channel.id', $channel->id)
             ->where('channel.name', 'general')
             ->where('channel.workspace.id', $workspace->id)
+            ->has('channel.messages', 2)
+            ->where('channel.messages.0.user.id', $author->id)
         );
 });
 

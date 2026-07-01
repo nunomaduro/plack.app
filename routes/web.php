@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotificationController;
@@ -47,6 +48,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
             Route::delete('workspaces/{workspace}/channels/{channel}', [ChannelController::class, 'destroy'])
                 ->name('channel.destroy');
+
+            // Messages...
+            Route::post('workspaces/{workspace}/channels/{channel}/messages', [MessageController::class, 'store'])
+                ->name('message.store');
         });
     });
 });

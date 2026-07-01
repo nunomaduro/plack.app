@@ -12,6 +12,7 @@ use App\Http\Requests\DeleteChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
 use App\Models\Channel;
 use App\Models\Workspace;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -21,7 +22,10 @@ final readonly class ChannelController
     public function show(Workspace $workspace, Channel $channel): Response
     {
         return Inertia::render('channel/show', [
-            'channel' => $channel->load('workspace'),
+            'channel' => $channel->load([
+                'workspace',
+                'messages' => fn (HasMany $messages) => $messages->oldest()->with('user'),
+            ]),
         ]);
     }
 
