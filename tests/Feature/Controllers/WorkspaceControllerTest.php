@@ -67,6 +67,29 @@ it('validates the workspace name', function (): void {
     expect($user->workspaces()->count())->toBe(0);
 });
 
+it('cannot create a workspace with a name already used by the user', function (): void {
+    $user = User::factory()->create();
+    Workspace::factory()->for($user, 'owner')->create(['name' => 'Test Workspace']);
+
+    $this->actingAs($user)->post(route('workspace.store'), [
+        'name' => 'Test Workspace',
+    ])->assertSessionHasErrors('name');
+
+    expect($user->workspaces()->count())->toBe(1);
+});
+
+it('allows different users to create workspaces with the same name', function (): void {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    Workspace::factory()->for($otherUser, 'owner')->create(['name' => 'Test Workspace']);
+
+    $this->actingAs($user)->post(route('workspace.store'), [
+        'name' => 'Test Workspace',
+    ])->assertSessionHasNoErrors();
+
+    expect($user->workspaces()->count())->toBe(1);
+});
+
 it('can update workspace name', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane']);
