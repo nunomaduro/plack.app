@@ -44,14 +44,14 @@ final readonly class WorkspaceController
     ): RedirectResponse {
         $name = $request->string('name')->value();
 
-        $createWorkspace->handle($user, $name);
+        $workspace = $createWorkspace->handle($user, $name);
 
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('Workspace created.'),
         ]);
 
-        return back();
+        return to_route('workspace.show', $workspace);
     }
 
     public function update(

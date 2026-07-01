@@ -43,19 +43,19 @@ it('can create workspace', function (): void {
         'name' => 'Test Workspace',
     ]);
 
-    $response->assertRedirectBack()
+    $workspaces = $user->workspaces;
+
+    expect($workspaces->count())->toBe(1)
+        ->and($workspaces->first()->name)->toBe('Test Workspace')
+        ->and($workspaces->first()->slug)->toBe('test-workspace');
+
+    $response->assertRedirect(route('workspace.show', $workspaces->first()))
         ->assertSessionHas(SessionKey::FLASH_DATA, [
             'toast' => [
                 'type' => 'success',
                 'message' => __('Workspace created.'),
             ],
         ]);
-
-    $workspaces = $user->workspaces;
-
-    expect($workspaces->count())->toBe(1)
-        ->and($workspaces->first()->name)->toBe('Test Workspace')
-        ->and($workspaces->first()->slug)->toBe('test-workspace');
 });
 
 it('validates the workspace name', function (): void {

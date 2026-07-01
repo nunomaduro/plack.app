@@ -48,19 +48,19 @@ it('can create a channel', function (): void {
         'name' => 'general',
     ]);
 
-    $response->assertRedirectBack()
+    $channels = $workspace->channels;
+
+    expect($channels->count())->toBe(1)
+        ->and($channels->first()->name)->toBe('general')
+        ->and($channels->first()->slug)->toBe('general');
+
+    $response->assertRedirect(route('channel.show', ['workspace' => $workspace, 'channel' => $channels->first()]))
         ->assertSessionHas(SessionKey::FLASH_DATA, [
             'toast' => [
                 'type' => 'success',
                 'message' => __('Channel created.'),
             ],
         ]);
-
-    $channels = $workspace->channels;
-
-    expect($channels->count())->toBe(1)
-        ->and($channels->first()->name)->toBe('general')
-        ->and($channels->first()->slug)->toBe('general');
 });
 
 it('infers the slug from the name and ignores a provided slug', function (): void {

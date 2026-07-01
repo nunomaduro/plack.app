@@ -32,7 +32,7 @@ Modern PHP has evolved into a mature, type-safe language, yet many Laravel proje
 - **Just Better Laravel Defaults**: Thanks to **[Essentials](https://github.com/nunomaduro/essentials)** / strict models, auto eager loading, immutable dates, and more...
 - **AI Guidelines**: Integrated AI Guidelines to assist in maintaining code quality and consistency
 - **Full Testing Suite**: More than 150 tests with 100% code coverage using Pest
-- 
+
 This isn't just another Laravel boilerplate—it's a statement that PHP applications can and should be built with the same rigor as strongly-typed languages like Rust or TypeScript.
 
 ## Getting Started
