@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\CreateStatusPresetController;
+use App\Http\Controllers\DeleteStatusPresetController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotificationController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\UserEmailVerificationController;
 use App\Http\Controllers\UserEmailVerificationNotificationController;
 use App\Http\Controllers\UserPasswordController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\UserStatusController;
 use App\Http\Controllers\UserTwoFactorAuthenticationController;
 use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +68,11 @@ Route::middleware('auth')->group(function (): void {
     Route::put('settings/password', [UserPasswordController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('password.update');
+
+    // User Status...
+    Route::patch('settings/status', [UserStatusController::class, 'update'])->name('user-status.update');
+    Route::post('settings/status-presets', CreateStatusPresetController::class)->name('status-preset.store');
+    Route::delete('settings/status-presets/{statusPreset}', DeleteStatusPresetController::class)->name('status-preset.destroy');
 
     // Appearance...
     Route::get('settings/appearance', fn () => Inertia::render('appearance/update'))->name('appearance.edit');

@@ -27,6 +27,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read string|null $two_factor_secret
  * @property-read string|null $two_factor_recovery_codes
  * @property-read CarbonInterface|null $two_factor_confirmed_at
+ * @property-read string|null $status_emoji
+ * @property-read string|null $status_text
+ * @property-read CarbonInterface|null $status_expires_at
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
@@ -60,6 +63,9 @@ final class User extends Authenticatable implements MustVerifyEmail
             'two_factor_secret' => 'string',
             'two_factor_recovery_codes' => 'string',
             'two_factor_confirmed_at' => 'datetime',
+            'status_emoji' => 'string',
+            'status_text' => 'string',
+            'status_expires_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
@@ -79,6 +85,39 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    /**
+     * @return HasMany<StatusPreset, $this>
+     */
+    public function statusPresets(): HasMany
+    {
+        return $this->hasMany(StatusPreset::class);
+    }
+
+    public function isStatusExpired(): bool
+    {
+        return $this->status_expires_at !== null && $this->status_expires_at->isPast();
+    }
+
+    /**
+     * @return array{emoji: string, text: string, expires_at: CarbonInterface|null}|null
+     */
+    public function currentStatus(): ?array
+    {
+        if ($this->status_emoji === null && $this->status_text === null) {
+            return null;
+        }
+
+        if ($this->isStatusExpired()) {
+            return null;
+        }
+
+        return [
+            'emoji' => $this->status_emoji,
+            'text' => $this->status_text,
+            'expires_at' => $this->status_expires_at,
+        ];
     }
 
     /**
