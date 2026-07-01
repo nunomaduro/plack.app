@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     // Workspaces...
     Route::post('workspaces', [WorkspaceController::class, 'store'])
         ->name('workspace.store');
+    Route::patch('workspaces/{workspace}', [WorkspaceController::class, 'update'])
+        ->name('workspace.update');
 });
 
 Route::middleware('auth')->group(function (): void {
