@@ -74,6 +74,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * @return HasMany<Reaction, $this>
+     */
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(Reaction::class);
+    }
+
+    /**
      * Send the email verification notification.
      */
     public function sendEmailVerificationNotification(): void

@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\CreateReactionController;
+use App\Http\Controllers\DeleteReactionController;
+use App\Http\Controllers\EmojiController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotificationController;
@@ -32,6 +35,16 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
         Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
             ->name('workspace.destroy');
+
+        // Emojis...
+        Route::get('emojis', EmojiController::class)->name('emoji.index');
+
+        // Reactions...
+        Route::post('workspaces/{workspace}/channels/{channel}/reactions', CreateReactionController::class)
+            ->name('reaction.store');
+
+        Route::delete('workspaces/{workspace}/channels/{channel}/reactions/{reaction}', DeleteReactionController::class)
+            ->name('reaction.destroy');
     });
 });
 
