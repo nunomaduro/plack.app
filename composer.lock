@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cbc4d4fc20289e0bec8dcfdfb4b1a7f0",
+    "content-hash": "03c389fa796e2aa18ffd23c4190972da",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2901,6 +2901,82 @@
                 }
             ],
             "time": "2026-02-23T09:37:58+00:00"
+        },
+        {
+            "name": "nunomaduro/laravel-sluggable",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nunomaduro/laravel-sluggable.git",
+                "reference": "c746106edc5bd1ab2bec684ff51c900e6364b569"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nunomaduro/laravel-sluggable/zipball/c746106edc5bd1ab2bec684ff51c900e6364b569",
+                "reference": "c746106edc5bd1ab2bec684ff51c900e6364b569",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^13.5.0",
+                "illuminate/database": "^13.5.0",
+                "illuminate/filesystem": "^13.5.0",
+                "illuminate/support": "^13.5.0",
+                "illuminate/translation": "^13.5.0",
+                "illuminate/validation": "^13.5.0",
+                "php": "^8.5.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.29.0",
+                "orchestra/testbench": "^11.1",
+                "pestphp/pest": "^5.0",
+                "pestphp/pest-plugin-laravel": "^5.0",
+                "pestphp/pest-plugin-type-coverage": "^5.0",
+                "phpstan/phpstan": "^2.1.50",
+                "rector/rector": "^2.4.2",
+                "symfony/var-dumper": "^8.0.8"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "NunoMaduro\\LaravelSluggable\\SluggableServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "NunoMaduro\\LaravelSluggable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nuno Maduro",
+                    "email": "enunomaduro@gmail.com"
+                }
+            ],
+            "description": "Automatic slug generation for Eloquent models via the #[Sluggable] attribute.",
+            "keywords": [
+                "eloquent",
+                "laravel",
+                "php",
+                "slug",
+                "sluggable"
+            ],
+            "support": {
+                "issues": "https://github.com/nunomaduro/laravel-sluggable/issues",
+                "source": "https://github.com/nunomaduro/laravel-sluggable/tree/v1.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-04-17T15:36:01+00:00"
         },
         {
             "name": "nunomaduro/termwind",
