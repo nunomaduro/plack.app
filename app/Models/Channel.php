@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ChannelVisibility;
 use Carbon\CarbonInterface;
 use Database\Factories\ChannelFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,6 +20,7 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
  * @property-read string $workspace_id
  * @property-read string $name
  * @property-read string $slug
+ * @property-read ChannelVisibility $visibility
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  * @property-read Workspace $workspace
@@ -76,6 +78,7 @@ final class Channel extends Model
             'workspace_id' => 'string',
             'name' => 'string',
             'slug' => 'string',
+            'visibility' => ChannelVisibility::class,
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

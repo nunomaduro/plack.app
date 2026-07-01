@@ -18,6 +18,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuidFor(Workspace::class)->index();
             $table->string('name');
+            $table->string('visibility');
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\ChannelVisibility;
 use App\Models\Channel;
 use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -23,6 +24,21 @@ final class ChannelFactory extends Factory
         return [
             'workspace_id' => Workspace::factory(),
             'name' => fake()->name(),
+            'visibility' => ChannelVisibility::Public,
         ];
+    }
+
+    public function public(): self
+    {
+        return $this->state([
+            'visibility' => ChannelVisibility::Public,
+        ]);
+    }
+
+    public function private(): self
+    {
+        return $this->state([
+            'visibility' => ChannelVisibility::Private,
+        ]);
     }
 }
