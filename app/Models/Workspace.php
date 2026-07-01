@@ -31,6 +31,11 @@ final class Workspace extends Model
 
     use HasUuids;
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     /**
      * @return BelongsTo<User, $this>
      */

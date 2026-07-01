@@ -17,6 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
     created_at: string;
 };
 
@@ -63,7 +64,7 @@ export default function WorkspaceList({
                                 className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                             >
                                 <Link
-                                    href={show(workspace.id)}
+                                    href={show(workspace.slug)}
                                     className="font-medium hover:underline"
                                 >
                                     {workspace.name}

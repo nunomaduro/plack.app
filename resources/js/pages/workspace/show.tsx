@@ -8,6 +8,7 @@ import type { BreadcrumbItem } from '@/types';
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
 };
 
 export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
@@ -18,7 +19,7 @@ export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
         },
         {
             title: workspace.name,
-            href: show(workspace.id),
+            href: show(workspace.slug),
         },
     ];
 

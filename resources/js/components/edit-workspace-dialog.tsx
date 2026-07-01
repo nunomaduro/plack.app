@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
 };
 
 export default function EditWorkspaceDialog({
@@ -42,7 +43,7 @@ export default function EditWorkspaceDialog({
                 </DialogDescription>
 
                 <Form
-                    {...WorkspaceController.update.form(workspace.id)}
+                    {...WorkspaceController.update.form(workspace.slug)}
                     options={{
                         preserveScroll: true,
                     }}
