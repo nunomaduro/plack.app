@@ -53,3 +53,16 @@ it('validates the workspace name', function (): void {
 
     expect($user->workspaces()->count())->toBe(0);
 });
+
+it('can update workspace name', function () {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user)->create(['name' => 'Hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Nuno Maduro',
+    ]);
+
+    $response->assertRedirectBack();
+
+    expect($workspace->refresh()->name)->toBe('Nuno Maduro');
+});
