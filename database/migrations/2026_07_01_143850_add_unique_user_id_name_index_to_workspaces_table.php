@@ -8,21 +8,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('workspaces', function (Blueprint $table): void {
             $table->unique(['user_id', 'name']);
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        //
     }
 };
