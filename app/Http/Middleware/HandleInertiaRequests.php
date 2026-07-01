@@ -45,7 +45,7 @@ final class HandleInertiaRequests extends Middleware
             'navWorkspaces' => fn () => $user
                 ? $user->workspaces()->orderBy('name')->get(['id', 'name', 'slug'])
                 : [],
-            'currentWorkspace' => fn () => $currentWorkspace instanceof Workspace
+            'currentWorkspace' => fn (): ?array => $currentWorkspace instanceof Workspace
                 ? [
                     'id' => $currentWorkspace->id,
                     'name' => $currentWorkspace->name,

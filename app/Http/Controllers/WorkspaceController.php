@@ -34,7 +34,7 @@ final readonly class WorkspaceController
         $firstChannel = $workspace->channels()->oldest()->first();
 
         if ($firstChannel !== null) {
-            return redirect()->route('channel.show', [$workspace, $firstChannel]);
+            return to_route('channel.show', [$workspace, $firstChannel]);
         }
 
         return Inertia::render('workspace/show', [
