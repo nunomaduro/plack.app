@@ -25,14 +25,14 @@ final readonly class WorkspaceController
         $workspaces = $listWorkspace->get($user);
 
         return Inertia::render('workspace/list', [
-            'workspaces' => $workspaces,
+            'workspaces' => $workspaces->through(fn (Workspace $workspace): array => $workspace->only('id', 'name', 'created_at')),
         ]);
     }
 
-    public function show(#[CurrentUser] User $user, Workspace $workspace): Response
+    public function show(Workspace $workspace): Response
     {
         return Inertia::render('workspace/show', [
-            'workspace' => $workspace,
+            'workspace' => $workspace->only('id', 'name'),
         ]);
     }
 
