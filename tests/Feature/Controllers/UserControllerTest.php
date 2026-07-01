@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Models\WorkspaceInvitation;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +13,20 @@ it('renders registration page', function (): void {
         ->get(route('register'));
 
     $response->assertOk()
-        ->assertInertia(fn ($page) => $page->component('user/create'));
+        ->assertInertia(fn ($page) => $page
+            ->component('user/create')
+            ->where('workspaceInvitation', null));
+});
+
+it('shows a pending workspace invitation on the registration page', function (): void {
+    $invitation = WorkspaceInvitation::factory()->create();
+
+    $this->get(route('register', ['invitation' => $invitation->code]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('user/create')
+            ->where('workspaceInvitation.code', $invitation->code)
+            ->where('workspaceInvitation.workspace', $invitation->workspace->name));
 });
 
 it('may register a new user', function (): void {

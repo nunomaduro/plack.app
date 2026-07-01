@@ -61,9 +61,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         ->name('invitations.decline');
 });
 
-Route::get('invitations/{invitation}', [WorkspaceInvitationController::class, 'show'])
-    ->name('invitations.show');
-
 Route::middleware('auth')->group(function (): void {
     // User...
     Route::delete('user', [UserController::class, 'destroy'])->name('user.destroy');

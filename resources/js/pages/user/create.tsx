@@ -6,17 +6,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import WorkspaceInvitationAlert, {
+    type WorkspaceInvitation,
+} from '@/components/workspace-invitation-alert';
 import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 
-export default function Register() {
+type Props = {
+    workspaceInvitation?: WorkspaceInvitation | null;
+};
+
+export default function Register({ workspaceInvitation }: Props) {
     return (
         <AuthLayout
             title="Create an account"
             description="Enter your details below to create your account"
         >
             <Head title="Register" />
+
+            {workspaceInvitation && (
+                <WorkspaceInvitationAlert
+                    invitation={workspaceInvitation}
+                    action="Register"
+                />
+            )}
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -101,7 +115,19 @@ export default function Register() {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
+                            <TextLink
+                                href={
+                                    workspaceInvitation
+                                        ? login.url({
+                                              query: {
+                                                  invitation:
+                                                      workspaceInvitation.code,
+                                              },
+                                          })
+                                        : login()
+                                }
+                                tabIndex={6}
+                            >
                                 Log in
                             </TextLink>
                         </div>

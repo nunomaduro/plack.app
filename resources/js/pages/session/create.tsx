@@ -7,6 +7,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import WorkspaceInvitationAlert, {
+    type WorkspaceInvitation,
+} from '@/components/workspace-invitation-alert';
 import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
@@ -16,12 +19,14 @@ type Props = {
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
+    workspaceInvitation?: WorkspaceInvitation | null;
 };
 
 export default function Login({
     status,
     canResetPassword,
     canRegister,
+    workspaceInvitation,
 }: Props) {
     return (
         <AuthLayout
@@ -29,6 +34,13 @@ export default function Login({
             description="Enter your email and password below to log in"
         >
             <Head title="Log in" />
+
+            {workspaceInvitation && (
+                <WorkspaceInvitationAlert
+                    invitation={workspaceInvitation}
+                    action="Log in"
+                />
+            )}
 
             <Form
                 {...store.form()}
@@ -101,7 +113,19 @@ export default function Login({
                         {canRegister && (
                             <div className="text-center text-sm text-muted-foreground">
                                 Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
+                                <TextLink
+                                    href={
+                                        workspaceInvitation
+                                            ? register.url({
+                                                  query: {
+                                                      invitation:
+                                                          workspaceInvitation.code,
+                                                  },
+                                              })
+                                            : register()
+                                    }
+                                    tabIndex={5}
+                                >
                                     Sign up
                                 </TextLink>
                             </div>

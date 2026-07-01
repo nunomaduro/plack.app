@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Models\WorkspaceInvitation;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +16,20 @@ it('renders login page', function (): void {
         ->assertInertia(fn ($page) => $page
             ->component('session/create')
             ->has('canResetPassword')
-            ->has('status'));
+            ->where('canRegister', true)
+            ->has('status')
+            ->where('workspaceInvitation', null));
+});
+
+it('shows a pending workspace invitation on the login page', function (): void {
+    $invitation = WorkspaceInvitation::factory()->create();
+
+    $this->get(route('login', ['invitation' => $invitation->code]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('session/create')
+            ->where('workspaceInvitation.code', $invitation->code)
+            ->where('workspaceInvitation.workspace', $invitation->workspace->name));
 });
 
 it('may create a session', function (): void {

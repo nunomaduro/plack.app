@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateSessionRequest;
+use App\Queries\FindPendingWorkspaceInvitation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,11 +15,13 @@ use Inertia\Response;
 
 final readonly class SessionController
 {
-    public function create(Request $request): Response
+    public function create(Request $request, FindPendingWorkspaceInvitation $findPendingWorkspaceInvitation): Response
     {
         return Inertia::render('session/create', [
             'canResetPassword' => Route::has('password.request'),
+            'canRegister' => Route::has('register'),
             'status' => $request->session()->get('status'),
+            'workspaceInvitation' => $findPendingWorkspaceInvitation->get($request->query('invitation')),
         ]);
     }
 

@@ -18,5 +18,5 @@ it('builds the invitation mail', function (): void {
     $mail = new WorkspaceInvitationNotification($invitation)->toMail(new AnonymousNotifiable);
 
     expect($mail->subject)->toContain($invitation->workspace->name)
-        ->and($mail->actionUrl)->toBe(route('invitations.show', $invitation->code));
+        ->and($mail->actionUrl)->toBe(route('login', ['invitation' => $invitation->code]));
 });

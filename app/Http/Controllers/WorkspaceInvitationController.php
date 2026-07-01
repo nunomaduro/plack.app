@@ -12,7 +12,6 @@ use App\Models\Workspace;
 use App\Models\WorkspaceInvitation;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 final readonly class WorkspaceInvitationController
@@ -48,23 +47,5 @@ final readonly class WorkspaceInvitationController
         ]);
 
         return back();
-    }
-
-    public function show(Request $request, WorkspaceInvitation $invitation): RedirectResponse
-    {
-        $user = $request->user();
-
-        if ($user === null) {
-            return to_route('register');
-        }
-
-        if ($user->email !== $invitation->email) {
-            Inertia::flash('toast', [
-                'type' => 'error',
-                'message' => __('This invitation was sent to a different email address.'),
-            ]);
-        }
-
-        return to_route('workspace.index');
     }
 }

@@ -34,6 +34,6 @@ final class WorkspaceInvitationNotification extends Notification implements Shou
                 'inviter' => $this->invitation->inviter->name,
                 'workspace' => $workspace->name,
             ]))
-            ->action(__('View Invitation'), route('invitations.show', $this->invitation->code));
+            ->action(__('Log in'), route('login', ['invitation' => $this->invitation->code]));
     }
 }

@@ -9,17 +9,21 @@ use App\Actions\DeleteUser;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\DeleteUserRequest;
 use App\Models\User;
+use App\Queries\FindPendingWorkspaceInvitation;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final readonly class UserController
 {
-    public function create(): Response
+    public function create(Request $request, FindPendingWorkspaceInvitation $findPendingWorkspaceInvitation): Response
     {
-        return Inertia::render('user/create');
+        return Inertia::render('user/create', [
+            'workspaceInvitation' => $findPendingWorkspaceInvitation->get($request->query('invitation')),
+        ]);
     }
 
     public function store(CreateUserRequest $request, CreateUser $action): RedirectResponse

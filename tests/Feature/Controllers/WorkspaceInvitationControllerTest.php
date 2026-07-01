@@ -122,35 +122,6 @@ it('does not let a non-owner cancel an invitation', function (): void {
         ->assertStatus(404);
 });
 
-it('redirects a guest opening an invitation to register', function (): void {
-    $invitation = WorkspaceInvitation::factory()->create();
-
-    $this->get(route('invitations.show', $invitation))
-        ->assertRedirect(route('register'));
-});
-
-it('redirects the invited user to the workspace list', function (): void {
-    $user = User::factory()->create();
-    $invitation = WorkspaceInvitation::factory()->create(['email' => $user->email]);
-
-    $this->actingAs($user)->get(route('invitations.show', $invitation))
-        ->assertRedirect(route('workspace.index'));
-});
-
-it('flashes an error when the invitation is for a different email', function (): void {
-    $user = User::factory()->create();
-    $invitation = WorkspaceInvitation::factory()->create();
-
-    $this->actingAs($user)->get(route('invitations.show', $invitation))
-        ->assertRedirect(route('workspace.index'))
-        ->assertSessionHas(SessionKey::FLASH_DATA, [
-            'toast' => [
-                'type' => 'error',
-                'message' => __('This invitation was sent to a different email address.'),
-            ],
-        ]);
-});
-
 it('lets the invited user accept', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->create();
