@@ -24,7 +24,7 @@ final class MessageFactory extends Factory
         return [
             'channel_id' => Channel::factory(),
             'user_id' => User::factory(),
-            'body' => $this->faker->sentence(),
+            'body' => fake()->sentence(),
         ];
     }
 }
