@@ -11,6 +11,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type Workspace = {
     id: string;
@@ -24,15 +30,24 @@ export default function DeleteWorkspaceDialog({
 }) {
     return (
         <Dialog>
-            <DialogTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Delete workspace"
-                >
-                    <Trash2 />
-                </Button>
-            </DialogTrigger>
+            <TooltipProvider>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <DialogTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                aria-label="Delete workspace"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </DialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Delete workspace</p>
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
             <DialogContent>
                 <DialogTitle>Delete “{workspace.name}”?</DialogTitle>
                 <DialogDescription>
