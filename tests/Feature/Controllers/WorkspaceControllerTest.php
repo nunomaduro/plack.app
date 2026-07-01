@@ -36,6 +36,40 @@ it('can show a workspace', function (): void {
         );
 });
 
+it('does not expose sensitive fields when showing a workspace', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+
+    $this->actingAs($user)->get(route('workspace.show', $workspace))
+        ->assertStatus(200)
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('workspace/show')
+            ->where('workspace.id', $workspace->id)
+            ->where('workspace.name', $workspace->name)
+            ->missing('workspace.user_id')
+            ->missing('workspace.created_at')
+            ->missing('workspace.updated_at')
+        );
+});
+
+it('does not expose sensitive fields when listing workspaces', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Test']);
+
+    $this->actingAs($user)->get('workspaces')
+        ->assertStatus(200)
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('workspace/list')
+            ->has('workspaces.data', 1, fn (Assert $item): Assert => $item
+                ->where('id', $workspace->id)
+                ->where('name', 'Test')
+                ->has('created_at')
+                ->missing('user_id')
+                ->missing('updated_at')
+            )
+        );
+});
+
 it('can create workspace', function (): void {
     $user = User::factory()->create();
 
