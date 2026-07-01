@@ -18,9 +18,9 @@ final readonly class CreateAttachment
         $name = (string) Str::ulid();
 
         $extension = $file->extension();
-        $filename = $extension === '' ? $name : "{$name}.{$extension}";
+        $filename = $extension === '' ? $name : sprintf('%s.%s', $name, $extension);
 
-        $storageKey = $file->storeAs("workspaces/{$channel->workspace_id}/attachments", $filename);
+        $storageKey = $file->storeAs(sprintf('workspaces/%s/attachments', $channel->workspace_id), $filename);
 
         return $message->attachments()->create([
             'workspace_id' => $channel->workspace_id,

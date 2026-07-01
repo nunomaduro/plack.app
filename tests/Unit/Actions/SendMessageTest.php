@@ -46,7 +46,7 @@ it('may send messages with attachments', function (): void {
         ->and($attachment->workspace_id)->toBe($channel->workspace_id)
         ->and($attachment->original_filename)->toBe('screenshot.png')
         ->and($attachment->mime_type)->toBe('image/png')
-        ->and($attachment->storage_key)->toStartWith("workspaces/{$channel->workspace_id}/attachments/")
+        ->and($attachment->storage_key)->toStartWith(sprintf('workspaces/%s/attachments/', $channel->workspace_id))
         ->and($attachment->storage_key)->not->toContain('screenshot');
 
     Storage::disk('local')->assertExists($attachment->storage_key);
