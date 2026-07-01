@@ -32,11 +32,16 @@ export default function EditWorkspaceDialog({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Edit workspace">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Edit workspace"
+                    data-test="edit-workspace-trigger"
+                >
                     <Pencil />
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent data-test="edit-workspace-dialog">
                 <DialogTitle>Edit workspace</DialogTitle>
                 <DialogDescription>
                     Update the name and slug of your workspace.
@@ -91,7 +96,11 @@ export default function EditWorkspaceDialog({
                                     </Button>
                                 </DialogClose>
 
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    data-test="edit-workspace-submit"
+                                >
                                     Save
                                 </Button>
                             </DialogFooter>

@@ -22,12 +22,12 @@ export default function CreateWorkspaceDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>
+                <Button data-test="create-workspace-trigger">
                     <Plus />
                     New workspace
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent data-test="create-workspace-dialog">
                 <DialogTitle>Create workspace</DialogTitle>
                 <DialogDescription>
                     Enter a name for your new workspace.
@@ -68,7 +68,11 @@ export default function CreateWorkspaceDialog() {
                                     </Button>
                                 </DialogClose>
 
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    data-test="create-workspace-submit"
+                                >
                                     Create
                                 </Button>
                             </DialogFooter>
