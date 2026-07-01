@@ -16,17 +16,30 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function CreateWorkspaceDialog() {
-    const [open, setOpen] = useState(false);
+type Props = {
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
+};
+
+export default function CreateWorkspaceDialog({
+    open: controlledOpen,
+    onOpenChange,
+}: Props = {}) {
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const isControlled = controlledOpen !== undefined;
+    const open = isControlled ? controlledOpen : uncontrolledOpen;
+    const setOpen = onOpenChange ?? setUncontrolledOpen;
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button>
-                    <Plus />
-                    New workspace
-                </Button>
-            </DialogTrigger>
+            {!isControlled && (
+                <DialogTrigger asChild>
+                    <Button>
+                        <Plus />
+                        New workspace
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent>
                 <DialogTitle>Create workspace</DialogTitle>
                 <DialogDescription>
