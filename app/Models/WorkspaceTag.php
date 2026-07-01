@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonInterface;
-use Database\Factories\WorkspaceFactory;
+use Database\Factories\WorkspaceTagFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property-read string $id
@@ -19,15 +19,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read string $name
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property-read CarbonInterface|null $deleted_at
  */
-final class Workspace extends Model
+final class WorkspaceTag extends Model
 {
-    /**
-     * @use HasFactory<WorkspaceFactory>
-     */
+    /** @use HasFactory<WorkspaceTagFactory> */
     use HasFactory;
 
     use HasUuids;
+    use SoftDeletes;
 
     /**
      * @return BelongsTo<User, $this>
@@ -38,28 +38,12 @@ final class Workspace extends Model
     }
 
     /**
-     * @return HasMany<Channel, $this>
+     * @return BelongsToMany<Workspace, $this>
      */
-    public function channels(): HasMany
+    public function workspaces(): BelongsToMany
     {
-        return $this->hasMany(Channel::class);
-    }
-
-    /**
-     * @return BelongsToMany<WorkspaceTag, $this>
-     */
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(WorkspaceTag::class, 'workspace_tag_workspace')
+        return $this->belongsToMany(Workspace::class, 'workspace_tag_workspace')
             ->withTimestamps();
-    }
-
-    /**
-     * @return HasMany<UserTag, $this>
-     */
-    public function userTags(): HasMany
-    {
-        return $this->hasMany(UserTag::class);
     }
 
     /**
@@ -73,6 +57,7 @@ final class Workspace extends Model
             'name' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 }

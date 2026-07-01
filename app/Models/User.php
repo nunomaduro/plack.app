@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -71,6 +72,23 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function workspaces(): HasMany
     {
         return $this->hasMany(Workspace::class);
+    }
+
+    /**
+     * @return HasMany<WorkspaceTag, $this>
+     */
+    public function workspaceTags(): HasMany
+    {
+        return $this->hasMany(WorkspaceTag::class);
+    }
+
+    /**
+     * @return BelongsToMany<UserTag, $this>
+     */
+    public function userTags(): BelongsToMany
+    {
+        return $this->belongsToMany(UserTag::class, 'user_tag_user')
+            ->withTimestamps();
     }
 
     /**

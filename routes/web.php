@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AttachUserTagController;
+use App\Http\Controllers\AttachWorkspaceTagController;
+use App\Http\Controllers\DetachUserTagController;
+use App\Http\Controllers\DetachWorkspaceTagController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotificationController;
@@ -9,8 +13,10 @@ use App\Http\Controllers\UserEmailVerificationController;
 use App\Http\Controllers\UserEmailVerificationNotificationController;
 use App\Http\Controllers\UserPasswordController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\UserTagController;
 use App\Http\Controllers\UserTwoFactorAuthenticationController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\WorkspaceTagController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,6 +29,12 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('workspaces', [WorkspaceController::class, 'store'])
         ->name('workspace.store');
 
+    // Workspace Tags...
+    Route::get('workspace-tags', [WorkspaceTagController::class, 'index'])->name('workspace-tag.index');
+    Route::post('workspace-tags', [WorkspaceTagController::class, 'store'])->name('workspace-tag.store');
+    Route::patch('workspace-tags/{workspaceTag}', [WorkspaceTagController::class, 'update'])->name('workspace-tag.update');
+    Route::delete('workspace-tags/{workspaceTag}', [WorkspaceTagController::class, 'destroy'])->name('workspace-tag.destroy');
+
     Route::middleware(['workspace.access'])->group(function (): void {
         Route::get('workspaces/{workspace}', [WorkspaceController::class, 'show'])
             ->name('workspace.show');
@@ -32,6 +44,33 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
         Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
             ->name('workspace.destroy');
+
+        // Workspace Tag Attachment...
+        Route::post('workspaces/{workspace}/tags/{workspaceTag}', AttachWorkspaceTagController::class)
+            ->name('workspace-tag.attach');
+
+        Route::delete('workspaces/{workspace}/tags/{workspaceTag}', DetachWorkspaceTagController::class)
+            ->name('workspace-tag.detach');
+
+        // User Tags...
+        Route::get('workspaces/{workspace}/user-tags', [UserTagController::class, 'index'])
+            ->name('user-tag.index');
+
+        Route::post('workspaces/{workspace}/user-tags', [UserTagController::class, 'store'])
+            ->name('user-tag.store');
+
+        Route::patch('workspaces/{workspace}/user-tags/{userTag}', [UserTagController::class, 'update'])
+            ->name('user-tag.update');
+
+        Route::delete('workspaces/{workspace}/user-tags/{userTag}', [UserTagController::class, 'destroy'])
+            ->name('user-tag.destroy');
+
+        // User Tag Attachment...
+        Route::post('workspaces/{workspace}/user-tags/{userTag}/users/{user}', AttachUserTagController::class)
+            ->name('user-tag.attach');
+
+        Route::delete('workspaces/{workspace}/user-tags/{userTag}/users/{user}', DetachUserTagController::class)
+            ->name('user-tag.detach');
     });
 });
 
