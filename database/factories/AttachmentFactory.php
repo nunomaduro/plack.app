@@ -24,10 +24,10 @@ final class AttachmentFactory extends Factory
             'workspace_id' => Workspace::factory(),
             'message_id' => Message::factory(),
             'user_id' => User::factory(),
-            'original_filename' => $this->faker->word().'.png',
+            'original_filename' => fake()->word().'.png',
             'mime_type' => 'image/png',
-            'size_bytes' => $this->faker->numberBetween(1_000, 1_000_000),
-            'storage_key' => 'workspaces/'.$this->faker->uuid().'/attachments/'.$this->faker->uuid().'.png',
+            'size_bytes' => fake()->numberBetween(1_000, 1_000_000),
+            'storage_key' => 'workspaces/'.fake()->uuid().'/attachments/'.fake()->uuid().'.png',
         ];
     }
 }
