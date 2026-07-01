@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import { index, show } from '@/routes/workspace';
+import { channels, index } from '@/routes/workspace';
 import type { BreadcrumbItem } from '@/types';
 
 type Workspace = {
@@ -10,7 +10,11 @@ type Workspace = {
     name: string;
 };
 
-export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
+export default function WorkspaceChannels({
+    workspace,
+}: {
+    workspace: Workspace;
+}) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Workspaces',
@@ -18,7 +22,7 @@ export default function WorkspaceShow({ workspace }: { workspace: Workspace }) {
         },
         {
             title: workspace.name,
-            href: show(workspace.id),
+            href: channels(workspace.id),
         },
     ];
 
