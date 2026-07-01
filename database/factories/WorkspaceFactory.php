@@ -23,6 +23,7 @@ final class WorkspaceFactory extends Factory
         return [
             'user_id' => User::factory(),
             'name' => fake()->company(),
+            'slug' => fake()->unique()->slug(),
         ];
     }
 }
