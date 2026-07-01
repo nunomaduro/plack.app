@@ -5,61 +5,45 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonInterface;
-use Database\Factories\WorkspaceFactory;
+use Database\Factories\UserTagFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property-read string $id
- * @property-read string $user_id
+ * @property-read string $workspace_id
  * @property-read string $name
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property-read CarbonInterface|null $deleted_at
  */
-final class Workspace extends Model
+final class UserTag extends Model
 {
-    /**
-     * @use HasFactory<WorkspaceFactory>
-     */
+    /** @use HasFactory<UserTagFactory> */
     use HasFactory;
 
     use HasUuids;
+    use SoftDeletes;
 
     /**
-     * @return BelongsTo<User, $this>
+     * @return BelongsTo<Workspace, $this>
      */
-    public function owner(): BelongsTo
+    public function workspace(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Workspace::class);
     }
 
     /**
-     * @return HasMany<Channel, $this>
+     * @return BelongsToMany<User, $this>
      */
-    public function channels(): HasMany
+    public function users(): BelongsToMany
     {
-        return $this->hasMany(Channel::class);
-    }
-
-    /**
-     * @return BelongsToMany<WorkspaceTag, $this>
-     */
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(WorkspaceTag::class, 'workspace_tag_workspace')
+        return $this->belongsToMany(User::class, 'user_tag_user')
             ->withTimestamps();
-    }
-
-    /**
-     * @return HasMany<UserTag, $this>
-     */
-    public function userTags(): HasMany
-    {
-        return $this->hasMany(UserTag::class);
     }
 
     /**
@@ -69,10 +53,11 @@ final class Workspace extends Model
     {
         return [
             'id' => 'string',
-            'user_id' => 'string',
+            'workspace_id' => 'string',
             'name' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 }
