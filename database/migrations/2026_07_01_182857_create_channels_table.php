@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('channels', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuidFor(Workspace::class)->index();
+            $table->foreignUuidFor(Workspace::class)->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->timestamps();
         });

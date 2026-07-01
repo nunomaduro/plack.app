@@ -75,6 +75,7 @@ Route::middleware('guest')->group(function (): void {
     Route::get('forgot-password', [UserEmailResetNotificationController::class, 'create'])
         ->name('password.request');
     Route::post('forgot-password', [UserEmailResetNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.email');
 
     // Session...
