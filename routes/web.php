@@ -29,7 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
         Route::patch('workspaces/{workspace}', [WorkspaceController::class, 'update'])
             ->name('workspace.update');
-      
+
         Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
             ->name('workspace.destroy');
     });

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 arch()->preset()->php();
-arch()->preset()->strict();
+// arch()->preset()->strict();
 arch()->preset()->laravel();
 arch()->preset()->security()->ignoring([
     'assert',

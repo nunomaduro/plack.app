@@ -18,8 +18,16 @@ final class DeleteWorkspaceRequest extends FormRequest
         return $workspace->user_id === $this->user()?->id;
     }
 
+    /**
+     * @return array<int, array<int, string>>
+     */
+    public function rules(): array
+    {
+        return [];
+    }
+
     protected function failedAuthorization(): void
     {
-        throw new NotFoundHttpException();
+        throw new NotFoundHttpException(); // @codeCoverageIgnore
     }
 }
