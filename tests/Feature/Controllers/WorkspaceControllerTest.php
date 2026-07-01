@@ -23,6 +23,32 @@ it('may have workspaces', function (): void {
         );
 });
 
+it('lists workspaces from newest to oldest', function (): void {
+    $user = User::factory()->create();
+
+    $oldestWorkspace = Workspace::factory()->for($user, 'owner')->create([
+        'name' => 'Oldest Workspace',
+        'created_at' => now()->subDays(3),
+    ]);
+    $middleWorkspace = Workspace::factory()->for($user, 'owner')->create([
+        'name' => 'Middle Workspace',
+        'created_at' => now()->subDays(2),
+    ]);
+    $newestWorkspace = Workspace::factory()->for($user, 'owner')->create([
+        'name' => 'Newest Workspace',
+        'created_at' => now()->subDay(),
+    ]);
+
+    $this->actingAs($user)->get('workspaces')
+        ->assertStatus(200)
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('workspace/list')
+            ->where('workspaces.data.0.id', $newestWorkspace->id)
+            ->where('workspaces.data.1.id', $middleWorkspace->id)
+            ->where('workspaces.data.2.id', $oldestWorkspace->id)
+        );
+});
+
 it('can show a workspace', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane']);
