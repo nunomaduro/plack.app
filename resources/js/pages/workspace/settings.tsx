@@ -1,6 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
+import { Mail } from 'lucide-react';
 import WorkspaceController from '@/actions/App/Http/Controllers/WorkspaceController';
-import WorkspaceInvitationController from '@/actions/App/Http/Controllers/WorkspaceInvitationController';
+import CancelInvitationDialog from '@/components/cancel-invitation-dialog';
 import DeleteWorkspaceDialog from '@/components/delete-workspace-dialog';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
@@ -157,27 +158,20 @@ export default function WorkspaceSettings({
                                     key={invitation.code}
                                     className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
                                 >
-                                    <span className="text-sm">
-                                        {invitation.email}
-                                    </span>
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                                            <Mail className="h-5 w-5 text-muted-foreground" />
+                                        </div>
 
-                                    <Form
-                                        {...WorkspaceInvitationController.destroy.form(
-                                            [workspace.id, invitation.code],
-                                        )}
-                                        options={{ preserveScroll: true }}
-                                    >
-                                        {({ processing }) => (
-                                            <Button
-                                                type="submit"
-                                                variant="ghost"
-                                                size="sm"
-                                                disabled={processing}
-                                            >
-                                                Cancel
-                                            </Button>
-                                        )}
-                                    </Form>
+                                        <span className="text-sm">
+                                            {invitation.email}
+                                        </span>
+                                    </div>
+
+                                    <CancelInvitationDialog
+                                        workspaceId={workspace.id}
+                                        invitation={invitation}
+                                    />
                                 </li>
                             ))}
                         </ul>
