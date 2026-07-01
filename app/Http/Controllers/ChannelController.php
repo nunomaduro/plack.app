@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\CreateChannel;
 use App\Actions\DeleteChannel;
 use App\Actions\UpdateChannel;
+use App\Exceptions\CannotDeleteLastChannel;
 use App\Http\Requests\CreateChannelRequest;
 use App\Http\Requests\DeleteChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
@@ -66,6 +67,8 @@ final readonly class ChannelController
         Channel $channel,
         DeleteChannel $deleteChannel,
     ): RedirectResponse {
+        throw_if($channel->isOnlyChannelInWorkspace(), CannotDeleteLastChannel::class);
+
         $deleteChannel->handle($channel);
 
         Inertia::flash('toast', [

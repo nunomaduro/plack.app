@@ -52,6 +52,13 @@ final class Channel extends Model
         return $this->hasMany(Message::class);
     }
 
+    public function isOnlyChannelInWorkspace(): bool
+    {
+        return self::query()
+            ->where('workspace_id', $this->workspace_id)
+            ->count() === 1;
+    }
+
     /**
      * @return array<string, string>
      */

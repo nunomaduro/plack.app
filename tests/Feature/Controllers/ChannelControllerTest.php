@@ -154,6 +154,7 @@ it('can delete a channel', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create();
     $channel = Channel::factory()->for($workspace)->create();
+    Channel::factory()->for($workspace)->create();
 
     $response = $this->actingAs($user)->delete(route('channel.destroy', [$workspace, $channel]));
 
@@ -165,7 +166,25 @@ it('can delete a channel', function (): void {
             ],
         ]);
 
-    expect($workspace->channels()->count())->toBe(0);
+    expect($workspace->channels()->count())->toBe(1);
+});
+
+it('cannot delete the last channel of a workspace', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+    $channel = Channel::factory()->for($workspace)->create();
+
+    $response = $this->actingAs($user)->delete(route('channel.destroy', [$workspace, $channel]));
+
+    $response->assertRedirectBack()
+        ->assertSessionHas(SessionKey::FLASH_DATA, [
+            'toast' => [
+                'type' => 'error',
+                'message' => __('A workspace must have at least one channel.'),
+            ],
+        ]);
+
+    expect($workspace->channels()->count())->toBe(1);
 });
 
 it('cannot manage channels of a workspace owned by another user', function (): void {
