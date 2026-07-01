@@ -75,3 +75,17 @@ it('redirects authenticated users away from forgot password', function (): void 
 
     $response->assertRedirectToRoute('workspace.index');
 });
+
+it('rate limits password reset emails', function (): void {
+    Notification::fake();
+
+    for ($i = 0; $i < 6; $i++) {
+        $this->fromRoute('password.request')
+            ->post(route('password.email'), ['email' => 'test@example.com'])
+            ->assertRedirectToRoute('password.request');
+    }
+
+    $this->fromRoute('password.request')
+        ->post(route('password.email'), ['email' => 'test@example.com'])
+        ->assertStatus(429);
+});
