@@ -66,3 +66,31 @@ it('can update workspace name', function (): void {
 
     expect($workspace->refresh()->name)->toBe('Nuno Maduro');
 });
+
+it('can delete a workspace', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+
+    $response = $this->actingAs($user)->delete(route('workspace.destroy', $workspace));
+
+    $response->assertRedirectBack()
+        ->assertSessionHas(SessionKey::FLASH_DATA, [
+            'toast' => [
+                'type' => 'success',
+                'message' => __('Workspace deleted.'),
+            ],
+        ]);
+
+    expect($user->workspaces()->count())->toBe(0);
+});
+
+it('cannot delete a workspace owned by another user', function (): void {
+    $user = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $workspace = Workspace::factory()->for($otherUser, 'owner')->create();
+
+    $this->actingAs($user)->delete(route('workspace.destroy', $workspace))
+        ->assertNotFound();
+
+    expect($otherUser->workspaces()->count())->toBe(1);
+});

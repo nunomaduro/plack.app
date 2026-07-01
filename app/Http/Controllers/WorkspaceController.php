@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\CreateWorkspace;
+use App\Actions\DeleteWorkspace;
 use App\Actions\UpdateWorkspace;
 use App\Http\Requests\CreateWorkspaceRequest;
+use App\Http\Requests\DeleteWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\User;
 use App\Models\Workspace;
@@ -56,6 +58,21 @@ final readonly class WorkspaceController
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('Workspace updated.'),
+        ]);
+
+        return back();
+    }
+
+    public function destroy(
+        DeleteWorkspaceRequest $request,
+        Workspace $workspace,
+        DeleteWorkspace $deleteWorkspace,
+    ): RedirectResponse {
+        $deleteWorkspace->handle($workspace);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Workspace deleted.'),
         ]);
 
         return back();
