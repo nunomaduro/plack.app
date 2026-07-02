@@ -13,6 +13,8 @@ type Channel = {
     id: string;
     name: string;
     slug: string;
+    unread_count: number;
+    muted: boolean;
 };
 
 type Workspace = {
