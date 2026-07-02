@@ -10,6 +10,7 @@ use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -29,6 +30,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read CarbonInterface|null $two_factor_confirmed_at
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property-read string $avatar
  */
 #[Hidden([
     'password',
@@ -44,6 +46,22 @@ final class User extends Authenticatable implements MustVerifyEmail
     use HasUuids;
     use Notifiable;
     use TwoFactorAuthenticatable;
+
+    private const AVATAR_COLORS = [
+        ['color' => 'FFFFFF', 'background' => 'F44336'],
+        ['color' => 'FFFFFF', 'background' => 'E91E63'],
+        ['color' => 'FFFFFF', 'background' => '9C27B0'],
+        ['color' => 'FFFFFF', 'background' => '673AB7'],
+        ['color' => 'FFFFFF', 'background' => '3F51B5'],
+        ['color' => 'FFFFFF', 'background' => '2196F3'],
+        ['color' => 'FFFFFF', 'background' => '009688'],
+        ['color' => 'FFFFFF', 'background' => '4CAF50'],
+        ['color' => 'FFFFFF', 'background' => 'FF9800'],
+        ['color' => 'FFFFFF', 'background' => 'FF5722'],
+    ];
+
+    /** @var list<string> */
+    protected $appends = ['avatar'];
 
     /**
      * @return array<string, string>
@@ -97,5 +115,21 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPassword($token));
+    }
+
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function avatar(): Attribute
+    {
+        return Attribute::get(function (): string {
+            $colors = self::AVATAR_COLORS[abs(crc32($this->name)) % count(self::AVATAR_COLORS)];
+
+            return 'https://ui-avatars.com/api/?'.http_build_query([
+                'name' => $this->name,
+                'color' => $colors['color'],
+                'background' => $colors['background'],
+            ]);
+        });
     }
 }
