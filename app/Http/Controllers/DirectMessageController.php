@@ -11,6 +11,8 @@ use App\Http\Requests\StoreDirectMessageRequest;
 use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,8 +22,8 @@ final readonly class DirectMessageController
     public function index(#[CurrentUser] User $user): Response
     {
         $conversations = $user->conversations()
-            ->with(['participants' => fn ($query) => $query->whereKeyNot($user->id)])
-            ->with('messages', fn ($query) => $query->latest()->limit(1))
+            ->with(['participants' => fn (BelongsToMany $query) => $query->whereKeyNot($user->id)])
+            ->with('messages', fn (HasMany $query) => $query->latest()->limit(1))
             ->latest()
             ->paginate(20);
 

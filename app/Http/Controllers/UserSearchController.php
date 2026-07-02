@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ final readonly class UserSearchController
 
         $users = User::query()
             ->whereKeyNot($user->id)
-            ->where(function ($queryBuilder) use ($query): void {
+            ->where(function (Builder $queryBuilder) use ($query): void {
                 $queryBuilder
                     ->where('name', 'like', '%'.$query.'%')
                     ->orWhere('email', 'like', '%'.$query.'%');
