@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Message;
-use App\Models\Thread;
+use App\Models\Reply;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Thread>
+ * @extends Factory<Reply>
  */
-final class ThreadFactory extends Factory
+final class ReplyFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -22,6 +23,8 @@ final class ThreadFactory extends Factory
     {
         return [
             'message_id' => Message::factory(),
+            'user_id' => User::factory(),
+            'body' => fake()->sentence(),
         ];
     }
 }

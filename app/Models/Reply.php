@@ -5,23 +5,24 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonInterface;
-use Database\Factories\ThreadFactory;
+use Database\Factories\ReplyFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property-read string $id
  * @property-read string $message_id
+ * @property-read string $user_id
+ * @property-read string $body
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
-final class Thread extends Model
+final class Reply extends Model
 {
     /**
-     * @use HasFactory<ThreadFactory>
+     * @use HasFactory<ReplyFactory>
      */
     use HasFactory;
 
@@ -36,11 +37,11 @@ final class Thread extends Model
     }
 
     /**
-     * @return HasMany<Message, $this>
+     * @return BelongsTo<User, $this>
      */
-    public function replies(): HasMany
+    public function sender(): BelongsTo
     {
-        return $this->hasMany(Message::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -51,6 +52,8 @@ final class Thread extends Model
         return [
             'id' => 'string',
             'message_id' => 'string',
+            'user_id' => 'string',
+            'body' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

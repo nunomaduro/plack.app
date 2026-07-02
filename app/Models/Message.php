@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property-read string $id
  * @property-read string $channel_id
- * @property-read ?string $thread_id
  * @property-read string $user_id
  * @property-read string $body
  * @property-read CarbonInterface $created_at
@@ -48,11 +48,19 @@ final class Message extends Model
     }
 
     /**
-     * @return BelongsTo<Thread, $this>
+     * @return HasMany<Reply, $this>
      */
-    public function thread(): BelongsTo
+    public function replies(): HasMany
     {
-        return $this->belongsTo(Thread::class);
+        return $this->hasMany(Reply::class);
+    }
+
+    /**
+     * A message becomes a thread once it has at least one reply.
+     */
+    public function isThread(): bool
+    {
+        return $this->replies()->exists();
     }
 
     /**
@@ -63,7 +71,6 @@ final class Message extends Model
         return [
             'id' => 'string',
             'channel_id' => 'string',
-            'thread_id' => 'string',
             'user_id' => 'string',
             'body' => 'string',
             'created_at' => 'datetime',

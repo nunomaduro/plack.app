@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Message;
-use App\Models\Thread;
+use App\Models\Reply;
 
 test('to array', function (): void {
     $message = Message::factory()->create()->fresh();
@@ -16,14 +16,23 @@ test('to array', function (): void {
             'body',
             'created_at',
             'updated_at',
-            'thread_id',
         ]);
 });
 
-test('belongs to a thread', function (): void {
-    $thread = Thread::factory()->create();
-    $message = Message::factory()->create(['thread_id' => $thread->id]);
+test('has many replies', function (): void {
+    $message = Message::factory()->create();
+    $reply = Reply::factory()->create(['message_id' => $message->id]);
 
-    expect($message->thread)->toBeInstanceOf(Thread::class)
-        ->and($message->thread->id)->toBe($thread->id);
+    expect($message->replies)->toHaveCount(1)
+        ->and($message->replies->first()->id)->toBe($reply->id);
+});
+
+test('is a thread once it has a reply', function (): void {
+    $message = Message::factory()->create();
+
+    expect($message->isThread())->toBeFalse();
+
+    Reply::factory()->create(['message_id' => $message->id]);
+
+    expect($message->isThread())->toBeTrue();
 });
