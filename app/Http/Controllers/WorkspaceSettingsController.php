@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\WorkspaceType;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceInvitation;
@@ -24,14 +25,18 @@ final readonly class WorkspaceSettingsController
                 'id' => $workspace->id,
                 'name' => $workspace->name,
                 'slug' => $workspace->slug,
+                'type' => $workspace->type->value,
                 'channels' => $workspace->channels->map->only('id', 'name', 'slug')->values(),
             ],
             'owner' => $workspace->owner->only('id', 'name', 'email'),
             'members' => $workspace->members->map->only('id', 'name', 'email')->values(),
-            'invitations' => $workspace->invitations->map(fn (WorkspaceInvitation $invitation): array => [
+            'invitations' => $workspace->type === WorkspaceType::Private ? $workspace->invitations->map(fn (WorkspaceInvitation $invitation): array => [
                 'code' => $invitation->code,
                 'email' => $invitation->email,
-            ])->values(),
+            ])->values() : [],
+            'publicJoinUrl' => $workspace->type === WorkspaceType::Public && $workspace->join_code !== null
+                ? route('workspace.join', $workspace->join_code)
+                : null,
             'workspaces' => $listWorkspace->get($user),
         ]);
     }

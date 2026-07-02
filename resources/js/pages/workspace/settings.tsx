@@ -1,9 +1,11 @@
 import { Form, Head } from '@inertiajs/react';
+import RegenerateWorkspaceJoinLinkController from '@/actions/App/Http/Controllers/RegenerateWorkspaceJoinLinkController';
 import CancelInvitationDialog from '@/components/cancel-invitation-dialog';
 import DeleteWorkspaceDialog from '@/components/delete-workspace-dialog';
 import InputError from '@/components/input-error';
 import InviteMemberDialog from '@/components/invite-member-dialog';
 import RemoveMemberDialog from '@/components/remove-member-dialog';
+import { useClipboard } from '@/hooks/use-clipboard';
 import WorkspaceLayout from '@/layouts/workspace-layout';
 import { update } from '@/routes/workspace';
 
@@ -17,6 +19,7 @@ type Workspace = {
     id: string;
     name: string;
     slug: string;
+    type: 'private' | 'public';
     channels: Channel[];
 };
 
@@ -50,14 +53,19 @@ export default function WorkspaceSettings({
     owner,
     members,
     invitations,
+    publicJoinUrl,
     workspaces,
 }: {
     workspace: Workspace;
     owner: Person;
     members: Person[];
     invitations: Invitation[];
+    publicJoinUrl: string | null;
     workspaces?: WorkspaceSummary[];
 }) {
+    const [copiedPublicJoinUrl, copyPublicJoinUrl] = useClipboard();
+    const isPublic = workspace.type === 'public';
+
     return (
         <WorkspaceLayout
             workspace={workspace}
@@ -142,15 +150,76 @@ export default function WorkspaceSettings({
                         </Form>
                     </section>
 
+                    {isPublic && publicJoinUrl && (
+                        <section>
+                            <div className={sectionLabel}>public join link</div>
+
+                            <div className="flex flex-col gap-3 border border-line bg-ink-950 px-[14px] py-4">
+                                <p className="text-[12px] leading-relaxed text-mute">
+                                    Anyone with this link can request to join
+                                    this workspace. Regenerating it invalidates
+                                    the previous link.
+                                </p>
+
+                                <div className="flex h-[46px] items-center gap-[9px] border border-line bg-ink-900 px-[14px]">
+                                    <span className="text-[13px] text-green">
+                                        &gt;
+                                    </span>
+                                    <input
+                                        readOnly
+                                        value={publicJoinUrl}
+                                        data-test="public-join-link"
+                                        className={inputClass}
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    <button
+                                        type="button"
+                                        data-test="copy-public-join-link"
+                                        onClick={() =>
+                                            copyPublicJoinUrl(publicJoinUrl)
+                                        }
+                                        className="flex h-10 items-center justify-center border border-line px-4 text-[12px] text-dim transition-colors hover:border-amber hover:text-amber"
+                                    >
+                                        {copiedPublicJoinUrl === publicJoinUrl
+                                            ? 'copied'
+                                            : 'copy link'}
+                                    </button>
+
+                                    <Form
+                                        {...RegenerateWorkspaceJoinLinkController.form(
+                                            workspace.slug,
+                                        )}
+                                        options={{ preserveScroll: true }}
+                                    >
+                                        {({ processing }) => (
+                                            <button
+                                                type="submit"
+                                                disabled={processing}
+                                                data-test="regenerate-public-join-link"
+                                                className="flex h-10 items-center justify-center border border-amber px-4 text-[12px] text-amber transition-colors hover:bg-amber hover:text-ink-950 disabled:opacity-60"
+                                            >
+                                                regenerate link
+                                            </button>
+                                        )}
+                                    </Form>
+                                </div>
+                            </div>
+                        </section>
+                    )}
+
                     {/* members */}
                     <section>
                         <div className="mb-[10px] flex items-center justify-between">
                             <span className={sectionLabel + ' mb-0'}>
                                 members
                             </span>
-                            <InviteMemberDialog
-                                workspaceSlug={workspace.slug}
-                            />
+                            {!isPublic && (
+                                <InviteMemberDialog
+                                    workspaceSlug={workspace.slug}
+                                />
+                            )}
                         </div>
 
                         <ul className="flex flex-col gap-[2px]">
@@ -192,7 +261,7 @@ export default function WorkspaceSettings({
                     </section>
 
                     {/* pending invitations */}
-                    {invitations.length > 0 && (
+                    {!isPublic && invitations.length > 0 && (
                         <section>
                             <div className={sectionLabel}>
                                 pending invitations

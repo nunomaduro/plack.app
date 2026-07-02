@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\WorkspaceType;
 use App\Models\Channel;
 use App\Models\User;
 use App\Models\Workspace;
@@ -65,6 +66,54 @@ it('shows the workspace settings page', function (): void {
         );
 });
 
+it('shows invitations and no public join url for private workspace settings', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->private()->for($user, 'owner')->create();
+    Channel::factory()->for($workspace)->create();
+    WorkspaceInvitation::factory()->for($workspace)->create(['email' => 'pending@example.com']);
+
+    $this->actingAs($user)->get(route('workspace.settings', $workspace))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('workspace/settings')
+            ->where('workspace.type', WorkspaceType::Private->value)
+            ->where('publicJoinUrl', null)
+            ->has('invitations', 1)
+        );
+});
+
+it('shows a public join url and no invitations for public workspace settings', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->public()->for($user, 'owner')->create();
+    Channel::factory()->for($workspace)->create();
+    WorkspaceInvitation::factory()->for($workspace)->create(['email' => 'pending@example.com']);
+
+    $this->actingAs($user)->get(route('workspace.settings', $workspace))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('workspace/settings')
+            ->where('workspace.type', WorkspaceType::Public->value)
+            ->where('publicJoinUrl', route('workspace.join', $workspace->join_code))
+            ->where('invitations', [])
+        );
+});
+
+it('does not show a public join url when a public workspace has no join code', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->public()->for($user, 'owner')->create([
+        'join_code' => null,
+    ]);
+    Channel::factory()->for($workspace)->create();
+
+    $this->actingAs($user)->get(route('workspace.settings', $workspace))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('workspace/settings')
+            ->where('workspace.type', WorkspaceType::Public->value)
+            ->where('publicJoinUrl', null)
+        );
+});
+
 it('does not let a non-owner open the workspace settings page', function (): void {
     $member = User::factory()->create();
     $workspace = Workspace::factory()->create();
@@ -93,7 +142,75 @@ it('can create workspace', function (): void {
 
     expect($workspaces->count())->toBe(1)
         ->and($workspaces->first()->name)->toBe('Test Workspace')
-        ->and($workspaces->first()->slug)->toBe('test-workspace');
+        ->and($workspaces->first()->slug)->toBe('test-workspace')
+        ->and($workspaces->first()->type)->toBe(WorkspaceType::Private)
+        ->and($workspaces->first()->join_code)->toBeNull();
+});
+
+it('can create a public workspace', function (): void {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post(route('workspace.store'), [
+        'name' => 'Public Workspace',
+        'type' => WorkspaceType::Public->value,
+    ]);
+
+    $response->assertRedirectBack()->assertSessionHasNoErrors();
+
+    $workspace = $user->ownedWorkspaces()->sole();
+
+    expect($workspace->type)->toBe(WorkspaceType::Public)
+        ->and($workspace->join_code)->toBeString()
+        ->and($workspace->join_code)->toHaveLength(64);
+});
+
+it('rejects invalid workspace type values', function (): void {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post(route('workspace.store'), [
+        'name' => 'Test Workspace',
+        'type' => 'shared',
+    ]);
+
+    $response->assertSessionHasErrors('type');
+
+    expect($user->ownedWorkspaces()->count())->toBe(0);
+});
+
+it('lets an owner regenerate a public workspace join link', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->public()->for($user, 'owner')->create([
+        'join_code' => 'old-public-join-code',
+    ]);
+
+    $this->actingAs($user)->post(route('workspace.join-link.regenerate', $workspace))
+        ->assertRedirectBack();
+
+    expect($workspace->refresh()->join_code)->not->toBe('old-public-join-code')
+        ->and($workspace->join_code)->toBeString()
+        ->and($workspace->join_code)->toHaveLength(64);
+});
+
+it('does not let a non-owner regenerate a public workspace join link', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->public()->create([
+        'join_code' => 'public-join-code',
+    ]);
+
+    $this->actingAs($user)->post(route('workspace.join-link.regenerate', $workspace))
+        ->assertNotFound();
+
+    expect($workspace->refresh()->join_code)->toBe('public-join-code');
+});
+
+it('does not regenerate a private workspace join link', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->private()->for($user, 'owner')->create();
+
+    $this->actingAs($user)->post(route('workspace.join-link.regenerate', $workspace))
+        ->assertNotFound();
+
+    expect($workspace->refresh()->join_code)->toBeNull();
 });
 
 it('validates the workspace name', function (): void {
