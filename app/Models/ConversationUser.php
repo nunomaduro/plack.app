@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  */
 final class ConversationUser extends Pivot
 {
+    use HasFactory;
+
     /**
      * @return BelongsTo<Conversation, $this>
      */

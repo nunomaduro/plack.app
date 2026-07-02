@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Conversation;
+use App\Models\DirectMessage;
 use App\Models\User;
 
 test('to array', function (): void {
@@ -26,7 +27,7 @@ it('may have participants', function (): void {
 
 it('may have direct messages', function (): void {
     $conversation = Conversation::factory()
-        ->has(App\Models\DirectMessage::factory()->count(3), 'messages')
+        ->has(DirectMessage::factory()->count(3), 'messages')
         ->create();
 
     expect($conversation->messages)->toHaveCount(3);
