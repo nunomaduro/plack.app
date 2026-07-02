@@ -1,0 +1,96 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers;
+
+use App\Actions\CreateOrGetConversation;
+use App\Actions\SendDirectMessage;
+use App\Http\Requests\StoreDirectMessageMessageRequest;
+use App\Http\Requests\StoreDirectMessageRequest;
+use App\Models\Conversation;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
+use Inertia\Response;
+
+final readonly class DirectMessageController
+{
+    public function index(#[CurrentUser] User $user): Response
+    {
+        $conversations = $user->conversations()
+            ->with(['participants' => fn ($query) => $query->whereKeyNot($user->id)])
+            ->with('messages', fn ($query) => $query->latest()->limit(1))
+            ->latest()
+            ->paginate(20);
+
+        return Inertia::render('direct-message/index', [
+            'conversations' => $conversations,
+        ]);
+    }
+
+    public function store(
+        StoreDirectMessageRequest $request,
+        #[CurrentUser] User $user,
+        CreateOrGetConversation $createOrGetConversation,
+    ): RedirectResponse {
+        $userId = $request->string('user_id')->value();
+
+        if ($userId === $user->id) {
+            return back()->withErrors([
+                'user_id' => __('You cannot start a conversation with yourself.'),
+            ]);
+        }
+
+        $otherUser = User::query()->findOrFail($userId);
+
+        $conversation = $createOrGetConversation->handle($user, $otherUser);
+
+        return redirect()->route('direct-message.show', $conversation);
+    }
+
+    public function show(#[CurrentUser] User $user, Conversation $conversation): Response
+    {
+        if (! $conversation->participants()->whereKey($user->id)->exists()) {
+            abort(404);
+        }
+
+        $messages = $conversation->messages()
+            ->with('sender')
+            ->latest()
+            ->paginate(50);
+
+        $otherParticipant = $conversation->participants()
+            ->whereKeyNot($user->id)
+            ->first();
+
+        return Inertia::render('direct-message/show', [
+            'conversation' => $conversation,
+            'messages' => $messages,
+            'otherParticipant' => $otherParticipant,
+        ]);
+    }
+
+    public function send(
+        StoreDirectMessageMessageRequest $request,
+        #[CurrentUser] User $user,
+        Conversation $conversation,
+        SendDirectMessage $sendDirectMessage,
+    ): RedirectResponse {
+        if (! $conversation->participants()->whereKey($user->id)->exists()) {
+            abort(404);
+        }
+
+        $body = $request->string('body')->value();
+
+        $sendDirectMessage->handle($conversation, $user, $body);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => __('Message sent.'),
+        ]);
+
+        return back();
+    }
+}

@@ -91,6 +91,16 @@ final class User extends Authenticatable
     }
 
     /**
+     * @return BelongsToMany<Conversation, $this>
+     */
+    public function conversations(): BelongsToMany
+    {
+        return $this->belongsToMany(Conversation::class)
+            ->using(ConversationUser::class)
+            ->withTimestamps();
+    }
+
+    /**
      * Send the email verification notification.
      */
     public function sendEmailVerificationNotification(): void
