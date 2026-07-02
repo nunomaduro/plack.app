@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="art/plack.png" width="600" alt="Plack.app" />
+</p>
+
 # plack.app
 
 A Slack-style team chat app built with Laravel and React. You sign up, spin up a workspace, and organize conversations into channels.
