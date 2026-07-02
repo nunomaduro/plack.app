@@ -92,6 +92,16 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * @return BelongsToMany<Conversation, $this, ConversationUser, 'pivot'>
+     */
+    public function conversations(): BelongsToMany
+    {
+        return $this->belongsToMany(Conversation::class)
+            ->using(ConversationUser::class)
+            ->withTimestamps();
+    }
+
+    /**
      * The user's per-channel metadata (read markers, mute, ...).
      *
      * @return HasMany<UserChannelMetadata, $this>

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { BookOpen, FolderGit2, LayoutGrid, MessageSquare } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -13,6 +13,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { index as messages } from '@/routes/direct-message';
 import { index as workspaces } from '@/routes/workspace';
 import type { NavItem } from '@/types';
 
@@ -21,6 +22,11 @@ const mainNavItems: NavItem[] = [
         title: 'Workspaces',
         href: workspaces(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Messages',
+        href: messages(),
+        icon: MessageSquare,
     },
 ];
 
