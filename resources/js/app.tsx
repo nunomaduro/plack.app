@@ -1,13 +1,13 @@
 import { createInertiaApp } from '@inertiajs/react';
+import { configureEcho } from '@laravel/echo-react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { ComponentType } from 'react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { initializeTheme } from '@/hooks/use-appearance';
 import '../css/app.css';
-import { configureEcho } from '@laravel/echo-react';
+import { initializeTheme } from '@/hooks/use-appearance';
 
 configureEcho({
     broadcaster: 'reverb',
