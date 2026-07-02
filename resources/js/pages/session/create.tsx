@@ -1,6 +1,7 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
+import { memberLabel } from '@/lib/utils';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -8,6 +9,16 @@ import { request } from '@/routes/password';
 type WorkspaceInvitation = {
     code: string;
     workspace: string;
+    memberCount: number;
+};
+
+type WorkspaceJoin = {
+    code: string;
+    workspace: {
+        id: string;
+        name: string;
+        memberCount: number;
+    };
 };
 
 type Props = {
@@ -15,6 +26,7 @@ type Props = {
     canResetPassword: boolean;
     canRegister: boolean;
     workspaceInvitation?: WorkspaceInvitation | null;
+    workspaceJoin?: WorkspaceJoin | null;
 };
 
 const fieldWrap =
@@ -28,12 +40,18 @@ export default function Login({
     canResetPassword,
     canRegister,
     workspaceInvitation,
+    workspaceJoin,
 }: Props) {
     const [showPw, setShowPw] = useState(false);
     const [remember, setRemember] = useState(true);
 
-    const registerHref = workspaceInvitation
-        ? register.url({ query: { invitation: workspaceInvitation.code } })
+    const authQuery = workspaceInvitation
+        ? { invitation: workspaceInvitation.code }
+        : workspaceJoin
+          ? { join: workspaceJoin.code }
+          : null;
+    const registerHref = authQuery
+        ? register.url({ query: authQuery })
         : register();
 
     return (
@@ -80,8 +98,24 @@ export default function Login({
                         invited to{' '}
                         <span className="font-semibold text-amber">
                             {workspaceInvitation.workspace}
+                        </span>{' '}
+                        <span className="text-mute">
+                            ({memberLabel(workspaceInvitation.memberCount)})
                         </span>
                         . Log in to accept.
+                    </div>
+                )}
+
+                {workspaceJoin && !workspaceInvitation && (
+                    <div className="mb-5 w-[340px] border border-line bg-ink-900 px-[14px] py-3 text-[12px] text-dim">
+                        <span className="text-green">→</span> you're joining{' '}
+                        <span className="font-semibold text-amber">
+                            {workspaceJoin.workspace.name}
+                        </span>{' '}
+                        <span className="text-mute">
+                            ({memberLabel(workspaceJoin.workspace.memberCount)})
+                        </span>
+                        . Log in to continue.
                     </div>
                 )}
 

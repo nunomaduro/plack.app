@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Carbon\CarbonInterface;
 use Database\Factories\ChannelFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,9 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
  * @property-read string $slug
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property-read Workspace $workspace
+ * @property-read Collection<int, Message> $messages
+ * @property-read Collection<int, UserChannelMetadata> $userChannelMetadata
  */
 #[Sluggable(from: 'name', scope: 'workspace_id', onUpdating: true)]
 final class Channel extends Model
@@ -50,6 +54,16 @@ final class Channel extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    /**
+     * The per-user metadata (read markers, mute, ...) for this channel.
+     *
+     * @return HasMany<UserChannelMetadata, $this>
+     */
+    public function userChannelMetadata(): HasMany
+    {
+        return $this->hasMany(UserChannelMetadata::class);
     }
 
     /**

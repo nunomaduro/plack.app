@@ -159,9 +159,11 @@ it('can update a channel name', function (): void {
         'name' => 'random',
     ]);
 
-    $response->assertRedirectBack();
+    $channel->refresh();
 
-    expect($channel->refresh()->name)->toBe('random')
+    $response->assertRedirectToRoute('channel.show', [$workspace, $channel]);
+
+    expect($channel->name)->toBe('random')
         ->and($channel->slug)->toBe('random');
 });
 

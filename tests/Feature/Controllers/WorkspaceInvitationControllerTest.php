@@ -47,6 +47,21 @@ it('validates the invitation email', function (): void {
     Notification::assertNothingSent();
 });
 
+it('does not invite users to public workspaces', function (): void {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->public()->for($user, 'owner')->create();
+
+    $this->actingAs($user)->post(route('workspace.invitations.store', $workspace), [
+        'email' => 'invitee@example.com',
+    ])->assertSessionHasErrors('email');
+
+    expect($workspace->invitations()->count())->toBe(0);
+
+    Notification::assertNothingSent();
+});
+
 it('does not invite an existing member', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create();

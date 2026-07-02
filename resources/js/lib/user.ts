@@ -2,22 +2,19 @@
  * Frontend derivations for the terminal UI: the backend User only carries
  * name/email/id, but the design shows lowercase handles, initials avatars, and
  * a per-user color. These derive that look deterministically so the same user
- * always renders identically (design rule: "hash the user id into this palette").
+ * always renders identically.
+ *
+ * The color is an OKLCH value with fixed lightness and chroma, rotated around
+ * the hue axis by a hash of the name. The four hand-picked handoff colors
+ * (green/violet/blue/clay) all sit at L≈0.71, C≈0.115 and differ only in hue —
+ * so pinning L/C to that band and varying hue yields infinite unique colors
+ * that stay inside the palette's region and never clash with the dark surface.
+ * OKLCH (not HSL) because it is perceptually uniform: fixed L/C looks equally
+ * bright and saturated at every hue.
  */
 
-const NICK_TEXT = [
-    'text-green',
-    'text-user-violet',
-    'text-user-blue',
-    'text-user-clay',
-] as const;
-
-const AVATAR_BG = [
-    'bg-green',
-    'bg-user-violet',
-    'bg-user-blue',
-    'bg-user-clay',
-] as const;
+const NICK_LIGHTNESS = 0.71;
+const NICK_CHROMA = 0.115;
 
 function hash(value: string): number {
     let h = 0;
@@ -53,13 +50,8 @@ export function initialsFor(name: string): string {
 /**
  * The text color token for a user's handle/nick, hashed from their id.
  */
-export function nickColorFor(id: string | number): string {
-    return NICK_TEXT[hash(String(id)) % NICK_TEXT.length];
-}
+export function nickColorFor(name: string): string {
+    const hue = hash(name) % 360;
 
-/**
- * The background color token for a user's avatar square, hashed from their id.
- */
-export function avatarColorFor(id: string | number): string {
-    return AVATAR_BG[hash(String(id)) % AVATAR_BG.length];
+    return `oklch(${NICK_LIGHTNESS} ${NICK_CHROMA} ${hue})`;
 }

@@ -9,6 +9,7 @@ use App\Notifications\VerifyEmail;
 use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,7 +38,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
     'two_factor_secret',
     'two_factor_recovery_codes',
 ])]
-final class User extends Authenticatable
+final class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
@@ -98,6 +99,16 @@ final class User extends Authenticatable
         return $this->belongsToMany(Conversation::class)
             ->using(ConversationUser::class)
             ->withTimestamps();
+    }
+
+    /**
+     * The user's per-channel metadata (read markers, mute, ...).
+     *
+     * @return HasMany<UserChannelMetadata, $this>
+     */
+    public function userChannelMetadata(): HasMany
+    {
+        return $this->hasMany(UserChannelMetadata::class);
     }
 
     /**

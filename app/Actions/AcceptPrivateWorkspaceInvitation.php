@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\WorkspaceInvitation;
 use Illuminate\Support\Facades\DB;
 
-final readonly class AcceptWorkspaceInvitation
+final readonly class AcceptPrivateWorkspaceInvitation
 {
     public function handle(WorkspaceInvitation $invitation, User $user): void
     {

@@ -1,4 +1,7 @@
-import type { PendingInvitation } from '@/components/pending-invitations';
+import type {
+    PendingInvitation,
+    PendingWorkspaceJoin,
+} from '@/components/pending-invitations';
 import type { Auth } from '@/types/auth';
 import type { FlashToast } from '@/types/ui';
 
@@ -11,6 +14,7 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             pendingInvitations: PendingInvitation[];
+            pendingWorkspaceJoin: PendingWorkspaceJoin | null;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

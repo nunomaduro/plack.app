@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Actions\CreateWorkspace;
 use App\Actions\DeleteWorkspace;
 use App\Actions\UpdateWorkspace;
+use App\Enums\WorkspaceType;
 use App\Http\Requests\CreateWorkspaceRequest;
 use App\Http\Requests\DeleteWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
@@ -44,8 +45,9 @@ final readonly class WorkspaceController
         CreateWorkspace $createWorkspace,
     ): RedirectResponse {
         $name = $request->string('name')->value();
+        $type = $request->enum('type', WorkspaceType::class, WorkspaceType::Private);
 
-        $createWorkspace->handle($user, $name);
+        $createWorkspace->handle($user, $name, $type);
 
         Inertia::flash('toast', [
             'type' => 'success',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\AcceptWorkspaceInvitation;
+use App\Actions\AcceptPrivateWorkspaceInvitation;
 use App\Http\Requests\RespondToWorkspaceInvitationRequest;
 use App\Models\User;
 use App\Models\WorkspaceInvitation;
@@ -18,7 +18,7 @@ final readonly class AcceptWorkspaceInvitationController
         RespondToWorkspaceInvitationRequest $request,
         WorkspaceInvitation $invitation,
         #[CurrentUser] User $user,
-        AcceptWorkspaceInvitation $acceptWorkspaceInvitation,
+        AcceptPrivateWorkspaceInvitation $acceptWorkspaceInvitation,
     ): RedirectResponse {
         $acceptWorkspaceInvitation->handle($invitation, $user);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Queries\FindPendingWorkspaceJoin;
 use App\Queries\ListPendingWorkspaceInvitations;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -41,6 +42,19 @@ final class HandleInertiaRequests extends Middleware
             'pendingInvitations' => fn (): array => $request->user() === null
                 ? []
                 : resolve(ListPendingWorkspaceInvitations::class)->get($request->user())->all(),
+            'pendingWorkspaceJoin' => function () use ($request): ?array {
+                if ($request->user() === null) {
+                    return null;
+                }
+
+                $join = resolve(FindPendingWorkspaceJoin::class)->get($request->session()->get('pendingWorkspaceJoin'));
+
+                if ($join === null) {
+                    $request->session()->forget('pendingWorkspaceJoin');
+                }
+
+                return $join;
+            },
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

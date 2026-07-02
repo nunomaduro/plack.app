@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Actions\DeleteChannel;
+use App\Events\ChannelDeleted;
 use App\Models\Channel;
 use App\Models\Message;
+use Illuminate\Support\Facades\Event;
 
 it('may delete a channel', function (): void {
     $channel = Channel::factory()->create();
@@ -29,4 +31,20 @@ it('deletes the channel messages', function (): void {
     $messages->each(function (Message $message): void {
         expect(Message::query()->whereKey($message->id)->exists())->toBeFalse();
     });
+});
+
+it('broadcasts a channel deleted event on the workspace', function (): void {
+    Event::fake([ChannelDeleted::class]);
+
+    $channel = Channel::factory()->create();
+    $workspaceId = $channel->workspace_id;
+    $channelId = $channel->id;
+
+    resolve(DeleteChannel::class)->handle($channel);
+
+    Event::assertDispatched(
+        ChannelDeleted::class,
+        fn (ChannelDeleted $event): bool => $event->workspaceId === $workspaceId
+            && $event->channelId === $channelId,
+    );
 });

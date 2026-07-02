@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Models\Workspace;
 use App\Models\WorkspaceInvitation;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Event;
@@ -15,7 +16,8 @@ it('renders registration page', function (): void {
     $response->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('user/create')
-            ->where('workspaceInvitation', null));
+            ->where('workspaceInvitation', null)
+            ->where('workspaceJoin', null));
 });
 
 it('shows a pending workspace invitation on the registration page', function (): void {
@@ -26,7 +28,22 @@ it('shows a pending workspace invitation on the registration page', function ():
         ->assertInertia(fn ($page) => $page
             ->component('user/create')
             ->where('workspaceInvitation.code', $invitation->code)
-            ->where('workspaceInvitation.workspace', $invitation->workspace->name));
+            ->where('workspaceInvitation.workspace', $invitation->workspace->name)
+            ->where('workspaceInvitation.memberCount', 1));
+});
+
+it('shows a pending public workspace join on the registration page', function (): void {
+    $workspace = Workspace::factory()->public()->create();
+    $workspace->members()->attach(User::factory()->create());
+
+    $this->get(route('register', ['join' => $workspace->join_code]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('user/create')
+            ->where('workspaceJoin.code', $workspace->join_code)
+            ->where('workspaceJoin.workspace.id', $workspace->id)
+            ->where('workspaceJoin.workspace.name', $workspace->name)
+            ->where('workspaceJoin.workspace.memberCount', 2));
 });
 
 it('may register a new user', function (): void {

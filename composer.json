@@ -14,6 +14,7 @@
         "inertiajs/inertia-laravel": "v3.0.6",
         "laravel/fortify": "^1.37.2",
         "laravel/framework": "^13.18.0",
+        "laravel/octane": "^2.17.5",
         "laravel/reverb": "^1.10.2",
         "laravel/wayfinder": "^0.1.20",
         "nunomaduro/essentials": "^1.2.0",
@@ -62,7 +63,12 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "bunx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"bun run dev\" --names=server,queue,logs,vite --kill-others"
+            "bunx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74,#67e8f9\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"bun run dev\" \"php artisan reverb:start\" --names=server,queue,logs,vite,reverb --kill-others"
+        ],
+        "dev:ssr": [
+            "bun run build:ssr",
+            "Composer\\Config::disableProcessTimeout",
+            "bunx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74,#67e8f9\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"php artisan inertia:start-ssr\" \"php artisan reverb:start\" --names=server,queue,logs,ssr,reverb --kill-others"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
