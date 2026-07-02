@@ -26,10 +26,10 @@ final readonly class WorkspaceSettingsController
                 'name' => $workspace->name,
                 'slug' => $workspace->slug,
                 'type' => $workspace->type->value,
-                'channels' => $workspace->channels->map->only('id', 'name', 'slug')->values(),
+                'channels' => $workspace->channels->map->only(['id', 'name', 'slug'])->values(),
             ],
-            'owner' => $workspace->owner->only('id', 'name', 'email'),
-            'members' => $workspace->members->map->only('id', 'name', 'email')->values(),
+            'owner' => $workspace->owner->only(['id', 'name', 'email']),
+            'members' => $workspace->members->map->only(['id', 'name', 'email'])->values(),
             'invitations' => $workspace->type === WorkspaceType::Private ? $workspace->invitations->map(fn (WorkspaceInvitation $invitation): array => [
                 'code' => $invitation->code,
                 'email' => $invitation->email,
