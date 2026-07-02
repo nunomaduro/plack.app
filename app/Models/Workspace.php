@@ -38,14 +38,6 @@ final class Workspace extends Model
 
     use HasUuids;
 
-    /**
-     * @var array<string, mixed>
-     */
-    protected $attributes = [
-        'type' => 'private',
-        'join_code' => null,
-    ];
-
     public function getRouteKeyName(): string
     {
         return 'slug';
