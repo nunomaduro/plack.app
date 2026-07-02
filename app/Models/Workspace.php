@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\WorkspaceType;
 use Carbon\CarbonInterface;
 use Database\Factories\WorkspaceFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,6 +21,8 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
  * @property-read string $user_id
  * @property-read string $name
  * @property-read string $slug
+ * @property WorkspaceType $type
+ * @property string|null $join_code
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  * @property-read User $owner
@@ -34,6 +37,14 @@ final class Workspace extends Model
     use HasFactory;
 
     use HasUuids;
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'type' => 'private',
+        'join_code' => null,
+    ];
 
     public function getRouteKeyName(): string
     {
@@ -82,6 +93,8 @@ final class Workspace extends Model
             'user_id' => 'string',
             'name' => 'string',
             'slug' => 'string',
+            'type' => WorkspaceType::class,
+            'join_code' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

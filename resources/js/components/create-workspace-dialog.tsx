@@ -80,6 +80,51 @@ export default function CreateWorkspaceDialog({
                                 <InputError message={errors.name} />
                             </div>
 
+                            <div className="grid gap-2">
+                                <Label>Workspace type</Label>
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    <label
+                                        data-test="create-workspace-private"
+                                        className="cursor-pointer border border-line bg-ink-950 px-3 py-3 text-[12px] text-dim transition-colors has-checked:border-amber has-checked:text-amber"
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="type"
+                                            value="private"
+                                            defaultChecked
+                                            className="sr-only"
+                                        />
+                                        <span className="block font-medium">
+                                            Private
+                                        </span>
+                                        <span className="mt-1 block text-[10px] text-mute">
+                                            Invite-only access.
+                                        </span>
+                                    </label>
+
+                                    <label
+                                        data-test="create-workspace-public"
+                                        className="cursor-pointer border border-line bg-ink-950 px-3 py-3 text-[12px] text-dim transition-colors has-checked:border-amber has-checked:text-amber"
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="type"
+                                            value="public"
+                                            className="sr-only"
+                                        />
+                                        <span className="block font-medium">
+                                            Public
+                                        </span>
+                                        <span className="mt-1 block text-[10px] text-mute">
+                                            Join by shared link.
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <InputError message={errors.type} />
+                            </div>
+
                             <DialogFooter className="gap-2">
                                 <DialogClose asChild>
                                     <Button
