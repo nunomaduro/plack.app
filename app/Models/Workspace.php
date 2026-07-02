@@ -59,6 +59,11 @@ final class Workspace extends Model
         return $this->belongsToMany(User::class, 'workspace_user')->withTimestamps();
     }
 
+    public function memberCount(): int
+    {
+        return $this->members()->count() + 1;
+    }
+
     /**
      * @return HasMany<WorkspaceInvitation, $this>
      */

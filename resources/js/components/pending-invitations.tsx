@@ -1,5 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { Check, X } from 'lucide-react';
+import { memberLabel } from '@/lib/utils';
 import {
     accept as acceptInvitation,
     decline as declineInvitation,
@@ -14,6 +15,7 @@ type PendingInvitation = {
     workspace: {
         id: string;
         name: string;
+        memberCount: number;
     };
     invitedBy: string;
 };
@@ -23,6 +25,7 @@ type PendingWorkspaceJoin = {
     workspace: {
         id: string;
         name: string;
+        memberCount: number;
     };
 };
 
@@ -50,7 +53,8 @@ export default function PendingInvitations({
                             {invitation.workspace.name}
                         </span>
                         <span className="truncate text-[10px] text-mute">
-                            from {invitation.invitedBy}
+                            from {invitation.invitedBy} ·{' '}
+                            {memberLabel(invitation.workspace.memberCount)}
                         </span>
                     </div>
 
@@ -96,7 +100,8 @@ export default function PendingInvitations({
                             {workspaceJoin.workspace.name}
                         </span>
                         <span className="truncate text-[10px] text-mute">
-                            public workspace
+                            public workspace ·{' '}
+                            {memberLabel(workspaceJoin.workspace.memberCount)}
                         </span>
                     </div>
 

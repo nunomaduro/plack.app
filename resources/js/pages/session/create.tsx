@@ -1,6 +1,7 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
+import { memberLabel } from '@/lib/utils';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -8,6 +9,7 @@ import { request } from '@/routes/password';
 type WorkspaceInvitation = {
     code: string;
     workspace: string;
+    memberCount: number;
 };
 
 type WorkspaceJoin = {
@@ -15,6 +17,7 @@ type WorkspaceJoin = {
     workspace: {
         id: string;
         name: string;
+        memberCount: number;
     };
 };
 
@@ -95,6 +98,9 @@ export default function Login({
                         invited to{' '}
                         <span className="font-semibold text-amber">
                             {workspaceInvitation.workspace}
+                        </span>{' '}
+                        <span className="text-mute">
+                            ({memberLabel(workspaceInvitation.memberCount)})
                         </span>
                         . Log in to accept.
                     </div>
@@ -105,6 +111,9 @@ export default function Login({
                         <span className="text-green">→</span> you're joining{' '}
                         <span className="font-semibold text-amber">
                             {workspaceJoin.workspace.name}
+                        </span>{' '}
+                        <span className="text-mute">
+                            ({memberLabel(workspaceJoin.workspace.memberCount)})
                         </span>
                         . Log in to continue.
                     </div>
