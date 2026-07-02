@@ -23,3 +23,31 @@ it('may send messages', function (): void {
         ->and($message->sender->id)->toBe($sender->id)
         ->and($message->body)->toBe('Hello, world!');
 });
+
+it('attaches mentioned users to the message', function (): void {
+    $channel = Channel::factory()->create();
+    $sender = User::factory()->create();
+    $mentioned = User::factory()->create(['username' => 'alice']);
+
+    $message = resolve(SendMessage::class)->handle(
+        $channel,
+        $sender,
+        'Hey @alice, check this out!',
+    );
+
+    expect($message->mentions)->toHaveCount(1)
+        ->and($message->mentions->first()->id)->toBe($mentioned->id);
+});
+
+it('does not attach mentions when none exist', function (): void {
+    $channel = Channel::factory()->create();
+    $sender = User::factory()->create();
+
+    $message = resolve(SendMessage::class)->handle(
+        $channel,
+        $sender,
+        'No mentions here.',
+    );
+
+    expect($message->mentions)->toBeEmpty();
+});

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property-read string $id
@@ -42,6 +43,14 @@ final class Message extends Model
     public function sender(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function mentions(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'message_mentions')->using(MessageMention::class);
     }
 
     /**

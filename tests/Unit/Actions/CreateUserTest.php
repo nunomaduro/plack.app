@@ -14,6 +14,7 @@ it('may create a user', function (): void {
 
     $user = $action->handle([
         'name' => 'Test User',
+        'username' => 'testuser',
         'email' => 'example@email.com',
     ], 'password');
 
