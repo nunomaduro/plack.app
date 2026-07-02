@@ -67,7 +67,8 @@ it('can update a workspace from its settings page', function (): void {
 
     $page->fill('name', 'Globex')
         ->fill('slug', 'globex')
-        ->click('@update-workspace-submit');
+        ->click('@update-workspace-submit')
+        ->wait(0.5);
 
     expect($workspace->refresh()->name)->toBe('Globex')
         ->and($workspace->slug)->toBe('globex');
