@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Models\Workspace;
 use App\Models\WorkspaceInvitation;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Event;
@@ -18,7 +19,8 @@ it('renders login page', function (): void {
             ->has('canResetPassword')
             ->where('canRegister', true)
             ->has('status')
-            ->where('workspaceInvitation', null));
+            ->where('workspaceInvitation', null)
+            ->where('workspaceJoin', null));
 });
 
 it('shows a pending workspace invitation on the login page', function (): void {
@@ -30,6 +32,18 @@ it('shows a pending workspace invitation on the login page', function (): void {
             ->component('session/create')
             ->where('workspaceInvitation.code', $invitation->code)
             ->where('workspaceInvitation.workspace', $invitation->workspace->name));
+});
+
+it('shows a pending public workspace join on the login page', function (): void {
+    $workspace = Workspace::factory()->public()->create();
+
+    $this->get(route('login', ['join' => $workspace->join_code]))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('session/create')
+            ->where('workspaceJoin.code', $workspace->join_code)
+            ->where('workspaceJoin.workspace.id', $workspace->id)
+            ->where('workspaceJoin.workspace.name', $workspace->name));
 });
 
 it('may create a session', function (): void {

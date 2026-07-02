@@ -6,6 +6,7 @@ use App\Http\Controllers\AcceptWorkspaceInvitationController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\DeclineWorkspaceInvitationController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\RegenerateWorkspaceJoinLinkController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserEmailResetNotificationController;
@@ -16,12 +17,16 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserTwoFactorAuthenticationController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceInvitationController;
+use App\Http\Controllers\WorkspaceJoinController;
 use App\Http\Controllers\WorkspaceMemberController;
 use App\Http\Controllers\WorkspaceSettingsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
+
+Route::get('workspaces/join/{joinCode}', [WorkspaceJoinController::class, 'show'])
+    ->name('workspace.join');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     // Workspaces...
@@ -55,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
             ->name('workspace.destroy');
 
+        Route::post('workspaces/{workspace}/join-link', RegenerateWorkspaceJoinLinkController::class)
+            ->name('workspace.join-link.regenerate');
+
         // Invitations & Members...
         Route::post('workspaces/{workspace}/invitations', [WorkspaceInvitationController::class, 'store'])
             ->name('workspace.invitations.store');
@@ -84,6 +92,13 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
     Route::delete('invitations/{invitation}', DeclineWorkspaceInvitationController::class)
         ->name('invitations.decline');
+
+    // Public Workspace Joins...
+    Route::post('workspace-joins/{joinCode}/accept', [WorkspaceJoinController::class, 'store'])
+        ->name('workspace-joins.accept');
+
+    Route::delete('workspace-joins/{joinCode}', [WorkspaceJoinController::class, 'destroy'])
+        ->name('workspace-joins.decline');
 });
 
 Route::middleware('auth')->group(function (): void {

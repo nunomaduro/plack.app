@@ -10,6 +10,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\DeleteUserRequest;
 use App\Models\User;
 use App\Queries\FindPendingWorkspaceInvitation;
+use App\Queries\FindPendingWorkspaceJoin;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,10 +20,20 @@ use Inertia\Response;
 
 final readonly class UserController
 {
-    public function create(Request $request, FindPendingWorkspaceInvitation $findPendingWorkspaceInvitation): Response
-    {
+    public function create(
+        Request $request,
+        FindPendingWorkspaceInvitation $findPendingWorkspaceInvitation,
+        FindPendingWorkspaceJoin $findPendingWorkspaceJoin,
+    ): Response {
+        $workspaceJoin = $findPendingWorkspaceJoin->get($request->query('join') ?? $request->session()->get('pendingWorkspaceJoin'));
+
+        if ($workspaceJoin !== null) {
+            $request->session()->put('pendingWorkspaceJoin', $workspaceJoin['code']);
+        }
+
         return Inertia::render('user/create', [
             'workspaceInvitation' => $findPendingWorkspaceInvitation->get($request->query('invitation')),
+            'workspaceJoin' => $workspaceJoin,
         ]);
     }
 
