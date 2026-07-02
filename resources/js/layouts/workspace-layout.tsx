@@ -1,6 +1,6 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { useEcho } from '@laravel/echo-react';
-import { Menu } from 'lucide-react';
+import { Menu, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
     createContext,
     type PropsWithChildren,
@@ -8,7 +8,10 @@ import {
     useEffect,
     useState,
 } from 'react';
+import CreateChannelDialog from '@/components/create-channel-dialog';
 import CreateWorkspaceDialog from '@/components/create-workspace-dialog';
+import DeleteChannelDialog from '@/components/delete-channel-dialog';
+import EditChannelDialog from '@/components/edit-channel-dialog';
 import PendingInvitations from '@/components/pending-invitations';
 import {
     DropdownMenu,
@@ -150,8 +153,26 @@ function SidebarContent({
 
             {/* channel list */}
             <nav className="flex-1 overflow-y-auto px-[14px] py-4">
-                <div className="mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase">
-                    channels
+                <div className="mb-[10px] flex items-center justify-between">
+                    <div className="text-[9px] tracking-[.22em] text-mute uppercase">
+                        channels
+                    </div>
+
+                    {canManage && (
+                        <CreateChannelDialog
+                            workspaceSlug={workspace.slug}
+                            trigger={
+                                <button
+                                    type="button"
+                                    aria-label="New channel"
+                                    data-test="create-channel-trigger"
+                                    className="text-mute transition-colors hover:text-amber"
+                                >
+                                    <Plus className="size-3.5" />
+                                </button>
+                            }
+                        />
+                    )}
                 </div>
 
                 <div className="flex flex-col gap-[2px] text-[12.5px]">
@@ -160,28 +181,30 @@ function SidebarContent({
                         const unread = !active && channel.unread_count > 0;
 
                         return (
-                            <Link
+                            <div
                                 key={channel.id}
-                                href={channelShow({
-                                    workspace: workspace.slug,
-                                    channel: channel.slug,
-                                })}
-                                data-test={`${variant}-channel-${channel.slug}`}
                                 className={
                                     active
-                                        ? 'flex items-center gap-2 border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
-                                        : 'flex items-center gap-2 px-2 py-[6px] text-dim transition-colors hover:text-fg'
+                                        ? 'group flex items-center gap-1 border-l-2 border-green bg-ink-800 px-2 py-[6px]'
+                                        : 'group flex items-center gap-1 px-2 py-[6px]'
                                 }
                             >
-                                <span
+                                <Link
+                                    href={channelShow({
+                                        workspace: workspace.slug,
+                                        channel: channel.slug,
+                                    })}
+                                    data-test={`${variant}-channel-${channel.slug}`}
                                     className={
-                                        unread
-                                            ? 'flex-1 truncate font-semibold text-fg'
-                                            : 'flex-1 truncate'
+                                        active
+                                            ? 'min-w-0 flex-1 truncate text-fg'
+                                            : unread
+                                              ? 'min-w-0 flex-1 truncate font-semibold text-fg'
+                                              : 'min-w-0 flex-1 truncate text-dim transition-colors hover:text-fg'
                                     }
                                 >
                                     # {channel.name}
-                                </span>
+                                </Link>
 
                                 {unread && (
                                     <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-green px-1 text-[9px] font-semibold text-ink-900">
@@ -190,7 +213,41 @@ function SidebarContent({
                                             : channel.unread_count}
                                     </span>
                                 )}
-                            </Link>
+
+                                {canManage && (
+                                    <div className="flex items-center gap-[6px] opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                                        <EditChannelDialog
+                                            workspaceSlug={workspace.slug}
+                                            channel={channel}
+                                            trigger={
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Edit #${channel.name}`}
+                                                    data-test={`edit-channel-trigger-${channel.slug}`}
+                                                    className="text-mute transition-colors hover:text-fg"
+                                                >
+                                                    <Pencil className="size-3" />
+                                                </button>
+                                            }
+                                        />
+
+                                        <DeleteChannelDialog
+                                            workspaceSlug={workspace.slug}
+                                            channel={channel}
+                                            trigger={
+                                                <button
+                                                    type="button"
+                                                    aria-label={`Delete #${channel.name}`}
+                                                    data-test={`delete-channel-trigger-${channel.slug}`}
+                                                    className="text-mute transition-colors hover:text-destructive"
+                                                >
+                                                    <Trash2 className="size-3" />
+                                                </button>
+                                            }
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         );
                     })}
                 </div>

@@ -1,6 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import ChannelController from '@/actions/App/Http/Controllers/ChannelController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -18,18 +18,22 @@ import { Label } from '@/components/ui/label';
 
 export default function CreateChannelDialog({
     workspaceSlug,
+    trigger,
 }: {
     workspaceSlug: string;
+    trigger?: ReactNode;
 }) {
     const [open, setOpen] = useState(false);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button data-test="create-channel-trigger">
-                    <Plus />
-                    <span className="hidden sm:inline">New channel</span>
-                </Button>
+                {trigger ?? (
+                    <Button data-test="create-channel-trigger">
+                        <Plus />
+                        <span className="hidden sm:inline">New channel</span>
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent data-test="create-channel-dialog">
                 <DialogTitle>Create channel</DialogTitle>

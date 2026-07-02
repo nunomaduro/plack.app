@@ -3,9 +3,6 @@ import { useEcho, useEchoPresence } from '@laravel/echo-react';
 import { useEffect, useRef, useState } from 'react';
 import ChannelTypingController from '@/actions/App/Http/Controllers/ChannelTypingController';
 import MessageController from '@/actions/App/Http/Controllers/MessageController';
-import CreateChannelDialog from '@/components/create-channel-dialog';
-import DeleteChannelDialog from '@/components/delete-channel-dialog';
-import EditChannelDialog from '@/components/edit-channel-dialog';
 import InputError from '@/components/input-error';
 import WorkspaceLayout, {
     MobileSidebarToggle,
@@ -155,32 +152,16 @@ export default function ChannelShow({
             <Head title={channel.name} />
 
             {/* header */}
-            <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-[15px] md:px-6">
-                <div className="flex min-w-0 items-center gap-3">
-                    <MobileSidebarToggle />
-                    <div className="flex min-w-0 items-baseline gap-3">
-                        <span className="truncate text-[15px] font-semibold text-amber">
-                            # {channel.name}
-                        </span>
-                        <span className="hidden text-[11px] text-mute sm:inline">
-                            {workspace.name}
-                        </span>
-                    </div>
+            <header className="flex items-center gap-3 border-b border-line px-4 py-[15px] md:px-6">
+                <MobileSidebarToggle />
+                <div className="flex min-w-0 items-baseline gap-3">
+                    <span className="truncate text-[15px] font-semibold text-amber">
+                        # {channel.name}
+                    </span>
+                    <span className="hidden text-[11px] text-mute sm:inline">
+                        {workspace.name}
+                    </span>
                 </div>
-
-                {canManage && (
-                    <div className="flex flex-none items-center gap-1">
-                        <CreateChannelDialog workspaceSlug={workspace.slug} />
-                        <EditChannelDialog
-                            workspaceSlug={workspace.slug}
-                            channel={channel}
-                        />
-                        <DeleteChannelDialog
-                            workspaceSlug={workspace.slug}
-                            channel={channel}
-                        />
-                    </div>
-                )}
             </header>
 
             {/* message log — bottom-anchored */}
