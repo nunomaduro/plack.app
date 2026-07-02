@@ -1,5 +1,7 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import { login, register } from '@/routes';
+import { Form, Head, Link, usePage } from '@inertiajs/react';
+import InputError from '@/components/input-error';
+import { login } from '@/routes';
+import { store as earlyAccessStore } from '@/routes/early-access';
 import { index as workspaces } from '@/routes/workspace';
 
 export default function Welcome() {
@@ -47,15 +49,49 @@ export default function Welcome() {
                     Somewhere quiet for your team to actually talk.
                 </p>
 
-                <Link
-                    href={auth.user ? workspaces() : register()}
-                    className="mt-11 border-b border-[#4a3f28] pb-[5px] text-[13.5px] tracking-[.03em] text-amber transition-colors hover:border-amber"
-                    data-test="register-link"
-                >
-                    {auth.user
-                        ? 'open your workspace →'
-                        : 'create your workspace →'}
-                </Link>
+                {auth.user ? (
+                    <Link
+                        href={workspaces()}
+                        className="mt-11 border-b border-[#4a3f28] pb-[5px] text-[13.5px] tracking-[.03em] text-amber transition-colors hover:border-amber"
+                        data-test="workspace-link"
+                    >
+                        open your workspace →
+                    </Link>
+                ) : (
+                    <Form
+                        {...earlyAccessStore.form()}
+                        resetOnSuccess={['email']}
+                        className="mt-11 flex w-full max-w-[360px] flex-col items-center"
+                    >
+                        {({ processing, errors }) => (
+                            <>
+                                <div className="flex h-[46px] w-full items-center gap-[9px] border border-line bg-ink-950 px-[14px] transition-colors focus-within:border-amber">
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        required
+                                        autoComplete="email"
+                                        placeholder="you@team.com"
+                                        className="min-w-0 flex-1 bg-transparent text-[13.5px] text-fg caret-green outline-none placeholder:text-faint"
+                                        data-test="early-access-email"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="shrink-0 text-[13.5px] tracking-[.03em] text-amber transition-colors hover:text-fg disabled:opacity-50"
+                                        data-test="early-access-submit"
+                                    >
+                                        request access →
+                                    </button>
+                                </div>
+                                <InputError
+                                    message={errors.email}
+                                    className="mt-2 self-start"
+                                />
+                            </>
+                        )}
+                    </Form>
+                )}
             </div>
         </div>
     );

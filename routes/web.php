@@ -6,6 +6,7 @@ use App\Http\Controllers\AcceptWorkspaceInvitationController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\ChannelTypingController;
 use App\Http\Controllers\DeclineWorkspaceInvitationController;
+use App\Http\Controllers\EarlyAccessEmailController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\RegenerateWorkspaceJoinLinkController;
 use App\Http\Controllers\SessionController;
@@ -26,10 +27,16 @@ use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
+Route::post('early-access', EarlyAccessEmailController::class)->name('early-access.store');
+
+// The application is not publicly available yet. Every route below the guard is
+// gated to the local environment via the "local" middleware while we collect
+// early-access sign-ups in production (see EnsureLocalEnvironment).
 Route::get('workspaces/join/{joinCode}', [WorkspaceJoinController::class, 'show'])
+    ->middleware('local')
     ->name('workspace.join');
 
-Route::middleware(['auth', 'verified'])->group(function (): void {
+Route::middleware(['local', 'auth', 'verified'])->group(function (): void {
     // Workspaces...
     Route::get('workspaces', [WorkspaceController::class, 'index'])->name('workspace.index');
 
@@ -106,7 +113,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         ->name('workspace-joins.decline');
 });
 
-Route::middleware('auth')->group(function (): void {
+Route::middleware(['local', 'auth'])->group(function (): void {
     // User...
     Route::delete('user', [UserController::class, 'destroy'])->name('user.destroy');
 
@@ -129,7 +136,7 @@ Route::middleware('auth')->group(function (): void {
         ->name('two-factor.show');
 });
 
-Route::middleware('guest')->group(function (): void {
+Route::middleware(['local', 'guest'])->group(function (): void {
     // User...
     Route::get('register', [UserController::class, 'create'])
         ->name('register');
@@ -156,7 +163,7 @@ Route::middleware('guest')->group(function (): void {
         ->name('login.store');
 });
 
-Route::middleware('auth')->group(function (): void {
+Route::middleware(['local', 'auth'])->group(function (): void {
     // User Email Verification...
     Route::get('verify-email', [UserEmailVerificationNotificationController::class, 'create'])
         ->name('verification.notice');
