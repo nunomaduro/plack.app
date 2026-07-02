@@ -17,28 +17,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 export default function InviteMemberDialog({
-    workspaceId,
+    workspaceSlug,
 }: {
-    workspaceId: string;
+    workspaceSlug: string;
 }) {
     const [open, setOpen] = useState(false);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>
+                <Button data-test="invite-member-trigger">
                     <UserPlus />
                     Invite member
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent data-test="invite-member-dialog">
                 <DialogTitle>Invite member</DialogTitle>
                 <DialogDescription>
                     Enter the email address of the person you want to invite.
                 </DialogDescription>
 
                 <Form
-                    {...WorkspaceInvitationController.store.form(workspaceId)}
+                    {...WorkspaceInvitationController.store.form(workspaceSlug)}
                     options={{ preserveScroll: true }}
                     onSuccess={() => setOpen(false)}
                     resetOnSuccess
@@ -71,7 +71,11 @@ export default function InviteMemberDialog({
                                     </Button>
                                 </DialogClose>
 
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    data-test="invite-member-submit"
+                                >
                                     Send invitation
                                 </Button>
                             </DialogFooter>

@@ -14,5 +14,6 @@ test('to array', function (): void {
             'name',
             'created_at',
             'updated_at',
+            'slug',
         ]);
 });

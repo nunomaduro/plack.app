@@ -21,7 +21,7 @@ final class WorkspaceInvitationFactory extends Factory
     {
         return [
             'workspace_id' => Workspace::factory(),
-            'email' => $this->faker->unique()->safeEmail(),
+            'email' => fake()->unique()->safeEmail(),
             'invited_by' => User::factory(),
             'expires_at' => now()->addDays(3),
         ];

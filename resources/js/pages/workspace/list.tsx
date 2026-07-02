@@ -25,6 +25,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
 };
 
 type PendingInvitation = {
@@ -57,7 +58,7 @@ function WorkspaceRow({ children }: { children: React.ReactNode }) {
     );
 }
 
-function EnterButton({ workspaceId }: { workspaceId: string }) {
+function EnterButton({ workspaceSlug }: { workspaceSlug: string }) {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
@@ -67,7 +68,7 @@ function EnterButton({ workspaceId }: { workspaceId: string }) {
                     size="sm"
                     aria-label="Enter workspace"
                 >
-                    <Link href={channels(workspaceId)}>
+                    <Link href={channels(workspaceSlug)}>
                         <DoorOpen className="h-4 w-4" />
                     </Link>
                 </Button>
@@ -122,10 +123,11 @@ export default function WorkspaceList({
                                                         variant="ghost"
                                                         size="sm"
                                                         aria-label="Workspace settings"
+                                                        data-test="workspace-settings-link"
                                                     >
                                                         <Link
                                                             href={show(
-                                                                workspace.id,
+                                                                workspace.slug,
                                                             )}
                                                         >
                                                             <Pencil className="h-4 w-4" />
@@ -138,7 +140,7 @@ export default function WorkspaceList({
                                             </Tooltip>
 
                                             <EnterButton
-                                                workspaceId={workspace.id}
+                                                workspaceSlug={workspace.slug}
                                             />
 
                                             <DeleteWorkspaceDialog
@@ -212,7 +214,7 @@ export default function WorkspaceList({
                                         </span>
 
                                         <EnterButton
-                                            workspaceId={workspace.id}
+                                            workspaceSlug={workspace.slug}
                                         />
                                     </WorkspaceRow>
                                 ))}
@@ -249,6 +251,7 @@ export default function WorkspaceList({
                                                                     processing
                                                                 }
                                                                 aria-label="Accept invitation"
+                                                                data-test="accept-invitation"
                                                             >
                                                                 <Check className="h-4 w-4" />
                                                             </Button>
@@ -282,6 +285,7 @@ export default function WorkspaceList({
                                                                     processing
                                                                 }
                                                                 aria-label="Decline invitation"
+                                                                data-test="decline-invitation"
                                                             >
                                                                 <Trash2 className="h-4 w-4" />
                                                             </Button>

@@ -24,10 +24,10 @@ type Member = {
 };
 
 export default function RemoveMemberDialog({
-    workspaceId,
+    workspaceSlug,
     member,
 }: {
-    workspaceId: string;
+    workspaceSlug: string;
     member: Member;
 }) {
     return (
@@ -59,7 +59,7 @@ export default function RemoveMemberDialog({
 
                 <Form
                     {...WorkspaceMemberController.destroy.form([
-                        workspaceId,
+                        workspaceSlug,
                         member.id,
                     ])}
                     options={{ preserveScroll: true }}

@@ -1,13 +1,23 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import CreateChannelDialog from '@/components/create-channel-dialog';
+import EditChannelDialog from '@/components/edit-channel-dialog';
 import Heading from '@/components/heading';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
+import { show as channelShow } from '@/routes/channel';
 import { channels, index } from '@/routes/workspace';
 import type { BreadcrumbItem } from '@/types';
+
+type Channel = {
+    id: string;
+    name: string;
+    slug: string;
+};
 
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
+    channels: Channel[];
 };
 
 export default function WorkspaceChannels({
@@ -22,7 +32,7 @@ export default function WorkspaceChannels({
         },
         {
             title: workspace.name,
-            href: channels(workspace.id),
+            href: channels(workspace.slug),
         },
     ];
 
@@ -39,17 +49,47 @@ export default function WorkspaceChannels({
                 </div>
 
                 <div className="flex flex-col gap-4">
-                    <Heading variant="small" title="Channels" />
+                    <div className="flex items-center justify-between">
+                        <Heading variant="small" title="Channels" />
 
-                    <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-sidebar-border/70 p-12 dark:border-sidebar-border">
-                        <p className="text-sm text-muted-foreground">
-                            No channels connected yet.
-                        </p>
-
-                        <Button variant="outline" disabled>
-                            Connect Slack
-                        </Button>
+                        <CreateChannelDialog workspaceSlug={workspace.slug} />
                     </div>
+
+                    {workspace.channels.length === 0 ? (
+                        <div className="flex flex-1 flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-sidebar-border/70 p-12 dark:border-sidebar-border">
+                            <p className="text-sm text-muted-foreground">
+                                No channels connected yet.
+                            </p>
+
+                            <CreateChannelDialog
+                                workspaceSlug={workspace.slug}
+                            />
+                        </div>
+                    ) : (
+                        <ul className="flex flex-col gap-2">
+                            {workspace.channels.map((channel) => (
+                                <li
+                                    key={channel.id}
+                                    className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
+                                >
+                                    <Link
+                                        href={channelShow({
+                                            workspace: workspace.slug,
+                                            channel: channel.slug,
+                                        })}
+                                        className="font-medium hover:underline"
+                                    >
+                                        {channel.name}
+                                    </Link>
+
+                                    <EditChannelDialog
+                                        workspaceSlug={workspace.slug}
+                                        channel={channel}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             </div>
         </AppLayout>

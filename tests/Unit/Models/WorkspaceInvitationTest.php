@@ -25,7 +25,7 @@ test('to array', function (): void {
 it('generates a unique code on creation', function (): void {
     $invitation = WorkspaceInvitation::factory()->create();
 
-    expect(mb_strlen($invitation->code))->toBe(64);
+    expect($invitation->code)->toHaveLength(64);
 });
 
 it('knows when it is expired', function (): void {

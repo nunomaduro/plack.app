@@ -35,7 +35,17 @@ final class UpdateWorkspaceRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:80',
-                Rule::unique(Workspace::class)->where('user_id', $workspace->user_id)->ignore($workspace->id),
+                Rule::unique(Workspace::class, 'name')
+                    ->where('user_id', $workspace->user_id)
+                    ->ignore($workspace->id),
+            ],
+            'slug' => [
+                'required',
+                'string',
+                'min:3',
+                'max:80',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                Rule::unique(Workspace::class)->ignore($workspace->id),
             ],
         ];
     }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AcceptWorkspaceInvitationController;
+use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\DeclineWorkspaceInvitationController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\UserController;
@@ -43,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         Route::delete('workspaces/{workspace}', [WorkspaceController::class, 'destroy'])
             ->name('workspace.destroy');
 
+        // Invitations & Members...
         Route::post('workspaces/{workspace}/invitations', [WorkspaceInvitationController::class, 'store'])
             ->name('workspace.invitations.store');
 
@@ -51,6 +53,21 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
         Route::delete('workspaces/{workspace}/members/{user}', [WorkspaceMemberController::class, 'destroy'])
             ->name('workspace.members.destroy');
+
+        // Channels...
+        Route::post('workspaces/{workspace}/channels', [ChannelController::class, 'store'])
+            ->name('channel.store');
+
+        Route::scopeBindings()->group(function (): void {
+            Route::get('workspaces/{workspace}/channels/{channel}', [ChannelController::class, 'show'])
+                ->name('channel.show');
+
+            Route::patch('workspaces/{workspace}/channels/{channel}', [ChannelController::class, 'update'])
+                ->name('channel.update');
+
+            Route::delete('workspaces/{workspace}/channels/{channel}', [ChannelController::class, 'destroy'])
+                ->name('channel.destroy');
+        });
     });
 
     // Workspace Invitations...
@@ -101,6 +118,7 @@ Route::middleware('guest')->group(function (): void {
     Route::get('forgot-password', [UserEmailResetNotificationController::class, 'create'])
         ->name('password.request');
     Route::post('forgot-password', [UserEmailResetNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.email');
 
     // Session...

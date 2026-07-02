@@ -17,6 +17,7 @@ import type { BreadcrumbItem } from '@/types';
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
 };
 
 type Person = {
@@ -48,7 +49,7 @@ export default function WorkspaceSettings({
         },
         {
             title: workspace.name,
-            href: show(workspace.id),
+            href: show(workspace.slug),
         },
     ];
 
@@ -60,32 +61,48 @@ export default function WorkspaceSettings({
                 <section className="flex flex-col gap-4">
                     <Heading
                         variant="small"
-                        title="Workspace name"
-                        description="Update the name of your workspace."
+                        title="Workspace details"
+                        description="Update the name and slug of your workspace."
                     />
 
                     <Form
-                        {...WorkspaceController.update.form(workspace.id)}
+                        {...WorkspaceController.update.form(workspace.slug)}
                         options={{ preserveScroll: true }}
-                        className="flex max-w-md flex-col gap-2"
+                        className="flex max-w-md flex-col gap-4"
                     >
                         {({ processing, errors }) => (
                             <>
-                                <Label htmlFor="name">Name</Label>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="name">Name</Label>
 
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    defaultValue={workspace.name}
-                                    autoComplete="off"
-                                />
+                                    <Input
+                                        id="name"
+                                        name="name"
+                                        defaultValue={workspace.name}
+                                        autoComplete="off"
+                                    />
 
-                                <InputError message={errors.name} />
+                                    <InputError message={errors.name} />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="slug">Slug</Label>
+
+                                    <Input
+                                        id="slug"
+                                        name="slug"
+                                        defaultValue={workspace.slug}
+                                        autoComplete="off"
+                                    />
+
+                                    <InputError message={errors.slug} />
+                                </div>
 
                                 <Button
                                     type="submit"
                                     className="self-start"
                                     disabled={processing}
+                                    data-test="update-workspace-submit"
                                 >
                                     Save
                                 </Button>
@@ -102,7 +119,7 @@ export default function WorkspaceSettings({
                             description="People with access to this workspace."
                         />
 
-                        <InviteMemberDialog workspaceId={workspace.id} />
+                        <InviteMemberDialog workspaceSlug={workspace.slug} />
                     </div>
 
                     <ul className="flex flex-col gap-2">
@@ -136,7 +153,7 @@ export default function WorkspaceSettings({
                                 </div>
 
                                 <RemoveMemberDialog
-                                    workspaceId={workspace.id}
+                                    workspaceSlug={workspace.slug}
                                     member={member}
                                 />
                             </li>
@@ -169,7 +186,7 @@ export default function WorkspaceSettings({
                                     </div>
 
                                     <CancelInvitationDialog
-                                        workspaceId={workspace.id}
+                                        workspaceSlug={workspace.slug}
                                         invitation={invitation}
                                     />
                                 </li>

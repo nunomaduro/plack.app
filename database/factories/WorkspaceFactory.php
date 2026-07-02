@@ -22,7 +22,7 @@ final class WorkspaceFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => $this->faker->company(),
+            'name' => fake()->company(),
         ];
     }
 }

@@ -67,53 +67,176 @@ it('can create workspace', function (): void {
     $workspaces = $user->ownedWorkspaces;
 
     expect($workspaces->count())->toBe(1)
-        ->and($workspaces->first()->name)->toBe('Test Workspace');
+        ->and($workspaces->first()->name)->toBe('Test Workspace')
+        ->and($workspaces->first()->slug)->toBe('test-workspace');
 });
 
 it('validates the workspace name', function (): void {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->post(route('workspace.store'), [
+    $response = $this->actingAs($user)->post(route('workspace.store'), [
         'name' => 'ab',
-    ])->assertSessionHasErrors('name');
+    ]);
+
+    $response->assertSessionHasErrors('name');
 
     expect($user->ownedWorkspaces()->count())->toBe(0);
 });
 
-it('cannot create a workspace with a name already used by the user', function (): void {
+it('rejects a workspace name already owned by the same user', function (): void {
     $user = User::factory()->create();
     Workspace::factory()->for($user, 'owner')->create(['name' => 'Test Workspace']);
 
-    $this->actingAs($user)->post(route('workspace.store'), [
+    $response = $this->actingAs($user)->post(route('workspace.store'), [
         'name' => 'Test Workspace',
-    ])->assertSessionHasErrors('name');
+    ]);
 
-    expect($user->ownedWorkspaces()->count())->toBe(1);
+    $response->assertSessionHasErrors('name');
+
+    expect($user->ownedWorkspaces()->where('name', 'Test Workspace')->count())->toBe(1);
 });
 
-it('allows different users to create workspaces with the same name', function (): void {
-    $user = User::factory()->create();
+it('allows different users to have the same workspace name', function (): void {
     $otherUser = User::factory()->create();
     Workspace::factory()->for($otherUser, 'owner')->create(['name' => 'Test Workspace']);
 
-    $this->actingAs($user)->post(route('workspace.store'), [
-        'name' => 'Test Workspace',
-    ])->assertSessionHasNoErrors();
+    $user = User::factory()->create();
 
-    expect($user->ownedWorkspaces()->count())->toBe(1);
+    $response = $this->actingAs($user)->post(route('workspace.store'), [
+        'name' => 'Test Workspace',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    expect($user->ownedWorkspaces()->where('name', 'Test Workspace')->count())->toBe(1);
+});
+
+it('generates a unique slug when the name is already taken', function (): void {
+    $otherUser = User::factory()->create();
+    Workspace::factory()->for($otherUser, 'owner')->create(['name' => 'Test Workspace', 'slug' => 'test-workspace']);
+
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post(route('workspace.store'), [
+        'name' => 'Test Workspace',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    expect($user->ownedWorkspaces()->where('slug', 'test-workspace-2')->exists())->toBeTrue();
 });
 
 it('can update workspace name', function (): void {
     $user = User::factory()->create();
-    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane']);
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
 
     $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
         'name' => 'Nuno Maduro',
+        'slug' => 'hashane',
     ]);
 
     $response->assertRedirectBack();
 
     expect($workspace->refresh()->name)->toBe('Nuno Maduro');
+});
+
+it('keeps the slug when the submitted slug is unchanged', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Nuno Maduro',
+        'slug' => 'hashane',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    expect($workspace->refresh()->slug)->toBe('hashane');
+});
+
+it('requires a slug when updating a workspace', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Nuno Maduro',
+    ]);
+
+    $response->assertSessionHasErrors('slug');
+
+    expect($workspace->refresh()->slug)->toBe('hashane');
+});
+
+it('updates the slug when one is provided', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Nuno Maduro',
+        'slug' => 'nuno-maduro',
+    ]);
+
+    $response->assertRedirectBack()->assertSessionHasNoErrors();
+
+    expect($workspace->refresh()->slug)->toBe('nuno-maduro');
+});
+
+it('validates the slug format when updating a workspace', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Hashane',
+        'slug' => 'Not A Slug',
+    ]);
+
+    $response->assertSessionHasErrors('slug');
+
+    expect($workspace->refresh()->slug)->toBe('hashane');
+});
+
+it('rejects a slug already taken by another workspace', function (): void {
+    $user = User::factory()->create();
+    Workspace::factory()->for($user, 'owner')->create(['name' => 'Taken', 'slug' => 'taken']);
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Hashane',
+        'slug' => 'taken',
+    ]);
+
+    $response->assertSessionHasErrors('slug');
+
+    expect($workspace->refresh()->slug)->toBe('hashane');
+});
+
+it('rejects updating a workspace to a name already owned by the same user', function (): void {
+    $user = User::factory()->create();
+    Workspace::factory()->for($user, 'owner')->create(['name' => 'Taken', 'slug' => 'taken']);
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Taken',
+        'slug' => 'hashane',
+    ]);
+
+    $response->assertSessionHasErrors('name');
+
+    expect($workspace->refresh()->name)->toBe('Hashane');
+});
+
+it('allows updating a workspace while keeping its own name', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane', 'slug' => 'hashane']);
+
+    $response = $this->actingAs($user)->patch(route('workspace.update', $workspace), [
+        'name' => 'Hashane',
+        'slug' => 'nuno-maduro',
+    ]);
+
+    $response->assertRedirectBack()->assertSessionHasNoErrors();
+
+    expect($workspace->refresh()->slug)->toBe('nuno-maduro');
 });
 
 it('can delete a workspace', function (): void {

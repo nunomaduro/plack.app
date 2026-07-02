@@ -29,7 +29,7 @@ final readonly class WorkspaceController
     ): Response {
         return Inertia::render('workspace/list', [
             'ownedWorkspaces' => $listOwnedWorkspaces->get($user),
-            'memberWorkspaces' => $user->memberWorkspaces()->get(['workspaces.id', 'workspaces.name']),
+            'memberWorkspaces' => $user->memberWorkspaces()->get(['workspaces.id', 'workspaces.name', 'workspaces.slug']),
             'pendingInvitations' => $listPendingWorkspaceInvitations->get($user),
         ]);
     }
@@ -39,7 +39,7 @@ final readonly class WorkspaceController
         $workspace->load(['owner', 'members', 'invitations']);
 
         return Inertia::render('workspace/settings', [
-            'workspace' => $workspace->only('id', 'name'),
+            'workspace' => $workspace->only('id', 'name', 'slug'),
             'owner' => $workspace->owner->only('id', 'name', 'email'),
             'members' => $workspace->members->map->only('id', 'name', 'email')->values(),
             'invitations' => $workspace->invitations->map(fn (WorkspaceInvitation $invitation): array => [
@@ -72,8 +72,9 @@ final readonly class WorkspaceController
         UpdateWorkspace $updateWorkspace,
     ): RedirectResponse {
         $name = $request->string('name')->value();
+        $slug = $request->string('slug')->value();
 
-        $updateWorkspace->handle($workspace, $name);
+        $updateWorkspace->handle($workspace, $name, $slug);
 
         Inertia::flash('toast', [
             'type' => 'success',

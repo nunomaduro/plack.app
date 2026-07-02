@@ -24,10 +24,10 @@ type Invitation = {
 };
 
 export default function CancelInvitationDialog({
-    workspaceId,
+    workspaceSlug,
     invitation,
 }: {
-    workspaceId: string;
+    workspaceSlug: string;
     invitation: Invitation;
 }) {
     return (
@@ -59,7 +59,7 @@ export default function CancelInvitationDialog({
 
                 <Form
                     {...WorkspaceInvitationController.destroy.form([
-                        workspaceId,
+                        workspaceSlug,
                         invitation.code,
                     ])}
                     options={{ preserveScroll: true }}

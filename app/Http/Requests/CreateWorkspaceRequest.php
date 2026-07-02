@@ -22,7 +22,7 @@ final class CreateWorkspaceRequest extends FormRequest
                 'string',
                 'min:3',
                 'max:80',
-                Rule::unique(Workspace::class)->where('user_id', $this->user()?->id),
+                Rule::unique(Workspace::class, 'name')->where('user_id', $this->user()?->id),
             ],
         ];
     }
