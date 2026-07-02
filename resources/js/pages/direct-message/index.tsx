@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import StartConversationDialog from '@/components/start-conversation-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { index, show } from '@/routes/direct-message';
 import type { BreadcrumbItem } from '@/types';
@@ -48,6 +48,8 @@ export default function DirectMessageIndex({
                         title="Messages"
                         description="Your direct messages."
                     />
+
+                    <StartConversationDialog />
                 </div>
 
                 {conversations.data.length === 0 ? (
@@ -55,6 +57,8 @@ export default function DirectMessageIndex({
                         <p className="text-sm text-muted-foreground">
                             No messages yet.
                         </p>
+
+                        <StartConversationDialog />
                     </div>
                 ) : (
                     <ul className="flex flex-col gap-2">

@@ -13,6 +13,7 @@ use App\Http\Controllers\UserEmailVerificationController;
 use App\Http\Controllers\UserEmailVerificationNotificationController;
 use App\Http\Controllers\UserPasswordController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\UserSearchController;
 use App\Http\Controllers\UserTwoFactorAuthenticationController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceInvitationController;
@@ -162,4 +163,8 @@ Route::middleware('auth')->group(function (): void {
 
     Route::post('messages/{conversation}/messages', [DirectMessageController::class, 'send'])
         ->name('direct-message.message.store');
+
+    // User Search...
+    Route::get('users/search', UserSearchController::class)
+        ->name('user.search');
 });
