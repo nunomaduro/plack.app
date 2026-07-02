@@ -1,5 +1,6 @@
 import { Form, Head, router } from '@inertiajs/react';
 import { useEcho } from '@laravel/echo-react';
+import { useEffect, useRef } from 'react';
 import MessageController from '@/actions/App/Http/Controllers/MessageController';
 import CreateChannelDialog from '@/components/create-channel-dialog';
 import DeleteChannelDialog from '@/components/delete-channel-dialog';
@@ -52,6 +53,15 @@ export default function ChannelShow({
     workspaces?: WorkspaceSummary[];
     canManage?: boolean;
 }) {
+    const logRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const log = logRef.current;
+        if (log) {
+            log.scrollTop = log.scrollHeight;
+        }
+    }, [messages]);
+
     useEcho(`channels.${channel.id}`, '.MessageCreated', () => {
         router.reload({ only: ['messages'] });
     });
@@ -104,26 +114,30 @@ export default function ChannelShow({
             </header>
 
             {/* message log — bottom-anchored */}
-            <div className="flex flex-1 flex-col justify-end gap-[14px] overflow-y-auto px-6 py-[18px] text-[12.5px] leading-[1.55]">
-                {messages.length === 0 ? (
-                    <div className="text-faint">
-                        # no messages yet — say hello
-                    </div>
-                ) : (
-                    messages.map((message) => (
-                        <div key={message.id} className="break-words">
-                            <span
-                                style={{ color: nickColorFor(message.sender) }}
-                            >
-                                {message.sender}
-                            </span>
-                            <span className="mx-2 text-faint">
-                                {messageTime(message.createdAt)}
-                            </span>
-                            <span className="text-fg">{message.body}</span>
+            <div ref={logRef} className="flex-1 overflow-y-auto">
+                <div className="flex min-h-full flex-col justify-end gap-[14px] px-6 py-[18px] text-[12.5px] leading-[1.55]">
+                    {messages.length === 0 ? (
+                        <div className="text-faint">
+                            # no messages yet — say hello
                         </div>
-                    ))
-                )}
+                    ) : (
+                        messages.map((message) => (
+                            <div key={message.id} className="break-words">
+                                <span
+                                    style={{
+                                        color: nickColorFor(message.sender),
+                                    }}
+                                >
+                                    {message.sender}
+                                </span>
+                                <span className="mx-2 text-faint">
+                                    {messageTime(message.createdAt)}
+                                </span>
+                                <span className="text-fg">{message.body}</span>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
 
             {/* composer */}
