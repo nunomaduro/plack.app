@@ -31,6 +31,7 @@ final class MessageCreated implements ShouldBroadcast, ShouldQueue
     {
         return [
             new PrivateChannel('channels.'.$this->message->channel_id),
+            new PrivateChannel('workspaces.'.$this->message->channel->workspace_id),
         ];
     }
 

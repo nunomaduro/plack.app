@@ -21,6 +21,8 @@ type Channel = {
     id: string;
     name: string;
     slug: string;
+    unread_count: number;
+    muted: boolean;
 };
 
 type WorkspaceSummary = {
@@ -131,6 +133,7 @@ export default function WorkspaceLayout({
                     <div className="flex flex-col gap-[2px] text-[12.5px]">
                         {workspace.channels.map((channel) => {
                             const active = channel.slug === activeChannelSlug;
+                            const unread = !active && channel.unread_count > 0;
 
                             return (
                                 <Link
@@ -141,11 +144,27 @@ export default function WorkspaceLayout({
                                     })}
                                     className={
                                         active
-                                            ? 'border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
-                                            : 'px-2 py-[6px] text-dim transition-colors hover:text-fg'
+                                            ? 'flex items-center gap-2 border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
+                                            : 'flex items-center gap-2 px-2 py-[6px] text-dim transition-colors hover:text-fg'
                                     }
                                 >
-                                    # {channel.name}
+                                    <span
+                                        className={
+                                            unread
+                                                ? 'flex-1 truncate font-semibold text-fg'
+                                                : 'flex-1 truncate'
+                                        }
+                                    >
+                                        # {channel.name}
+                                    </span>
+
+                                    {unread && (
+                                        <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-green px-1 text-[9px] font-semibold text-ink-900">
+                                            {channel.unread_count > 99
+                                                ? '99+'
+                                                : channel.unread_count}
+                                        </span>
+                                    )}
                                 </Link>
                             );
                         })}
