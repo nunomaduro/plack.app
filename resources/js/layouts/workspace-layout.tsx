@@ -386,7 +386,7 @@ export default function WorkspaceLayout({
             <aside className="flex w-[250px] flex-none flex-col border-r border-line bg-ink-950">
                 <div className="flex-1 px-[14px] py-4">
                     <div className="mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase">
-                        Members
+                        Members <span className="p-1 rounded bg-primary text-primary-foreground">{workspace.members.length + 1} </span>
                     </div>
                     <div className="flex flex-col gap-[2px] text-[12.5px]">
                         <span>
