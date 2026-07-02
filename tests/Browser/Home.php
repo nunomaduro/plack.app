@@ -9,16 +9,14 @@ it('has the landing page', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
-it('shows a login action on the landing page', function (): void {
+it('does not show a login action on the landing page', function (): void {
     $page = visit('/');
 
-    $page->click('@login-link')
-        ->assertPathIs('/login');
+    $page->assertMissing('@login-link');
 });
 
-it('shows a register action on the landing page', function (): void {
+it('does not show a register action on the landing page', function (): void {
     $page = visit('/');
 
-    $page->click('@register-link')
-        ->assertPathIs('/register');
+    $page->assertMissing('@register-link');
 });

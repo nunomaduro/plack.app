@@ -1,6 +1,5 @@
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 import InputError from '@/components/input-error';
-import { login } from '@/routes';
 import { store as earlyAccessStore } from '@/routes/early-access';
 import { index as workspaces } from '@/routes/workspace';
 
@@ -21,20 +20,12 @@ export default function Welcome() {
             />
 
             {/* top corners — minimal chrome */}
-            {auth.user ? (
+            {auth.user && (
                 <Link
                     href={workspaces()}
                     className="absolute top-6 right-9 z-10 text-xs tracking-[.02em] text-[#5a5344] transition-colors hover:text-fg"
                 >
                     workspaces
-                </Link>
-            ) : (
-                <Link
-                    href={login()}
-                    className="absolute top-6 right-9 z-10 text-xs tracking-[.02em] text-[#5a5344] transition-colors hover:text-fg"
-                    data-test="login-link"
-                >
-                    log in
                 </Link>
             )}
 
