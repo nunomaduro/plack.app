@@ -97,7 +97,9 @@ export default function DirectMessageShow({
                     ) : (
                         <div className="flex flex-col gap-3">
                             {[...messages.data].reverse().map((msg) => {
-                                const isMine = msg.sender.id === auth.user.id;
+                                const isMine =
+                                    String(msg.sender.id) ===
+                                    String(auth.user.id);
 
                                 return (
                                     <div
