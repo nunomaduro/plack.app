@@ -47,14 +47,12 @@ final readonly class DirectMessageController
 
         $conversation = $createOrGetConversation->handle($user, $otherUser);
 
-        return redirect()->route('direct-message.show', $conversation);
+        return to_route('direct-message.show', $conversation);
     }
 
     public function show(#[CurrentUser] User $user, Conversation $conversation): Response
     {
-        if (! $conversation->participants()->whereKey($user->id)->exists()) {
-            abort(404);
-        }
+        abort_unless($conversation->participants()->whereKey($user->id)->exists(), 404);
 
         $messages = $conversation->messages()
             ->with('sender')
@@ -78,9 +76,7 @@ final readonly class DirectMessageController
         Conversation $conversation,
         SendDirectMessage $sendDirectMessage,
     ): RedirectResponse {
-        if (! $conversation->participants()->whereKey($user->id)->exists()) {
-            abort(404);
-        }
+        abort_unless($conversation->participants()->whereKey($user->id)->exists(), 404);
 
         $body = $request->string('body')->value();
 

@@ -14,7 +14,7 @@ final readonly class CreateOrGetConversation
     {
         $existing = $this->findExisting($userA, $userB);
 
-        if ($existing !== null) {
+        if ($existing instanceof Conversation) {
             return $existing;
         }
 
