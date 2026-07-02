@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Models\Channel;
 use App\Models\Workspace;
+use Illuminate\Support\Str;
 
 final readonly class CreateChannel
 {
@@ -13,6 +14,7 @@ final readonly class CreateChannel
     {
         return $workspace->channels()->create([
             'name' => $name,
+            'slug' => Str::slug($name),
         ]);
     }
 }
