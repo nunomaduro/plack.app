@@ -6,21 +6,7 @@ import DeleteChannelDialog from '@/components/delete-channel-dialog';
 import EditChannelDialog from '@/components/edit-channel-dialog';
 import InputError from '@/components/input-error';
 import WorkspaceLayout from '@/layouts/workspace-layout';
-
-const NICK_COLORS = [
-    'text-green',
-    'text-user-violet',
-    'text-user-blue',
-    'text-user-clay',
-] as const;
-
-function nickColor(name: string): string {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = (hash + name.charCodeAt(i)) % NICK_COLORS.length;
-    }
-    return NICK_COLORS[hash];
-}
+import { nickColorFor } from '@/lib/user';
 
 function messageTime(iso: string): string {
     return new Date(iso).toLocaleTimeString([], {
@@ -114,7 +100,7 @@ export default function ChannelShow({
                 ) : (
                     messages.map((message) => (
                         <div key={message.id} className="break-words">
-                            <span className={nickColor(message.sender)}>
+                            <span style={{ color: nickColorFor(message.sender) }}>
                                 {message.sender}
                             </span>
                             <span className="mx-2 text-faint">

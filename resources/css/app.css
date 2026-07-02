@@ -83,10 +83,6 @@
     --color-amber: #e5a23d; /* primary accent + CTAs + channel name */
     --color-green: #7fae5f; /* online / cursor / success */
 
-    --color-user-violet: #c98bd1;
-    --color-user-blue: #5f9edb;
-    --color-user-clay: #dba15f;
-
     --animate-blink: blink 1.1s steps(1) infinite;
 }
 

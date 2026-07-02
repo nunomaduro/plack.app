@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { UserMenuContent } from '@/components/user-menu-content';
-import { avatarColorFor, handleFor, initialsFor } from '@/lib/user';
+import { nickColorFor, handleFor, initialsFor } from '@/lib/user';
 import { show as channelShow } from '@/routes/channel';
 import {
     settings as workspaceSettings,
@@ -168,7 +168,8 @@ export default function WorkspaceLayout({
                 <DropdownMenu>
                     <DropdownMenuTrigger className="flex w-full items-center gap-[9px] border-t border-line px-4 py-3 text-xs text-dim transition-colors outline-none hover:text-fg data-[state=open]:bg-ink-800 data-[state=open]:text-fg">
                         <span
-                            className={`flex h-[22px] w-[22px] items-center justify-center text-[10px] font-semibold text-ink-900 ${avatarColorFor(user.id)}`}
+                            className="flex h-[22px] w-[22px] items-center justify-center text-[10px] font-semibold text-ink-900"
+                            style={{ backgroundColor: nickColorFor(user.name) }}
                         >
                             {initialsFor(user.name)}
                         </span>
