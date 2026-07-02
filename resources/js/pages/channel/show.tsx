@@ -54,6 +54,7 @@ export default function ChannelShow({
     canManage?: boolean;
 }) {
     const logRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const log = logRef.current;
@@ -148,17 +149,20 @@ export default function ChannelShow({
                 ])}
                 options={{ preserveScroll: true }}
                 resetOnSuccess
+                onFinish={() => setTimeout(() => inputRef.current?.focus(), 0)}
                 className="mx-6 mb-5"
             >
-                {({ errors }) => (
+                {({ errors, processing }) => (
                     <>
                         <div className="flex items-center gap-2 border border-line px-[14px] py-[11px] text-[12.5px]">
                             <span className="text-green">&gt;</span>
                             <input
+                                ref={inputRef}
                                 type="text"
                                 name="body"
                                 placeholder={`message #${channel.name}`}
                                 autoComplete="off"
+                                disabled={processing}
                                 className="min-w-0 flex-1 bg-transparent text-fg caret-green outline-none placeholder:text-faint"
                             />
                         </div>
