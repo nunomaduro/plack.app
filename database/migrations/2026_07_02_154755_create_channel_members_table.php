@@ -12,7 +12,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('channel_reads', function (Blueprint $table): void {
+        Schema::create('channel_members', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuidFor(User::class)->index();
             $table->foreignUuidFor(Channel::class)->index();

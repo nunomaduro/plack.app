@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Channel;
-use App\Models\ChannelRead;
+use App\Models\ChannelMember;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<ChannelRead>
+ * @extends Factory<ChannelMember>
  */
-final class ChannelReadFactory extends Factory
+final class ChannelMemberFactory extends Factory
 {
     /**
      * @return array<string, mixed>

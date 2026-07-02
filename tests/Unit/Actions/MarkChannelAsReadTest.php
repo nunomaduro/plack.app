@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Actions\MarkChannelAsRead;
 use App\Models\Channel;
-use App\Models\ChannelRead;
+use App\Models\ChannelMember;
 use App\Models\User;
 
 it('records a read cursor for the user and channel', function (): void {
@@ -13,7 +13,7 @@ it('records a read cursor for the user and channel', function (): void {
 
     resolve(MarkChannelAsRead::class)->handle($channel, $user);
 
-    $read = ChannelRead::query()
+    $read = ChannelMember::query()
         ->where('user_id', $user->id)
         ->where('channel_id', $channel->id)
         ->sole();
@@ -29,6 +29,6 @@ it('updates the existing cursor instead of duplicating', function (): void {
     $action->handle($channel, $user);
     $action->handle($channel, $user);
 
-    expect(ChannelRead::query()->where('user_id', $user->id)->where('channel_id', $channel->id)->count())
+    expect(ChannelMember::query()->where('user_id', $user->id)->where('channel_id', $channel->id)->count())
         ->toBe(1);
 });

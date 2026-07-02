@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Queries;
 
 use App\Models\Channel;
-use App\Models\ChannelRead;
+use App\Models\ChannelMember;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Workspace;
@@ -27,7 +27,7 @@ final readonly class ListUnreadCounts
     {
         $channelIds = $workspace->channels()->get(['id'])->map(fn (Channel $channel): string => $channel->id);
 
-        $lastReadAt = ChannelRead::query()
+        $lastReadAt = ChannelMember::query()
             ->where('user_id', $user->id)
             ->whereIn('channel_id', $channelIds)
             ->pluck('last_read_at', 'channel_id');
