@@ -1,12 +1,12 @@
 import { Head, router, usePage } from '@inertiajs/react';
+import type { FormEvent } from 'react';
+import { useRef } from 'react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
 import directMessage, { index, show } from '@/routes/direct-message';
 import type { BreadcrumbItem } from '@/types';
-import type { FormEvent } from 'react';
-import { useRef } from 'react';
 
 type Participant = {
     id: string;
@@ -140,10 +140,7 @@ export default function DirectMessageShow({
                     )}
                 </div>
 
-                <form
-                    onSubmit={handleSend}
-                    className="flex items-center gap-2"
-                >
+                <form onSubmit={handleSend} className="flex items-center gap-2">
                     <Input
                         ref={inputRef}
                         name="body"

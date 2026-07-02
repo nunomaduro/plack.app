@@ -2,7 +2,6 @@ import { router } from '@inertiajs/react';
 import { Plus, Search } from 'lucide-react';
 import { useRef, useState } from 'react';
 import DirectMessageController from '@/actions/App/Http/Controllers/DirectMessageController';
-import { search as searchUsers } from '@/routes/user';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +14,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { search as searchUsers } from '@/routes/user';
 
 type SearchUser = {
     id: string;
@@ -45,7 +45,9 @@ export default function StartConversationDialog() {
 
         timerRef.current = setTimeout(async () => {
             try {
-                const res = await fetch(searchUsers.url({ query: { q: value } }));
+                const res = await fetch(
+                    searchUsers.url({ query: { q: value } }),
+                );
                 const data = await res.json();
                 setResults(data);
             } catch {
@@ -82,7 +84,7 @@ export default function StartConversationDialog() {
 
                 <div className="space-y-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                        <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 
                         <Input
                             value={query}
@@ -135,11 +137,13 @@ export default function StartConversationDialog() {
                         </ul>
                     )}
 
-                    {!searching && query.length >= 2 && results.length === 0 && (
-                        <p className="text-sm text-muted-foreground">
-                            No users found.
-                        </p>
-                    )}
+                    {!searching &&
+                        query.length >= 2 &&
+                        results.length === 0 && (
+                            <p className="text-sm text-muted-foreground">
+                                No users found.
+                            </p>
+                        )}
                 </div>
 
                 <DialogFooter className="gap-2">

@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { Button } from '@/components/ui/button';
 import StartConversationDialog from '@/components/start-conversation-dialog';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { index, show } from '@/routes/direct-message';
 import type { BreadcrumbItem } from '@/types';
@@ -80,7 +80,7 @@ export default function DirectMessageIndex({
                                         </span>
 
                                         {lastMessage && (
-                                            <span className="text-sm text-muted-foreground line-clamp-1">
+                                            <span className="line-clamp-1 text-sm text-muted-foreground">
                                                 {lastMessage.body}
                                             </span>
                                         )}
