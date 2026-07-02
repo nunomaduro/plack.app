@@ -1,6 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import ChannelController from '@/actions/App/Http/Controllers/ChannelController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -23,20 +23,28 @@ type Channel = {
 export default function DeleteChannelDialog({
     workspaceSlug,
     channel,
+    trigger,
 }: {
     workspaceSlug: string;
     channel: Channel;
+    trigger?: ReactNode;
 }) {
     const [open, setOpen] = useState(false);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Delete channel">
-                    <Trash2 />
-                </Button>
+                {trigger ?? (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Delete channel"
+                    >
+                        <Trash2 />
+                    </Button>
+                )}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent data-test="delete-channel-dialog">
                 <DialogTitle>Delete channel</DialogTitle>
                 <DialogDescription>
                     Are you sure you want to delete{' '}
@@ -68,6 +76,7 @@ export default function DeleteChannelDialog({
                                     type="submit"
                                     variant="destructive"
                                     disabled={processing}
+                                    data-test="delete-channel-submit"
                                 >
                                     Delete
                                 </Button>

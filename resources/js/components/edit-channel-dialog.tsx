@@ -1,6 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { Pencil } from 'lucide-react';
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import ChannelController from '@/actions/App/Http/Controllers/ChannelController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -25,20 +25,28 @@ type Channel = {
 export default function EditChannelDialog({
     workspaceSlug,
     channel,
+    trigger,
 }: {
     workspaceSlug: string;
     channel: Channel;
+    trigger?: ReactNode;
 }) {
     const [open, setOpen] = useState(false);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Edit channel">
-                    <Pencil />
-                </Button>
+                {trigger ?? (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Edit channel"
+                    >
+                        <Pencil />
+                    </Button>
+                )}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent data-test="edit-channel-dialog">
                 <DialogTitle>Edit channel</DialogTitle>
                 <DialogDescription>
                     Update the name of your channel.
@@ -82,7 +90,11 @@ export default function EditChannelDialog({
                                     </Button>
                                 </DialogClose>
 
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    data-test="edit-channel-submit"
+                                >
                                     Save
                                 </Button>
                             </DialogFooter>

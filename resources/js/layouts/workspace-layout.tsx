@@ -1,6 +1,10 @@
 import { Link, usePage } from '@inertiajs/react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { type PropsWithChildren, useState } from 'react';
+import CreateChannelDialog from '@/components/create-channel-dialog';
 import CreateWorkspaceDialog from '@/components/create-workspace-dialog';
+import DeleteChannelDialog from '@/components/delete-channel-dialog';
+import EditChannelDialog from '@/components/edit-channel-dialog';
 import PendingInvitations from '@/components/pending-invitations';
 import {
     DropdownMenu,
@@ -124,8 +128,26 @@ export default function WorkspaceLayout({
 
                 {/* channel list */}
                 <nav className="flex-1 px-[14px] py-4">
-                    <div className="mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase">
-                        channels
+                    <div className="mb-[10px] flex items-center justify-between">
+                        <div className="text-[9px] tracking-[.22em] text-mute uppercase">
+                            channels
+                        </div>
+
+                        {canManage && (
+                            <CreateChannelDialog
+                                workspaceSlug={workspace.slug}
+                                trigger={
+                                    <button
+                                        type="button"
+                                        aria-label="New channel"
+                                        data-test="create-channel-trigger"
+                                        className="text-mute transition-colors hover:text-amber"
+                                    >
+                                        <Plus className="size-3.5" />
+                                    </button>
+                                }
+                            />
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-[2px] text-[12.5px]">
@@ -133,20 +155,62 @@ export default function WorkspaceLayout({
                             const active = channel.slug === activeChannelSlug;
 
                             return (
-                                <Link
+                                <div
                                     key={channel.id}
-                                    href={channelShow({
-                                        workspace: workspace.slug,
-                                        channel: channel.slug,
-                                    })}
                                     className={
                                         active
-                                            ? 'border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
-                                            : 'px-2 py-[6px] text-dim transition-colors hover:text-fg'
+                                            ? 'group flex items-center gap-1 border-l-2 border-green bg-ink-800 px-2 py-[6px]'
+                                            : 'group flex items-center gap-1 px-2 py-[6px]'
                                     }
                                 >
-                                    # {channel.name}
-                                </Link>
+                                    <Link
+                                        href={channelShow({
+                                            workspace: workspace.slug,
+                                            channel: channel.slug,
+                                        })}
+                                        className={
+                                            active
+                                                ? 'min-w-0 flex-1 truncate text-fg'
+                                                : 'min-w-0 flex-1 truncate text-dim transition-colors hover:text-fg'
+                                        }
+                                    >
+                                        # {channel.name}
+                                    </Link>
+
+                                    {canManage && (
+                                        <div className="flex items-center gap-[6px] opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                                            <EditChannelDialog
+                                                workspaceSlug={workspace.slug}
+                                                channel={channel}
+                                                trigger={
+                                                    <button
+                                                        type="button"
+                                                        aria-label={`Edit #${channel.name}`}
+                                                        data-test={`edit-channel-trigger-${channel.slug}`}
+                                                        className="text-mute transition-colors hover:text-fg"
+                                                    >
+                                                        <Pencil className="size-3" />
+                                                    </button>
+                                                }
+                                            />
+
+                                            <DeleteChannelDialog
+                                                workspaceSlug={workspace.slug}
+                                                channel={channel}
+                                                trigger={
+                                                    <button
+                                                        type="button"
+                                                        aria-label={`Delete #${channel.name}`}
+                                                        data-test={`delete-channel-trigger-${channel.slug}`}
+                                                        className="text-mute transition-colors hover:text-destructive"
+                                                    >
+                                                        <Trash2 className="size-3" />
+                                                    </button>
+                                                }
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                             );
                         })}
                     </div>

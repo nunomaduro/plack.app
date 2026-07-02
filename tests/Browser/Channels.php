@@ -23,6 +23,41 @@ it('can create a channel', function (): void {
     expect($workspace->channels()->where('name', 'Announcements')->exists())->toBeTrue();
 });
 
+it('can edit a channel from the sidebar', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['slug' => 'acme']);
+    $channel = Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
+    $other = Channel::factory()->for($workspace)->create(['name' => 'random', 'slug' => 'random']);
+
+    $this->actingAs($user);
+
+    $page = visit(route('channel.show', [$workspace, $channel]));
+
+    $page->click('@edit-channel-trigger-random')
+        ->fill('name', 'Announcements')
+        ->click('@edit-channel-submit')
+        ->assertMissing('@edit-channel-dialog');
+
+    expect($other->refresh()->name)->toBe('Announcements');
+});
+
+it('can delete a channel from the sidebar', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['slug' => 'acme']);
+    $channel = Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
+    $other = Channel::factory()->for($workspace)->create(['name' => 'random', 'slug' => 'random']);
+
+    $this->actingAs($user);
+
+    $page = visit(route('channel.show', [$workspace, $channel]));
+
+    $page->click('@delete-channel-trigger-random')
+        ->click('@delete-channel-submit')
+        ->assertMissing('@delete-channel-dialog');
+
+    expect(Channel::query()->whereKey($other->id)->exists())->toBeFalse();
+});
+
 it('validates the channel name when creating', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['slug' => 'acme']);
