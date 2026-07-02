@@ -50,3 +50,18 @@ it('can update a workspace', function (): void {
 
     expect($workspace->refresh()->name)->toBe('Globex');
 });
+
+it('can delete a workspace', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Acme']);
+
+    $this->actingAs($user);
+
+    $page = visit('/workspaces');
+
+    $page->click('@delete-workspace-trigger')
+        ->click('@delete-workspace-submit')
+        ->assertMissing('@delete-workspace-dialog');
+
+    expect(Workspace::query()->whereKey($workspace->getKey())->exists())->toBeFalse();
+});
