@@ -1,16 +1,13 @@
-import '@fontsource/ibm-plex-mono/400.css';
-import '@fontsource/ibm-plex-mono/500.css';
-import '@fontsource/ibm-plex-mono/600.css';
-import { createInertiaApp } from '@inertiajs/react';
-import { configureEcho } from '@laravel/echo-react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import type { ComponentType } from 'react';
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Toaster } from '@/components/ui/sonner';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import {createInertiaApp} from '@inertiajs/react';
+import {configureEcho} from '@laravel/echo-react';
+import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
+import type {ComponentType} from 'react';
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import {Toaster} from '@/components/ui/sonner';
+import {TooltipProvider} from '@/components/ui/tooltip';
 import '../css/app.css';
-import { initializeTheme } from '@/hooks/use-appearance';
+import {initializeTheme} from '@/hooks/use-appearance';
 
 configureEcho({
     broadcaster: 'reverb',
