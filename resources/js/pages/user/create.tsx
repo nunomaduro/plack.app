@@ -1,113 +1,186 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 
+const fieldWrap =
+    'flex h-[46px] items-center gap-[9px] border border-line bg-ink-950 px-[14px] transition-colors focus-within:border-amber';
+const inputClass =
+    'min-w-0 flex-1 bg-transparent text-[13.5px] text-fg caret-green outline-none placeholder:text-faint';
+const labelClass = 'mb-2 text-[9px] uppercase tracking-[.22em] text-mute';
+
 export default function Register() {
+    const [showPw, setShowPw] = useState(false);
+
     return (
-        <AuthLayout
-            title="Create an account"
-            description="Enter your details below to create your account"
-        >
+        <div className="relative min-h-screen overflow-hidden bg-ink-950 font-mono text-fg">
             <Head title="Register" />
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password', 'password_confirmation']}
-                disableWhileProcessing
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="name"
-                                    name="name"
-                                    placeholder="Full name"
-                                />
+
+            <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                    background:
+                        'radial-gradient(58% 46% at 50% 44%, rgba(229,162,61,.06), transparent 72%)',
+                }}
+            />
+
+            <div className="absolute top-6 right-9 z-10 text-xs tracking-[.02em] text-[#5a5344]">
+                already have one?{' '}
+                <Link
+                    href={login()}
+                    className="border-b border-line text-dim transition-colors hover:text-amber"
+                >
+                    log in →
+                </Link>
+            </div>
+
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-10">
+                <div className="mb-[30px] text-center">
+                    <div className="inline-flex items-center text-[27px] font-semibold tracking-[.01em] text-amber">
+                        plack
+                        <span className="ml-[7px] inline-block h-[22px] w-2 animate-blink bg-green" />
+                    </div>
+                    <div className="mt-5 text-[9px] tracking-[.32em] text-mute uppercase">
+                        create account
+                    </div>
+                    <div className="mt-[9px] text-[13px] tracking-[.01em] text-dim">
+                        Somewhere quiet for your team to actually talk.
+                    </div>
+                </div>
+
+                <Form
+                    {...store.form()}
+                    resetOnSuccess={['password', 'password_confirmation']}
+                    disableWhileProcessing
+                    className="flex w-[340px] flex-col gap-[15px]"
+                >
+                    {({ processing, errors }) => (
+                        <>
+                            <div>
+                                <div className={labelClass}>your name</div>
+                                <div className={fieldWrap}>
+                                    <span className="text-[13px] text-green">
+                                        &gt;
+                                    </span>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        required
+                                        autoFocus
+                                        autoComplete="name"
+                                        placeholder="Nuno Maduro"
+                                        className={inputClass}
+                                    />
+                                </div>
                                 <InputError
                                     message={errors.name}
-                                    className="mt-2"
+                                    className="mt-1.5"
                                 />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="email"
-                                    name="email"
-                                    placeholder="email@example.com"
+                            <div>
+                                <div className={labelClass}>work email</div>
+                                <div className={fieldWrap}>
+                                    <span className="text-[13px] text-green">
+                                        &gt;
+                                    </span>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        required
+                                        autoComplete="email"
+                                        placeholder="you@company.com"
+                                        className={inputClass}
+                                    />
+                                </div>
+                                <InputError
+                                    message={errors.email}
+                                    className="mt-1.5"
                                 />
-                                <InputError message={errors.email} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <PasswordInput
-                                    id="password"
-                                    required
-                                    tabIndex={3}
-                                    autoComplete="new-password"
-                                    name="password"
-                                    placeholder="Password"
+                            <div>
+                                <div className={labelClass}>password</div>
+                                <div className={fieldWrap}>
+                                    <span className="text-[13px] text-green">
+                                        &gt;
+                                    </span>
+                                    <input
+                                        type={showPw ? 'text' : 'password'}
+                                        name="password"
+                                        required
+                                        autoComplete="new-password"
+                                        placeholder="at least 8 characters"
+                                        className={inputClass}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPw((v) => !v)}
+                                        className="text-[11px] tracking-[.06em] text-mute transition-colors hover:text-amber"
+                                    >
+                                        {showPw ? 'hide' : 'show'}
+                                    </button>
+                                </div>
+                                <InputError
+                                    message={errors.password}
+                                    className="mt-1.5"
                                 />
-                                <InputError message={errors.password} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
-                                <PasswordInput
-                                    id="password_confirmation"
-                                    required
-                                    tabIndex={4}
-                                    autoComplete="new-password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm password"
-                                />
+                            <div>
+                                <div className={labelClass}>
+                                    confirm password
+                                </div>
+                                <div className={fieldWrap}>
+                                    <span className="text-[13px] text-green">
+                                        &gt;
+                                    </span>
+                                    <input
+                                        type={showPw ? 'text' : 'password'}
+                                        name="password_confirmation"
+                                        required
+                                        autoComplete="new-password"
+                                        placeholder="repeat your password"
+                                        className={inputClass}
+                                    />
+                                </div>
                                 <InputError
                                     message={errors.password_confirmation}
+                                    className="mt-1.5"
                                 />
                             </div>
 
-                            <Button
+                            <button
                                 type="submit"
-                                className="mt-2 w-full"
-                                tabIndex={5}
+                                disabled={processing}
                                 data-test="register-user-button"
+                                className="mt-1.5 flex h-12 w-full items-center justify-center gap-2 border border-amber bg-amber text-[13.5px] font-semibold tracking-[.03em] text-ink-950 transition-colors hover:bg-[#f0b452] disabled:opacity-60"
                             >
-                                {processing && <Spinner />}
-                                Create account
-                            </Button>
-                        </div>
+                                create account →
+                            </button>
 
-                        <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
-                                Log in
-                            </TextLink>
-                        </div>
-                    </>
-                )}
-            </Form>
-        </AuthLayout>
+                            <div className="mt-1 text-center text-[11px] leading-relaxed text-faint">
+                                By continuing you agree to the{' '}
+                                <a
+                                    href="/terms"
+                                    className="border-b border-line text-mute hover:text-dim"
+                                >
+                                    terms
+                                </a>{' '}
+                                &amp;{' '}
+                                <a
+                                    href="/privacy"
+                                    className="border-b border-line text-mute hover:text-dim"
+                                >
+                                    privacy policy
+                                </a>
+                                .
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </div>
+        </div>
     );
 }
