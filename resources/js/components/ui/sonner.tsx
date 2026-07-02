@@ -1,17 +1,14 @@
 import type { CSSProperties } from "react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
-import { useAppearance } from "@/hooks/use-appearance"
 import { useFlashToast } from "@/hooks/use-flash-toast"
 
 function Toaster({ ...props }: ToasterProps) {
-  const { appearance } = useAppearance()
-
   useFlashToast()
 
   return (
     <Sonner
-      theme={appearance}
+      theme="dark"
       className="toaster group"
       position="bottom-right"
       style={

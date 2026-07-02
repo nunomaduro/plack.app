@@ -41,10 +41,9 @@ it('can update a workspace from its settings page', function (): void {
 
     $this->actingAs($user);
 
-    $page = visit('/workspaces');
+    $page = visit(route('workspace.settings', $workspace));
 
-    $page->click('@workspace-settings-link')
-        ->fill('name', 'Globex')
+    $page->fill('name', 'Globex')
         ->fill('slug', 'globex')
         ->click('@update-workspace-submit');
 

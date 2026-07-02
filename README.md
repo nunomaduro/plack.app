@@ -1,101 +1,83 @@
-- Inertia & React (this project) version: **[github.com/nunomaduro/laravel-starter-kit-inertia-react](https://github.com/nunomaduro/laravel-starter-kit-inertia-react)**
-- Blade version: **[github.com/nunomaduro/laravel-starter-kit](https://github.com/nunomaduro/laravel-starter-kit)**
-- Inertia & Vue version: **[github.com/nunomaduro/laravel-starter-kit-inertia-vue](https://github.com/nunomaduro/laravel-starter-kit-inertia-vue)**
+# plack.app
 
-<p align="center">
-    <a href="https://youtu.be/VhzP0XWGTC4" target="_blank">
-        <img src="https://github.com/nunomaduro/laravel-starter-kit/blob/main/art/banner.png" alt="Overview Laravel Starter Kit" style="width:70%;">
-    </a>
-</p>
+A Slack-style team chat app built with Laravel and React. You sign up, spin up a workspace, and organize conversations into channels.
 
-<p>
-    <a href="https://github.com/nunomaduro/laravel-starter-kit-inertia-react/actions"><img src="https://github.com/nunomaduro/laravel-starter-kit-inertia-react/actions/workflows/tests.yml/badge.svg" alt="Build Status"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit-inertia-react"><img src="https://img.shields.io/packagist/dt/nunomaduro/laravel-starter-kit-inertia-react" alt="Total Downloads"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit-inertia-react"><img src="https://img.shields.io/packagist/v/nunomaduro/laravel-starter-kit-inertia-react" alt="Latest Stable Version"></a>
-    <a href="https://packagist.org/packages/nunomaduro/laravel-starter-kit-inertia-react"><img src="https://img.shields.io/packagist/l/nunomaduro/laravel-starter-kit-inertia-react" alt="License"></a>
-    <a href="https://youtube.com/@nunomaduro?sub_confirmation=1"><img alt="YouTube Channel Subscribers" src="https://img.shields.io/youtube/channel/subscribers/UCO_hYZF2gb_CyG5sA7ArlGg?style=flat&label=youtube&color=brightgreen"></a>
-</p>
+plack.app was built live over two days on stream. Want to see it come together from an empty folder? Here are the recordings:
 
-**Laravel Starter Kit (Inertia & React)** is an ultra-strict, type-safe [Laravel](https://laravel.com) skeleton engineered for developers who refuse to compromise on code quality. This opinionated starter kit enforces rigorous development standards through meticulous tooling configuration and architectural decisions that prioritize type safety, immutability, and fail-fast principles.
+- Day 1 — https://www.youtube.com/watch?v=zq4vexfE2zs
+- Day 2 — https://www.youtube.com/watch?v=gPHN3wHdP8Q
 
-## Why This Starter Kit?
+## What it does
 
-Modern PHP has evolved into a mature, type-safe language, yet many Laravel projects still operate with loose conventions and optional typing. This starter kit changes that paradigm by enforcing:
+- **Workspaces** — every user can create and own workspaces. Each one gets a `general` channel out of the box so there's somewhere to talk from the start.
+- **Channels** — create, rename, and delete channels inside a workspace. Everything lives at readable slug URLs like `/workspaces/acme/channels/general`.
+- **Owner-only access** — a workspace belongs to the person who made it. If you're not the owner, you get a 404 and never even learn it exists.
+- **Accounts done properly** — registration, login, email verification, password resets, two-factor auth, and profile/appearance settings all come from Laravel Fortify.
 
-- **Fully Actions-Oriented Architecture**: Every operation is encapsulated in a single-action class
-- **Cruddy by Design**: Standardized CRUD operations for all controllers, actions, and Inertia & React pages
-- **100% Type Coverage**: Every method, property, and parameter is explicitly typed
-- **Zero Tolerance for Code Smells**: Rector, PHPStan, OxLint, and Oxfmt at maximum strictness catch issues before they become bugs
-- **Immutable-First Architecture**: Data structures favor immutability to prevent unexpected mutations
-- **Fail-Fast Philosophy**: Errors are caught at compile-time, not runtime
-- **Automated Code Quality**: Pre-configured tools ensure consistent, pristine code across your entire team
-- **Just Better Laravel Defaults**: Thanks to **[Essentials](https://github.com/nunomaduro/essentials)** / strict models, auto eager loading, immutable dates, and more...
-- **AI Guidelines**: Integrated AI Guidelines to assist in maintaining code quality and consistency
-- **Full Testing Suite**: More than 150 tests with 100% code coverage using Pest
-- 
-This isn't just another Laravel boilerplate—it's a statement that PHP applications can and should be built with the same rigor as strongly-typed languages like Rust or TypeScript.
+## Tech stack
 
-## Getting Started
+- **Laravel 13** on **PHP 8.5**, with [Inertia v3](https://inertiajs.com) gluing the backend to the frontend (no separate API layer).
+- **React 19** + TypeScript, styled with **Tailwind v4** and shadcn/Radix components.
+- **Fortify** for auth, **Wayfinder** for typed route helpers on the frontend, and **[Essentials](https://github.com/nunomaduro/essentials)** for stricter Laravel defaults.
+- **SQLite** by default, so there's no database server to set up. Sessions, the queue, and the cache all live in the database too.
+- **Bun** as the package manager and **vite-plus** as the bundler.
 
-> **Requires [PHP 8.5+](https://php.net/releases/) and a code coverage driver like [xdebug](https://xdebug.org/docs/install)**.
+## Getting started
 
-Create your type-safe Laravel application using [Composer](https://getcomposer.org):
+You'll need:
+
+- **PHP 8.5+**
+- **[Composer](https://getcomposer.org)**
+- **[Bun](https://bun.sh)**
+- A coverage driver like **[Xdebug](https://xdebug.org/docs/install)** or **pcov** if you plan to run the test suite (it enforces 100% coverage).
+
+Clone it and run the setup script:
 
 ```bash
-composer create-project nunomaduro/laravel-starter-kit-inertia-react --prefer-dist example-app
+git clone https://github.com/nunomaduro/plack.app.git
+cd plack.app
+
+# Installs deps, creates .env, generates a key, runs migrations, builds the frontend
+composer setup
 ```
 
-### Initial Setup
-
-Navigate to your project and complete the setup:
+Then start everything with one command:
 
 ```bash
-cd example-app
-
-# Setup the project
-composer setup
-
-# Start the development server
 composer dev
 ```
 
-### Optional: Browser Testing Setup
+That boots the Laravel server, a queue worker, live log output, and the Vite dev server together. Your app is at http://localhost:8000.
 
-If you plan to use Pest's browser testing capabilities:
+> The first `bun install` also downloads Chromium for the browser tests, so give it a minute the first time.
 
-```bash
-bun add playwright
-bunx playwright install
-```
-
-### Verify Installation
-
-Run the test suite to ensure everything is configured correctly:
+## Everyday commands
 
 ```bash
-composer test
+composer dev     # run the app (server + queue + logs + vite)
+composer test    # the full check: linting, types, static analysis, and tests
+composer lint    # auto-fix code style (Rector + Pint for PHP, vp for JS/TS)
 ```
 
-You should see 100% test coverage and all quality checks passing.
+`composer test` is the same gate CI runs, and it's strict on purpose. If you want to run just one slice:
 
-## Available Tooling
+```bash
+composer test:unit           # Pest tests, 100% code coverage required
+composer test:types          # PHPStan at max level + tsc
+composer test:type-coverage  # 100% type coverage required
+composer test:lint           # style check without fixing anything
+```
 
-### Development
-- `composer dev` - Starts Laravel server, queue worker, log monitoring, and Vite+ dev server concurrently
+Browser tests run through Pest's browser plugin (backed by Playwright) and live in `tests/Browser`.
 
-### Code Quality
-- `composer lint` - Runs Rector (refactoring), Pint (PHP formatting), and Oxfmt (JS/TS formatting)
-- `composer test:lint` - Dry-run mode for CI/CD pipelines
+## How the code is organized
 
-### Testing
-- `composer test:type-coverage` - Ensures 100% type coverage with Pest
-- `composer test:types` - Runs PHPStan at level 9 (maximum strictness)
-- `composer test:unit` - Runs Pest tests with 100% code coverage requirement
-- `composer test` - Runs the complete test suite (type coverage, unit tests, linting, static analysis)
+The backend keeps controllers thin and pushes the real work into small, single-purpose **Action** classes under `app/Actions` (for example, creating a workspace and its `general` channel happens in one transactional action). Read-heavy list queries live in `app/Queries`.
 
-### Maintenance
-- `composer update:requirements` - Updates all PHP and Bun dependencies to latest versions
+On the frontend, pages are Inertia components in `resources/js/pages`, and links to backend routes go through the typed helpers Wayfinder generates, so a renamed route becomes a TypeScript error instead of a broken link.
 
-## License
+A heads-up if you're new to the repo: it's opinionated about quality. 100% test and type coverage, PHPStan at max level, and strict style rules are all enforced by `composer test`, so expect the tooling to push back until things are tidy.
 
-**Laravel Starter Kit Inertia React** was created by **[Nuno Maduro](https://x.com/enunomaduro)** under the **[MIT license](https://opensource.org/licenses/MIT)**.
+## Credits
+
+plack.app grew out of the [Laravel Starter Kit (Inertia & React)](https://github.com/nunomaduro/laravel-starter-kit-inertia-react), built live on stream. Released under the [MIT license](https://opensource.org/licenses/MIT).

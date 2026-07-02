@@ -7,15 +7,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ | Plack — terminal visual foundation (dark-only).
+ |
+ | A warm, quiet "terminal": near-black surfaces, IBM Plex Mono, a single amber
+ | accent, and a phosphor-green cursor/online color. The shadcn semantic tokens
+ | below are remapped onto this palette so every existing component (buttons,
+ | inputs, dialogs, sidebar, cards) inherits the aesthetic. The named terminal
+ | tokens (ink/line/fg/amber/green/…) power the bespoke hero screens.
+ */
 @theme {
-    --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+    --font-sans: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
     --radius-lg: var(--radius);
-    --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: var(--radius);
+    --radius-sm: var(--radius);
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -59,77 +66,81 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* ── Terminal palette (named tokens for the hero screens) ── */
+    --color-ink-950: #0c0a06; /* deepest — landing, sidebar, popovers */
+    --color-ink-900: #14110c; /* main app background / panels / cards */
+    --color-ink-800: #1f1a10; /* active / selected / hover row */
+    --color-line: #2a2418; /* hairline borders + dividers */
+
+    --color-fg: #e8e0cf; /* primary text */
+    --color-fg-bright: #f2ead9; /* headings / emphasis */
+    --color-dim: #8a8172; /* secondary text, metadata */
+    --color-mute: #6b6353; /* eyebrow labels */
+    --color-faint: #4f4838; /* timestamps, faint dividers */
+    --color-ghost: #3f382c; /* barely-there footer text */
+
+    --color-amber: #e5a23d; /* primary accent + CTAs + channel name */
+    --color-green: #7fae5f; /* online / cursor / success */
+
+    --color-user-violet: #c98bd1;
+    --color-user-blue: #5f9edb;
+    --color-user-clay: #dba15f;
+
+    --animate-blink: blink 1.1s steps(1) infinite;
 }
 
-:root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+/* ── Cursor blink (hard on/off) ── */
+@keyframes blink {
+    0%,
+    50% {
+        opacity: 1;
+    }
+    50.01%,
+    100% {
+        opacity: 0;
+    }
 }
 
+/*
+ | Dark-only: :root and .dark resolve to the same terminal palette, so the app
+ | renders the terminal theme regardless of the stored appearance preference.
+ */
+:root,
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --background: #14110c;
+    --foreground: #e8e0cf;
+    --card: #14110c;
+    --card-foreground: #e8e0cf;
+    --popover: #0c0a06;
+    --popover-foreground: #e8e0cf;
+    --primary: #e5a23d;
+    --primary-foreground: #0c0a06;
+    --secondary: #1f1a10;
+    --secondary-foreground: #e8e0cf;
+    --muted: #1f1a10;
+    --muted-foreground: #8a8172;
+    --accent: #1f1a10;
+    --accent-foreground: #f2ead9;
+    --destructive: #d97a4a;
+    --destructive-foreground: #0c0a06;
+    --border: #2a2418;
+    --input: #2a2418;
+    --ring: #e5a23d;
+    --chart-1: #e5a23d;
+    --chart-2: #7fae5f;
+    --chart-3: #5f9edb;
+    --chart-4: #c98bd1;
+    --chart-5: #dba15f;
+    --radius: 0px;
+    --sidebar: #0c0a06;
+    --sidebar-foreground: #8a8172;
+    --sidebar-primary: #e5a23d;
+    --sidebar-primary-foreground: #0c0a06;
+    --sidebar-accent: #1f1a10;
+    --sidebar-accent-foreground: #e8e0cf;
+    --sidebar-border: #2a2418;
+    --sidebar-ring: #e5a23d;
 }
 
 @layer base {
@@ -139,5 +150,7 @@
 
     body {
         @apply bg-background text-foreground;
+        font-family: var(--font-mono);
+        -webkit-font-smoothing: antialiased;
     }
 }

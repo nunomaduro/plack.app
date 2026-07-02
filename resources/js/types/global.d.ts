@@ -1,3 +1,4 @@
+import type { PendingInvitation } from '@/components/pending-invitations';
 import type { Auth } from '@/types/auth';
 import type { FlashToast } from '@/types/ui';
 
@@ -9,6 +10,7 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            pendingInvitations: PendingInvitation[];
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

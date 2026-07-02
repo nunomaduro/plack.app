@@ -2,42 +2,58 @@
 
 declare(strict_types=1);
 
+use App\Models\Channel;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceInvitation;
 use Inertia\Support\SessionKey;
 use Inertia\Testing\AssertableInertia as Assert;
 
-it('splits owned, member, and pending workspaces', function (): void {
+it('redirects to the first workspace when the user owns one', function (): void {
     $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
 
-    Workspace::factory()->count(2)->for($user, 'owner')->create();
+    $this->actingAs($user)->get('workspaces')
+        ->assertRedirectToRoute('workspace.show', $workspace);
+});
 
-    $memberWorkspace = Workspace::factory()->create();
-    $memberWorkspace->members()->attach($user);
+it('redirects to an invited workspace when the user owns none', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->create();
+    $workspace->members()->attach($user);
 
-    $pending = WorkspaceInvitation::factory()->create(['email' => $user->email]);
-    WorkspaceInvitation::factory()->expired()->create(['email' => $user->email]);
+    $this->actingAs($user)->get('workspaces')
+        ->assertRedirectToRoute('workspace.show', $workspace);
+});
+
+it('shows an empty state when the user has no workspaces', function (): void {
+    $user = User::factory()->create();
 
     $this->actingAs($user)->get('workspaces')
         ->assertStatus(200)
         ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('workspace/list')
-            ->has('ownedWorkspaces.data', 2)
-            ->has('memberWorkspaces', 1)
-            ->has('pendingInvitations', 1)
-            ->where('pendingInvitations.0.code', $pending->code)
+            ->component('workspace/empty')
         );
+});
+
+it('redirects a workspace to its first channel', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+    $channel = Channel::factory()->for($workspace)->create();
+
+    $this->actingAs($user)->get(route('workspace.show', $workspace))
+        ->assertRedirectToRoute('channel.show', [$workspace, $channel]);
 });
 
 it('shows the workspace settings page', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['name' => 'Hashane']);
+    Channel::factory()->for($workspace)->create();
 
     $workspace->members()->attach(User::factory()->create());
     WorkspaceInvitation::factory()->for($workspace)->create(['email' => 'pending@example.com']);
 
-    $this->actingAs($user)->get(route('workspace.show', $workspace))
+    $this->actingAs($user)->get(route('workspace.settings', $workspace))
         ->assertStatus(200)
         ->assertInertia(fn (Assert $page): Assert => $page
             ->component('workspace/settings')
@@ -47,6 +63,15 @@ it('shows the workspace settings page', function (): void {
             ->has('members', 1)
             ->has('invitations', 1)
         );
+});
+
+it('does not let a non-owner open the workspace settings page', function (): void {
+    $member = User::factory()->create();
+    $workspace = Workspace::factory()->create();
+    $workspace->members()->attach($member);
+
+    $this->actingAs($member)->get(route('workspace.settings', $workspace))
+        ->assertNotFound();
 });
 
 it('can create workspace', function (): void {

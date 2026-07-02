@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Channel;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceInvitation;
@@ -12,7 +13,7 @@ it('can invite a member', function (): void {
 
     $this->actingAs($user);
 
-    $page = visit(route('workspace.show', $workspace));
+    $page = visit(route('workspace.settings', $workspace));
 
     $page->click('@invite-member-trigger')
         ->fill('email', 'teammate@example.com')
@@ -25,6 +26,7 @@ it('can invite a member', function (): void {
 it('can accept a workspace invitation', function (): void {
     $inviter = User::factory()->create();
     $workspace = Workspace::factory()->for($inviter, 'owner')->create(['slug' => 'acme']);
+    Channel::factory()->for($workspace)->create();
 
     $user = User::factory()->create();
     WorkspaceInvitation::factory()->for($workspace)->create(['email' => $user->email]);

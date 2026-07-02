@@ -7,6 +7,7 @@ namespace App\Http\Requests;
 use App\Models\Workspace;
 use Illuminate\Container\Attributes\RouteParameter;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final class DeleteChannelRequest extends FormRequest
@@ -22,6 +23,22 @@ final class DeleteChannelRequest extends FormRequest
     public function rules(): array
     {
         return [];
+    }
+
+    /**
+     * A workspace must always keep at least one channel, so the last one
+     * cannot be deleted.
+     */
+    protected function withValidator(Validator $validator): void
+    {
+        $workspace = $this->route('workspace');
+        assert($workspace instanceof Workspace);
+
+        $validator->after(function (Validator $validator) use ($workspace): void {
+            if ($workspace->channels()->count() <= 1) {
+                $validator->errors()->add('channel', __('A workspace must keep at least one channel.'));
+            }
+        });
     }
 
     protected function failedAuthorization(): void

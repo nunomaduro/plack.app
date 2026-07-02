@@ -1,5 +1,4 @@
 import { Link } from '@inertiajs/react';
-import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
 
@@ -9,29 +8,36 @@ export default function AuthSimpleLayout({
     description,
 }: AuthLayoutProps) {
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-            <div className="w-full max-w-sm">
-                <div className="flex flex-col gap-8">
-                    <div className="flex flex-col items-center gap-4">
-                        <Link
-                            href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
-                        >
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" />
-                            </div>
-                            <span className="sr-only">{title}</span>
-                        </Link>
+        <div className="relative min-h-screen overflow-hidden bg-ink-950 font-mono text-fg">
+            {/* faint warm center glow */}
+            <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                    background:
+                        'radial-gradient(58% 46% at 50% 44%, rgba(229,162,61,.06), transparent 72%)',
+                }}
+            />
 
-                        <div className="space-y-2 text-center">
-                            <h1 className="text-xl font-medium">{title}</h1>
-                            <p className="text-center text-sm text-muted-foreground">
-                                {description}
-                            </p>
-                        </div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-10">
+                <div className="mb-[34px] text-center">
+                    <Link
+                        href={home()}
+                        className="inline-flex items-center text-[27px] font-semibold tracking-[.01em] text-amber"
+                    >
+                        plack
+                        <span className="ml-[7px] inline-block h-[22px] w-2 animate-blink bg-green" />
+                    </Link>
+                    <div className="mt-5 text-[9px] tracking-[.32em] text-mute uppercase">
+                        {title}
                     </div>
-                    {children}
+                    {description && (
+                        <div className="mt-[9px] max-w-[340px] text-[13px] tracking-[.01em] text-dim">
+                            {description}
+                        </div>
+                    )}
                 </div>
+
+                <div className="w-[340px]">{children}</div>
             </div>
         </div>
     );

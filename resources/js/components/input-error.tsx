@@ -10,7 +10,7 @@ export default function InputError({
         <p
             data-test="input-error"
             {...props}
-            className={cn('text-sm text-red-600 dark:text-red-400', className)}
+            className={cn('text-[11px] text-[#d97a4a]', className)}
         >
             {message}
         </p>

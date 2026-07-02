@@ -1,5 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import WorkspaceInvitationController from '@/actions/App/Http/Controllers/WorkspaceInvitationController';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,12 +12,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 type Invitation = {
     code: string;
@@ -30,26 +25,20 @@ export default function CancelInvitationDialog({
     workspaceSlug: string;
     invitation: Invitation;
 }) {
+    const [open, setOpen] = useState(false);
+
     return (
-        <Dialog>
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <DialogTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                aria-label="Cancel invitation"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </DialogTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Cancel invitation</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Cancel invitation"
+                    data-test="cancel-invitation-trigger"
+                >
+                    <Trash2 />
+                </Button>
+            </DialogTrigger>
             <DialogContent>
                 <DialogTitle>Cancel invitation?</DialogTitle>
                 <DialogDescription>
@@ -63,6 +52,7 @@ export default function CancelInvitationDialog({
                         invitation.code,
                     ])}
                     options={{ preserveScroll: true }}
+                    onSuccess={() => setOpen(false)}
                     className="space-y-6"
                 >
                     {({ processing }) => (
@@ -77,6 +67,7 @@ export default function CancelInvitationDialog({
                                 type="submit"
                                 variant="destructive"
                                 disabled={processing}
+                                data-test="cancel-invitation-submit"
                             >
                                 Cancel invitation
                             </Button>

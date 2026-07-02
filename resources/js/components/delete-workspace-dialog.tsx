@@ -1,5 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import WorkspaceController from '@/actions/App/Http/Controllers/WorkspaceController';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,12 +12,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 type Workspace = {
     id: string;
@@ -29,26 +24,21 @@ export default function DeleteWorkspaceDialog({
 }: {
     workspace: Workspace;
 }) {
+    const [open, setOpen] = useState(false);
+
     return (
-        <Dialog>
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <DialogTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                aria-label="Delete workspace"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </DialogTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Delete workspace</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    variant="destructive"
+                    size="sm"
+                    aria-label="Delete workspace"
+                    data-test="delete-workspace-trigger"
+                >
+                    <Trash2 />
+                    Delete workspace
+                </Button>
+            </DialogTrigger>
             <DialogContent>
                 <DialogTitle>Delete “{workspace.name}”?</DialogTitle>
                 <DialogDescription>
@@ -60,6 +50,7 @@ export default function DeleteWorkspaceDialog({
                 <Form
                     {...WorkspaceController.destroy.form(workspace.slug)}
                     options={{ preserveScroll: true }}
+                    onSuccess={() => setOpen(false)}
                     className="space-y-6"
                 >
                     {({ processing }) => (
@@ -72,6 +63,7 @@ export default function DeleteWorkspaceDialog({
                                 type="submit"
                                 variant="destructive"
                                 disabled={processing}
+                                data-test="delete-workspace-submit"
                             >
                                 Delete workspace
                             </Button>

@@ -26,3 +26,5 @@ Homestead.yaml
 /.vscode
 /.zed
 /tmp/
+.playwright-mcp
+design_handoff_plack_ui_napoli

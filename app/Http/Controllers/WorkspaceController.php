@@ -12,9 +12,6 @@ use App\Http\Requests\DeleteWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Models\WorkspaceInvitation;
-use App\Queries\ListOwnedWorkspaces;
-use App\Queries\ListPendingWorkspaceInvitations;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -22,31 +19,23 @@ use Inertia\Response;
 
 final readonly class WorkspaceController
 {
-    public function index(
-        #[CurrentUser] User $user,
-        ListOwnedWorkspaces $listOwnedWorkspaces,
-        ListPendingWorkspaceInvitations $listPendingWorkspaceInvitations,
-    ): Response {
-        return Inertia::render('workspace/list', [
-            'ownedWorkspaces' => $listOwnedWorkspaces->get($user),
-            'memberWorkspaces' => $user->memberWorkspaces()->get(['workspaces.id', 'workspaces.name', 'workspaces.slug']),
-            'pendingInvitations' => $listPendingWorkspaceInvitations->get($user),
-        ]);
+    public function index(#[CurrentUser] User $user): RedirectResponse|Response
+    {
+        $workspace = $user->ownedWorkspaces()->oldest()->first()
+            ?? $user->memberWorkspaces()->oldest()->first();
+
+        if ($workspace instanceof Workspace) {
+            return to_route('workspace.show', $workspace);
+        }
+
+        return Inertia::render('workspace/empty');
     }
 
-    public function show(Workspace $workspace): Response
+    public function show(Workspace $workspace): RedirectResponse
     {
-        $workspace->load(['owner', 'members', 'invitations']);
+        $channel = $workspace->channels()->latest()->firstOrFail();
 
-        return Inertia::render('workspace/settings', [
-            'workspace' => $workspace->only('id', 'name', 'slug'),
-            'owner' => $workspace->owner->only('id', 'name', 'email'),
-            'members' => $workspace->members->map->only('id', 'name', 'email')->values(),
-            'invitations' => $workspace->invitations->map(fn (WorkspaceInvitation $invitation): array => [
-                'code' => $invitation->code,
-                'email' => $invitation->email,
-            ])->values(),
-        ]);
+        return to_route('channel.show', [$workspace, $channel]);
     }
 
     public function store(

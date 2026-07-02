@@ -1,5 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import WorkspaceMemberController from '@/actions/App/Http/Controllers/WorkspaceMemberController';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,12 +12,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 type Member = {
     id: string;
@@ -30,26 +25,20 @@ export default function RemoveMemberDialog({
     workspaceSlug: string;
     member: Member;
 }) {
+    const [open, setOpen] = useState(false);
+
     return (
-        <Dialog>
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <DialogTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                aria-label="Remove member"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </DialogTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Remove member</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Remove member"
+                    data-test="remove-member-trigger"
+                >
+                    <Trash2 />
+                </Button>
+            </DialogTrigger>
             <DialogContent>
                 <DialogTitle>Remove {member.name}?</DialogTitle>
                 <DialogDescription>
@@ -63,6 +52,7 @@ export default function RemoveMemberDialog({
                         member.id,
                     ])}
                     options={{ preserveScroll: true }}
+                    onSuccess={() => setOpen(false)}
                     className="space-y-6"
                 >
                     {({ processing }) => (
@@ -75,6 +65,7 @@ export default function RemoveMemberDialog({
                                 type="submit"
                                 variant="destructive"
                                 disabled={processing}
+                                data-test="remove-member-submit"
                             >
                                 Remove member
                             </Button>

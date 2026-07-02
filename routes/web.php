@@ -13,10 +13,10 @@ use App\Http\Controllers\UserEmailVerificationNotificationController;
 use App\Http\Controllers\UserPasswordController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserTwoFactorAuthenticationController;
-use App\Http\Controllers\WorkspaceChannelController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceInvitationController;
 use App\Http\Controllers\WorkspaceMemberController;
+use App\Http\Controllers\WorkspaceSettingsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,14 +29,21 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('workspaces', [WorkspaceController::class, 'store'])
         ->name('workspace.store');
 
+    // Members & owners may enter a workspace and browse its channels...
     Route::middleware(['workspace.member'])->group(function (): void {
-        Route::get('workspaces/{workspace}/channels', WorkspaceChannelController::class)
-            ->name('workspace.channels');
-    });
-
-    Route::middleware(['workspace.access'])->group(function (): void {
         Route::get('workspaces/{workspace}', [WorkspaceController::class, 'show'])
             ->name('workspace.show');
+
+        Route::scopeBindings()->group(function (): void {
+            Route::get('workspaces/{workspace}/channels/{channel}', [ChannelController::class, 'show'])
+                ->name('channel.show');
+        });
+    });
+
+    // Only owners may manage a workspace, its channels, members and invitations...
+    Route::middleware(['workspace.access'])->group(function (): void {
+        Route::get('workspaces/{workspace}/settings', WorkspaceSettingsController::class)
+            ->name('workspace.settings');
 
         Route::patch('workspaces/{workspace}', [WorkspaceController::class, 'update'])
             ->name('workspace.update');
@@ -59,9 +66,6 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
             ->name('channel.store');
 
         Route::scopeBindings()->group(function (): void {
-            Route::get('workspaces/{workspace}/channels/{channel}', [ChannelController::class, 'show'])
-                ->name('channel.show');
-
             Route::patch('workspaces/{workspace}/channels/{channel}', [ChannelController::class, 'update'])
                 ->name('channel.update');
 

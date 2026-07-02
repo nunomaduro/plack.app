@@ -9,11 +9,11 @@ use App\Models\Workspace;
 it('can create a channel', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['slug' => 'acme']);
-    Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
+    $channel = Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
 
     $this->actingAs($user);
 
-    $page = visit(route('workspace.channels', $workspace));
+    $page = visit(route('channel.show', [$workspace, $channel]));
 
     $page->click('@create-channel-trigger')
         ->fill('name', 'Announcements')
@@ -26,11 +26,11 @@ it('can create a channel', function (): void {
 it('validates the channel name when creating', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->for($user, 'owner')->create(['slug' => 'acme']);
-    Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
+    $channel = Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
 
     $this->actingAs($user);
 
-    $page = visit(route('workspace.channels', $workspace));
+    $page = visit(route('channel.show', [$workspace, $channel]));
 
     $page->click('@create-channel-trigger')
         ->fill('name', 'ab')

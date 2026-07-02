@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Channel;
 use App\Models\User;
 use App\Models\Workspace;
 
@@ -9,12 +10,13 @@ it('can access the workspace', function (): void {
     $user = User::factory()->create();
 
     $workspace = Workspace::factory()->for($user, 'owner')->create();
+    $channel = Channel::factory()->for($workspace)->create();
 
     $response = $this->actingAs($user)
         ->get(route('workspace.show', $workspace));
 
     $response
-        ->assertStatus(200);
+        ->assertRedirectToRoute('channel.show', [$workspace, $channel]);
 });
 
 it('can not access workspace if not owner', function (): void {

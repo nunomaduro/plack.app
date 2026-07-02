@@ -11,17 +11,24 @@ use App\Http\Requests\CreateChannelRequest;
 use App\Http\Requests\DeleteChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
 use App\Models\Channel;
+use App\Models\User;
 use App\Models\Workspace;
+use App\Queries\ListWorkspace;
+use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final readonly class ChannelController
 {
-    public function show(Workspace $workspace, Channel $channel): Response
+    public function show(#[CurrentUser] User $user, Workspace $workspace, Channel $channel, ListWorkspace $listWorkspace): Response
     {
         return Inertia::render('channel/show', [
-            'channel' => $channel->load('workspace'),
+            'workspace' => $workspace->load(['channels' => fn (HasMany $channels) => $channels->latest()]),
+            'channel' => $channel,
+            'workspaces' => $listWorkspace->get($user),
+            'canManage' => $user->is($workspace->owner),
         ]);
     }
 
@@ -32,14 +39,14 @@ final readonly class ChannelController
     ): RedirectResponse {
         $name = $request->string('name')->value();
 
-        $createChannel->handle($workspace, $name);
+        $channel = $createChannel->handle($workspace, $name);
 
         Inertia::flash('toast', [
             'type' => 'success',
             'message' => __('Channel created.'),
         ]);
 
-        return back();
+        return to_route('channel.show', [$workspace, $channel]);
     }
 
     public function update(
@@ -73,6 +80,6 @@ final readonly class ChannelController
             'message' => __('Channel deleted.'),
         ]);
 
-        return back();
+        return to_route('workspace.show', $workspace);
     }
 }

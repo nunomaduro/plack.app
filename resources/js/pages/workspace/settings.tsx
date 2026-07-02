@@ -1,20 +1,26 @@
 import { Form, Head } from '@inertiajs/react';
-import { Mail } from 'lucide-react';
-import WorkspaceController from '@/actions/App/Http/Controllers/WorkspaceController';
 import CancelInvitationDialog from '@/components/cancel-invitation-dialog';
 import DeleteWorkspaceDialog from '@/components/delete-workspace-dialog';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import InviteMemberDialog from '@/components/invite-member-dialog';
 import RemoveMemberDialog from '@/components/remove-member-dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/app-layout';
-import { index, show } from '@/routes/workspace';
-import type { BreadcrumbItem } from '@/types';
+import WorkspaceLayout from '@/layouts/workspace-layout';
+import { update } from '@/routes/workspace';
+
+type Channel = {
+    id: string;
+    name: string;
+    slug: string;
+};
 
 type Workspace = {
+    id: string;
+    name: string;
+    slug: string;
+    channels: Channel[];
+};
+
+type WorkspaceSummary = {
     id: string;
     name: string;
     slug: string;
@@ -31,184 +37,207 @@ type Invitation = {
     email: string;
 };
 
+const fieldWrap =
+    'flex h-[46px] items-center gap-[9px] border border-line bg-ink-950 px-[14px] transition-colors focus-within:border-amber';
+const inputClass =
+    'min-w-0 flex-1 bg-transparent text-[13.5px] text-fg caret-green outline-none placeholder:text-faint';
+const labelClass = 'mb-2 text-[9px] uppercase tracking-[.22em] text-mute';
+const sectionLabel =
+    'mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase';
+
 export default function WorkspaceSettings({
     workspace,
     owner,
     members,
     invitations,
+    workspaces,
 }: {
     workspace: Workspace;
     owner: Person;
     members: Person[];
     invitations: Invitation[];
+    workspaces?: WorkspaceSummary[];
 }) {
-    const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Workspaces',
-            href: index(),
-        },
-        {
-            title: workspace.name,
-            href: show(workspace.slug),
-        },
-    ];
-
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={workspace.name} />
+        <WorkspaceLayout
+            workspace={workspace}
+            workspaces={workspaces}
+            canManage
+        >
+            <Head title={`${workspace.name} — settings`} />
 
-            <div className="flex h-full flex-1 flex-col gap-8 overflow-x-auto rounded-xl p-4">
-                <section className="flex flex-col gap-4">
-                    <Heading
-                        variant="small"
-                        title="Workspace details"
-                        description="Update the name and slug of your workspace."
-                    />
+            {/* header */}
+            <header className="flex items-center justify-between gap-3 border-b border-line px-6 py-[15px]">
+                <div className="flex items-baseline gap-3">
+                    <span className="text-[15px] font-semibold text-amber">
+                        settings
+                    </span>
+                    <span className="text-[11px] text-mute">
+                        {workspace.name}
+                    </span>
+                </div>
+            </header>
 
-                    <Form
-                        {...WorkspaceController.update.form(workspace.slug)}
-                        options={{ preserveScroll: true }}
-                        className="flex max-w-md flex-col gap-4"
-                    >
-                        {({ processing, errors }) => (
-                            <>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name">Name</Label>
+            <div className="flex-1 overflow-y-auto px-6 py-7">
+                <div className="mx-auto flex max-w-[560px] flex-col gap-10">
+                    {/* workspace details */}
+                    <section>
+                        <div className={sectionLabel}>workspace details</div>
 
-                                    <Input
-                                        id="name"
-                                        name="name"
-                                        defaultValue={workspace.name}
-                                        autoComplete="off"
-                                    />
-
-                                    <InputError message={errors.name} />
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="slug">Slug</Label>
-
-                                    <Input
-                                        id="slug"
-                                        name="slug"
-                                        defaultValue={workspace.slug}
-                                        autoComplete="off"
-                                    />
-
-                                    <InputError message={errors.slug} />
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    className="self-start"
-                                    disabled={processing}
-                                    data-test="update-workspace-submit"
-                                >
-                                    Save
-                                </Button>
-                            </>
-                        )}
-                    </Form>
-                </section>
-
-                <section className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between">
-                        <Heading
-                            variant="small"
-                            title="Members"
-                            description="People with access to this workspace."
-                        />
-
-                        <InviteMemberDialog workspaceSlug={workspace.slug} />
-                    </div>
-
-                    <ul className="flex flex-col gap-2">
-                        <li className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border">
-                            <div className="flex flex-col">
-                                <span className="font-medium">
-                                    {owner.name}
-                                </span>
-                                <span className="text-sm text-muted-foreground">
-                                    {owner.email}
-                                </span>
-                            </div>
-
-                            <span className="text-sm text-muted-foreground">
-                                Owner
-                            </span>
-                        </li>
-
-                        {members.map((member) => (
-                            <li
-                                key={member.id}
-                                className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
-                            >
-                                <div className="flex flex-col">
-                                    <span className="font-medium">
-                                        {member.name}
-                                    </span>
-                                    <span className="text-sm text-muted-foreground">
-                                        {member.email}
-                                    </span>
-                                </div>
-
-                                <RemoveMemberDialog
-                                    workspaceSlug={workspace.slug}
-                                    member={member}
-                                />
-                            </li>
-                        ))}
-                    </ul>
-                </section>
-
-                {invitations.length > 0 && (
-                    <section className="flex flex-col gap-4">
-                        <Heading
-                            variant="small"
-                            title="Pending invitations"
-                            description="Invitations that haven't been accepted yet."
-                        />
-
-                        <ul className="flex flex-col gap-2">
-                            {invitations.map((invitation) => (
-                                <li
-                                    key={invitation.code}
-                                    className="flex items-center justify-between rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                                            <Mail className="h-5 w-5 text-muted-foreground" />
+                        <Form
+                            {...update.form(workspace.slug)}
+                            options={{ preserveScroll: true }}
+                            className="flex flex-col gap-4"
+                        >
+                            {({ processing, errors }) => (
+                                <>
+                                    <div>
+                                        <div className={labelClass}>name</div>
+                                        <div className={fieldWrap}>
+                                            <span className="text-[13px] text-green">
+                                                &gt;
+                                            </span>
+                                            <input
+                                                name="name"
+                                                defaultValue={workspace.name}
+                                                autoComplete="off"
+                                                className={inputClass}
+                                            />
                                         </div>
+                                        <InputError
+                                            message={errors.name}
+                                            className="mt-1.5"
+                                        />
+                                    </div>
 
-                                        <span className="text-sm">
-                                            {invitation.email}
+                                    <div>
+                                        <div className={labelClass}>slug</div>
+                                        <div className={fieldWrap}>
+                                            <span className="text-[13px] text-green">
+                                                &gt;
+                                            </span>
+                                            <input
+                                                name="slug"
+                                                defaultValue={workspace.slug}
+                                                autoComplete="off"
+                                                className={inputClass}
+                                            />
+                                        </div>
+                                        <InputError
+                                            message={errors.slug}
+                                            className="mt-1.5"
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        data-test="update-workspace-submit"
+                                        className="flex h-11 items-center justify-center gap-2 self-start border border-amber px-6 text-[13px] font-medium tracking-[.04em] text-amber transition-colors hover:bg-amber hover:text-ink-950 disabled:opacity-60"
+                                    >
+                                        save
+                                    </button>
+                                </>
+                            )}
+                        </Form>
+                    </section>
+
+                    {/* members */}
+                    <section>
+                        <div className="mb-[10px] flex items-center justify-between">
+                            <span className={sectionLabel + ' mb-0'}>
+                                members
+                            </span>
+                            <InviteMemberDialog
+                                workspaceSlug={workspace.slug}
+                            />
+                        </div>
+
+                        <ul className="flex flex-col gap-[2px]">
+                            <li className="flex items-center justify-between border border-line bg-ink-950 px-[14px] py-3">
+                                <div className="flex min-w-0 flex-col">
+                                    <span className="truncate text-[13px] text-fg">
+                                        {owner.name}
+                                    </span>
+                                    <span className="truncate text-[11px] text-mute">
+                                        {owner.email}
+                                    </span>
+                                </div>
+                                <span className="text-[9px] tracking-[.22em] text-amber uppercase">
+                                    owner
+                                </span>
+                            </li>
+
+                            {members.map((member) => (
+                                <li
+                                    key={member.id}
+                                    className="flex items-center justify-between border border-line bg-ink-950 px-[14px] py-3"
+                                >
+                                    <div className="flex min-w-0 flex-col">
+                                        <span className="truncate text-[13px] text-fg">
+                                            {member.name}
+                                        </span>
+                                        <span className="truncate text-[11px] text-mute">
+                                            {member.email}
                                         </span>
                                     </div>
 
-                                    <CancelInvitationDialog
+                                    <RemoveMemberDialog
                                         workspaceSlug={workspace.slug}
-                                        invitation={invitation}
+                                        member={member}
                                     />
                                 </li>
                             ))}
                         </ul>
                     </section>
-                )}
 
-                <section className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between rounded-xl border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
-                        <div className="space-y-0.5 text-red-600 dark:text-red-100">
-                            <p className="font-medium">Delete workspace</p>
-                            <p className="text-sm">
-                                Permanently delete this workspace and all of its
-                                data.
-                            </p>
+                    {/* pending invitations */}
+                    {invitations.length > 0 && (
+                        <section>
+                            <div className={sectionLabel}>
+                                pending invitations
+                            </div>
+
+                            <ul className="flex flex-col gap-[2px]">
+                                {invitations.map((invitation) => (
+                                    <li
+                                        key={invitation.code}
+                                        className="flex items-center justify-between border border-line bg-ink-950 px-[14px] py-3"
+                                    >
+                                        <span className="truncate text-[12.5px] text-dim">
+                                            {invitation.email}
+                                        </span>
+
+                                        <CancelInvitationDialog
+                                            workspaceSlug={workspace.slug}
+                                            invitation={invitation}
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
+
+                    {/* danger zone */}
+                    <section>
+                        <div className={sectionLabel}>danger zone</div>
+
+                        <div className="flex items-center justify-between border border-destructive/40 bg-destructive/5 px-[14px] py-4">
+                            <div>
+                                <p className="text-[13px] text-fg">
+                                    Delete workspace
+                                </p>
+                                <p className="mt-1 text-[11px] text-mute">
+                                    Permanently delete this workspace and all of
+                                    its data.
+                                </p>
+                            </div>
+
+                            <DeleteWorkspaceDialog workspace={workspace} />
                         </div>
-
-                        <DeleteWorkspaceDialog workspace={workspace} />
-                    </div>
-                </section>
+                    </section>
+                </div>
             </div>
-        </AppLayout>
+        </WorkspaceLayout>
     );
 }
