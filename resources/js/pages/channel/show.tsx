@@ -8,6 +8,7 @@ import DeleteChannelDialog from '@/components/delete-channel-dialog';
 import EditChannelDialog from '@/components/edit-channel-dialog';
 import InputError from '@/components/input-error';
 import WorkspaceLayout from '@/layouts/workspace-layout';
+import { renderMarkdown } from '@/lib/markdown';
 import { nickColorFor } from '@/lib/user';
 
 const TYPING_THROTTLE_MS = 2000;
@@ -197,7 +198,9 @@ export default function ChannelShow({
                                 <span className="mx-2 text-faint">
                                     {messageTime(message.createdAt)}
                                 </span>
-                                <span className="text-fg">{message.body}</span>
+                                <span className="text-fg">
+                                    {renderMarkdown(message.body)}
+                                </span>
                             </div>
                         ))
                     )}
