@@ -10,7 +10,7 @@ use App\Models\Workspace;
 final readonly class FindPendingWorkspaceJoin
 {
     /**
-     * @return array{code: string, workspace: array{id: string, name: string}}|null
+     * @return array{code: string, workspace: array{id: string, name: string, memberCount: int}}|null
      */
     public function get(mixed $code): ?array
     {
@@ -29,6 +29,7 @@ final readonly class FindPendingWorkspaceJoin
             'workspace' => [
                 'id' => $workspace->id,
                 'name' => $workspace->name,
+                'memberCount' => $workspace->memberCount(),
             ],
         ];
     }

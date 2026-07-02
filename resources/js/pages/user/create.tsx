@@ -1,12 +1,14 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
+import { memberLabel } from '@/lib/utils';
 import { login } from '@/routes';
 import { store } from '@/routes/register';
 
 type WorkspaceInvitation = {
     code: string;
     workspace: string;
+    memberCount: number;
 };
 
 type WorkspaceJoin = {
@@ -14,6 +16,7 @@ type WorkspaceJoin = {
     workspace: {
         id: string;
         name: string;
+        memberCount: number;
     };
 };
 
@@ -83,6 +86,9 @@ export default function Register({
                         invited to{' '}
                         <span className="font-semibold text-amber">
                             {workspaceInvitation.workspace}
+                        </span>{' '}
+                        <span className="text-mute">
+                            ({memberLabel(workspaceInvitation.memberCount)})
                         </span>
                         . Create your account to accept.
                     </div>
@@ -93,6 +99,9 @@ export default function Register({
                         <span className="text-green">→</span> you're joining{' '}
                         <span className="font-semibold text-amber">
                             {workspaceJoin.workspace.name}
+                        </span>{' '}
+                        <span className="text-mute">
+                            ({memberLabel(workspaceJoin.workspace.memberCount)})
                         </span>
                         . Create your account to continue.
                     </div>

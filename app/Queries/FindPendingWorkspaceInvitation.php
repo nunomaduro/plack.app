@@ -9,7 +9,7 @@ use App\Models\WorkspaceInvitation;
 final readonly class FindPendingWorkspaceInvitation
 {
     /**
-     * @return array{code: string, workspace: string}|null
+     * @return array{code: string, workspace: string, memberCount: int}|null
      */
     public function get(mixed $code): ?array
     {
@@ -30,6 +30,7 @@ final readonly class FindPendingWorkspaceInvitation
         return [
             'code' => $invitation->code,
             'workspace' => $invitation->workspace->name,
+            'memberCount' => $invitation->workspace->memberCount(),
         ];
     }
 }

@@ -28,3 +28,7 @@ Homestead.yaml
 /tmp/
 .playwright-mcp
 design_handoff_plack_ui_napoli
+
+**/caddy
+frankenphp
+frankenphp-worker.php

@@ -31,11 +31,13 @@ it('shows a pending workspace invitation on the login page', function (): void {
         ->assertInertia(fn ($page) => $page
             ->component('session/create')
             ->where('workspaceInvitation.code', $invitation->code)
-            ->where('workspaceInvitation.workspace', $invitation->workspace->name));
+            ->where('workspaceInvitation.workspace', $invitation->workspace->name)
+            ->where('workspaceInvitation.memberCount', 1));
 });
 
 it('shows a pending public workspace join on the login page', function (): void {
     $workspace = Workspace::factory()->public()->create();
+    $workspace->members()->attach(User::factory()->create());
 
     $this->get(route('login', ['join' => $workspace->join_code]))
         ->assertOk()
@@ -43,7 +45,8 @@ it('shows a pending public workspace join on the login page', function (): void 
             ->component('session/create')
             ->where('workspaceJoin.code', $workspace->join_code)
             ->where('workspaceJoin.workspace.id', $workspace->id)
-            ->where('workspaceJoin.workspace.name', $workspace->name));
+            ->where('workspaceJoin.workspace.name', $workspace->name)
+            ->where('workspaceJoin.workspace.memberCount', 2));
 });
 
 it('may create a session', function (): void {

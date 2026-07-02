@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Models\User;
 use App\Models\Workspace;
 use App\Queries\FindPendingWorkspaceJoin;
 
 it('returns public workspace details for a valid join code', function (): void {
     $workspace = Workspace::factory()->public()->create();
+    $workspace->members()->attach(User::factory()->create());
 
     $result = resolve(FindPendingWorkspaceJoin::class)->get($workspace->join_code);
 
@@ -15,6 +17,7 @@ it('returns public workspace details for a valid join code', function (): void {
         'workspace' => [
             'id' => $workspace->id,
             'name' => $workspace->name,
+            'memberCount' => 2,
         ],
     ]);
 });

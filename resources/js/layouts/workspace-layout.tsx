@@ -1,4 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
+import { useEcho } from '@laravel/echo-react';
 import { Menu } from 'lucide-react';
 import {
     createContext,
@@ -18,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { UserMenuContent } from '@/components/user-menu-content';
+import { playMessageChime } from '@/lib/sound';
 import { nickColorFor, handleFor, initialsFor } from '@/lib/user';
 import { show as channelShow } from '@/routes/channel';
 import {
@@ -29,6 +31,8 @@ type Channel = {
     id: string;
     name: string;
     slug: string;
+    unread_count: number;
+    muted: boolean;
 };
 
 type WorkspaceSummary = {
@@ -153,6 +157,7 @@ function SidebarContent({
                 <div className="flex flex-col gap-[2px] text-[12.5px]">
                     {workspace.channels.map((channel) => {
                         const active = channel.slug === activeChannelSlug;
+                        const unread = !active && channel.unread_count > 0;
 
                         return (
                             <Link
@@ -164,11 +169,27 @@ function SidebarContent({
                                 data-test={`${variant}-channel-${channel.slug}`}
                                 className={
                                     active
-                                        ? 'border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
-                                        : 'px-2 py-[6px] text-dim transition-colors hover:text-fg'
+                                        ? 'flex items-center gap-2 border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
+                                        : 'flex items-center gap-2 px-2 py-[6px] text-dim transition-colors hover:text-fg'
                                 }
                             >
-                                # {channel.name}
+                                <span
+                                    className={
+                                        unread
+                                            ? 'flex-1 truncate font-semibold text-fg'
+                                            : 'flex-1 truncate'
+                                    }
+                                >
+                                    # {channel.name}
+                                </span>
+
+                                {unread && (
+                                    <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-green px-1 text-[9px] font-semibold text-ink-900">
+                                        {channel.unread_count > 99
+                                            ? '99+'
+                                            : channel.unread_count}
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}
@@ -219,6 +240,9 @@ export default function WorkspaceLayout({
     canManage = false,
     children,
 }: WorkspaceLayoutProps) {
+    const { auth } = usePage().props;
+    const user = auth.user;
+
     const [createOpen, setCreateOpen] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -233,6 +257,35 @@ export default function WorkspaceLayout({
         canManage,
         onCreateWorkspace: () => setCreateOpen(true),
     };
+
+    const activeChannelId = workspace.channels.find(
+        (c) => c.slug === activeChannelSlug,
+    )?.id;
+
+    // Ping when a message lands somewhere the user isn't looking — a channel
+    // they aren't viewing, or any channel while the window isn't focused.
+    useEcho<{ id: string; channel_id: string; user_id: string }>(
+        `workspaces.${workspace.id}`,
+        '.MessageCreated',
+        ({ channel_id, user_id }) => {
+            if (String(user_id) === String(user.id)) {
+                return;
+            }
+
+            const target = workspace.channels.find((c) => c.id === channel_id);
+
+            if (target?.muted) {
+                return;
+            }
+
+            const isActive =
+                channel_id === activeChannelId && document.hasFocus();
+
+            if (!isActive) {
+                playMessageChime();
+            }
+        },
+    );
 
     return (
         <MobileSidebarContext.Provider value={setMobileOpen}>

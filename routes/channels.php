@@ -21,7 +21,7 @@ Broadcast::channel('workspaces.{workspaceId}', function (User $user, string $wor
         || $workspace->members()->whereKey($user->id)->exists();
 });
 
-Broadcast::channel('channels.{channelId}', function (User $user, string $channelId): bool {
+Broadcast::channel('channels.{channelId}', function (User $user, string $channelId): array|false {
     /** @var Channel|null $channel */
     $channel = Channel::query()->with('workspace')->find($channelId);
 
@@ -31,6 +31,9 @@ Broadcast::channel('channels.{channelId}', function (User $user, string $channel
 
     $workspace = $channel->workspace;
 
-    return $workspace->user_id === $user->id
-        || $workspace->members()->whereKey($user->id)->exists();
+    if ($workspace->user_id !== $user->id && ! $workspace->members()->whereKey($user->id)->exists()) {
+        return false;
+    }
+
+    return ['id' => $user->id, 'name' => $user->name];
 });

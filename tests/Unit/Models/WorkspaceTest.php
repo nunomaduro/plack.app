@@ -48,3 +48,13 @@ it('has members and invitations', function (): void {
     expect($workspace->members->pluck('id')->all())->toBe([$member->id])
         ->and($workspace->invitations)->toHaveCount(1);
 });
+
+it('counts members including the owner', function (): void {
+    $workspace = Workspace::factory()->create();
+
+    expect($workspace->memberCount())->toBe(1);
+
+    $workspace->members()->attach(User::factory()->count(2)->create());
+
+    expect($workspace->memberCount())->toBe(3);
+});

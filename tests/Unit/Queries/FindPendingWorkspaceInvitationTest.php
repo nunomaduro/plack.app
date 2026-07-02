@@ -13,6 +13,7 @@ it('returns the invitation details for a valid code', function (): void {
     expect($result)->toBe([
         'code' => $invitation->code,
         'workspace' => $invitation->workspace->name,
+        'memberCount' => 1,
     ]);
 });
 
