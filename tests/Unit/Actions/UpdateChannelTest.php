@@ -3,20 +3,22 @@
 declare(strict_types=1);
 
 use App\Actions\UpdateChannel;
+use App\Enums\ChannelVisibility;
 use App\Events\ChannelUpdated;
 use App\Models\Channel;
 use Illuminate\Support\Facades\Event;
 
-it('may update a channel name', function (): void {
-    $channel = Channel::factory()->create([
+it('may update a channel name and visibility', function (): void {
+    $channel = Channel::factory()->public()->create([
         'name' => 'general',
     ]);
 
     $action = resolve(UpdateChannel::class);
 
-    $action->handle($channel, 'random');
+    $action->handle($channel, 'random', ChannelVisibility::Private);
 
-    expect($channel->refresh()->name)->toBe('random');
+    expect($channel->refresh()->name)->toBe('random')
+        ->and($channel->visibility)->toBe(ChannelVisibility::Private);
 });
 
 it('broadcasts a channel updated event on the workspace', function (): void {
@@ -26,7 +28,7 @@ it('broadcasts a channel updated event on the workspace', function (): void {
         'name' => 'general',
     ]);
 
-    resolve(UpdateChannel::class)->handle($channel, 'random');
+    resolve(UpdateChannel::class)->handle($channel, 'random', ChannelVisibility::Private);
 
     Event::assertDispatched(
         ChannelUpdated::class,

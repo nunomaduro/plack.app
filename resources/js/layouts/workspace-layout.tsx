@@ -34,6 +34,7 @@ type Channel = {
     id: string;
     name: string;
     slug: string;
+    visibility: string;
     unread_count: number;
     muted: boolean;
 };

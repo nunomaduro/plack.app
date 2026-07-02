@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use App\Actions\CreateChannel;
+use App\Enums\ChannelMemberRole;
 use App\Enums\ChannelVisibility;
 use App\Events\ChannelCreated;
 use App\Models\Channel;
+use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\Event;
 
@@ -51,6 +53,16 @@ it('may create channels', function (): void {
         ->toBeInstanceOf(Channel::class)
         ->and($channel->workspace->id)->toBe($workspace->id)
         ->and($channel->name)->toBe('general');
+});
+
+it('adds the workspace owner as a channel admin', function (): void {
+    $owner = User::factory()->create();
+    $workspace = Workspace::factory()->for($owner, 'owner')->create();
+
+    $channel = resolve(CreateChannel::class)->handle($workspace, 'general');
+
+    expect($channel->members()->whereKey($owner->id)->first()?->pivot->role)
+        ->toBe(ChannelMemberRole::Admin->value);
 });
 
 it('broadcasts a channel created event on the workspace', function (): void {

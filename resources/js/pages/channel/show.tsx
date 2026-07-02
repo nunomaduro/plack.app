@@ -25,6 +25,7 @@ type Channel = {
     id: string;
     name: string;
     slug: string;
+    visibility: string;
 };
 
 type SidebarChannel = Channel & {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\ChannelVisibility;
 use App\Models\Channel;
-use App\Models\Workspace;
 use Illuminate\Container\Attributes\RouteParameter;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,9 +17,11 @@ final class UpdateChannelRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(#[RouteParameter('workspace')] Workspace $workspace): bool
+    public function authorize(#[RouteParameter('channel')] Channel $channel): bool
     {
-        return $workspace->user_id === $this->user()?->id;
+        $user = $this->user();
+
+        return $user !== null && $user->can('update', $channel);
     }
 
     /**
@@ -39,6 +41,10 @@ final class UpdateChannelRequest extends FormRequest
                 Rule::unique(Channel::class, 'name')
                     ->where('workspace_id', $channel->workspace_id)
                     ->ignore($channel->id),
+            ],
+            'visibility' => [
+                'required',
+                Rule::enum(ChannelVisibility::class),
             ],
         ];
     }

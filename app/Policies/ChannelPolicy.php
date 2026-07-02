@@ -16,6 +16,11 @@ final readonly class ChannelPolicy
         private IsChannelAdmin $isChannelAdmin,
     ) {}
 
+    public function update(User $user, Channel $channel): bool
+    {
+        return $this->isChannelAdmin->get($user, $channel);
+    }
+
     /**
      * Determine whether the user can view the channel.
      */

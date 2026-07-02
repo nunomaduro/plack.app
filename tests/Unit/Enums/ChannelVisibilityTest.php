@@ -21,3 +21,10 @@ it('may check if channel is private', function (): void {
         ->and($privateChannel->isPublic())->toBeFalse();
 
 });
+
+it('may list its options', function (): void {
+    expect(ChannelVisibility::options())->toBe([
+        ['public' => 'Public'],
+        ['private' => 'Private'],
+    ]);
+});
