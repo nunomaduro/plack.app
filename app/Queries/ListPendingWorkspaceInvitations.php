@@ -13,7 +13,7 @@ final readonly class ListPendingWorkspaceInvitations
     /**
      * @return Collection<int, array{
      *     code: string,
-     *     workspace: array{id: string, name: string},
+     *     workspace: array{id: string, name: string, memberCount: int},
      *     invitedBy: string,
      * }>
      */
@@ -30,6 +30,7 @@ final readonly class ListPendingWorkspaceInvitations
                 'workspace' => [
                     'id' => $invitation->workspace->id,
                     'name' => $invitation->workspace->name,
+                    'memberCount' => $invitation->workspace->memberCount(),
                 ],
                 'invitedBy' => $invitation->inviter->name,
             ]);
