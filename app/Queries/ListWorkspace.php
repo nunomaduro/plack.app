@@ -17,6 +17,7 @@ final readonly class ListWorkspace
     {
         return $user
             ->workspaces()
+            ->latest()
             ->paginate(10);
     }
 }
