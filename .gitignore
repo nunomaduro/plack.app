@@ -9,6 +9,7 @@
 /resources/js/wayfinder
 /storage/*.key
 /storage/pail
+/tests/Browser/Screenshots
 /vendor
 .DS_Store
 .env
