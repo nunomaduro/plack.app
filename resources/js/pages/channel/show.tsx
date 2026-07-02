@@ -1,6 +1,7 @@
-import { Form, Head, router } from '@inertiajs/react';
-import { useEcho } from '@laravel/echo-react';
-import { useEffect, useRef } from 'react';
+import { Form, Head, router, useHttp } from '@inertiajs/react';
+import { useEcho, useEchoPresence } from '@laravel/echo-react';
+import { useEffect, useRef, useState } from 'react';
+import ChannelTypingController from '@/actions/App/Http/Controllers/ChannelTypingController';
 import MessageController from '@/actions/App/Http/Controllers/MessageController';
 import CreateChannelDialog from '@/components/create-channel-dialog';
 import DeleteChannelDialog from '@/components/delete-channel-dialog';
@@ -8,6 +9,9 @@ import EditChannelDialog from '@/components/edit-channel-dialog';
 import InputError from '@/components/input-error';
 import WorkspaceLayout from '@/layouts/workspace-layout';
 import { nickColorFor } from '@/lib/user';
+
+const TYPING_THROTTLE_MS = 2000;
+const TYPING_GRACE_MS = 3500;
 
 function messageTime(iso: string): string {
     return new Date(iso).toLocaleTimeString([], {
@@ -67,6 +71,13 @@ export default function ChannelShow({
         }
     }, [messages]);
 
+    const [typingUsers, setTypingUsers] = useState<Record<string, string>>({});
+    const typingTimeouts = useRef<
+        Record<string, ReturnType<typeof setTimeout>>
+    >({});
+    const lastTypingSentAt = useRef(0);
+    const { post: postTyping } = useHttp({});
+
     useEcho(`channels.${channel.id}`, '.MessageCreated', () => {
         router.reload({ only: ['messages'] });
     });
@@ -82,6 +93,53 @@ export default function ChannelShow({
     useEcho(`workspaces.${workspace.id}`, '.ChannelUpdated', () => {
         router.reload({ only: ['workspace', 'channel'] });
     });
+
+    useEchoPresence<{ id: string; name: string }>(
+        `channels.${channel.id}`,
+        '.UserTyping',
+        (event) => {
+            setTypingUsers((current) => ({
+                ...current,
+                [event.id]: event.name,
+            }));
+
+            clearTimeout(typingTimeouts.current[event.id]);
+            typingTimeouts.current[event.id] = setTimeout(() => {
+                delete typingTimeouts.current[event.id];
+                setTypingUsers((current) => {
+                    const next = { ...current };
+                    delete next[event.id];
+                    return next;
+                });
+            }, TYPING_GRACE_MS);
+        },
+    );
+
+    useEffect(() => {
+        const timeouts = typingTimeouts.current;
+
+        return () => {
+            Object.values(timeouts).forEach(clearTimeout);
+            typingTimeouts.current = {};
+            setTypingUsers({});
+        };
+    }, [channel.id]);
+
+    const sendTyping = () => {
+        const now = Date.now();
+        if (now - lastTypingSentAt.current < TYPING_THROTTLE_MS) {
+            return;
+        }
+        lastTypingSentAt.current = now;
+
+        void postTyping(
+            ChannelTypingController.url([workspace.slug, channel.slug]),
+        ).catch(() => {
+            // typing is fire-and-forget
+        });
+    };
+
+    const typingNames = Object.values(typingUsers);
 
     return (
         <WorkspaceLayout
@@ -145,6 +203,15 @@ export default function ChannelShow({
                 </div>
             </div>
 
+            {/* typing indicator */}
+            <div
+                className="mx-6 mb-1 h-4 text-[11px] text-mute"
+                aria-live="polite"
+            >
+                {typingNames.length > 0 &&
+                    `${typingNames.join(', ')} ${typingNames.length === 1 ? 'is' : 'are'} typing ...`}
+            </div>
+
             {/* composer */}
             <Form
                 {...MessageController.store.form([
@@ -164,6 +231,7 @@ export default function ChannelShow({
                                 name="body"
                                 placeholder={`message #${channel.name}`}
                                 autoComplete="off"
+                                onChange={sendTyping}
                                 className="min-w-0 flex-1 bg-transparent text-fg caret-green outline-none placeholder:text-faint"
                             />
                         </div>
