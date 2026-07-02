@@ -28,7 +28,7 @@ export default function CreateChannelDialog({
             <DialogTrigger asChild>
                 <Button data-test="create-channel-trigger">
                     <Plus />
-                    New channel
+                    <span className="hidden sm:inline">New channel</span>
                 </Button>
             </DialogTrigger>
             <DialogContent data-test="create-channel-dialog">
