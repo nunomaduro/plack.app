@@ -16,6 +16,7 @@ import {
 type Workspace = {
     id: string;
     name: string;
+    slug: string;
 };
 
 export default function DeleteWorkspaceDialog({
@@ -45,7 +46,7 @@ export default function DeleteWorkspaceDialog({
                 </DialogDescription>
 
                 <Form
-                    {...WorkspaceController.destroy.form(workspace.id)}
+                    {...WorkspaceController.destroy.form(workspace.slug)}
                     options={{
                         preserveScroll: true,
                     }}
