@@ -29,7 +29,7 @@ it('shares null user when guest', function (): void {
         ->and($shared['auth']['user'])->toBeNull();
 });
 
-it('shares authenticated user data', function (): void {
+it('shares only the authenticated user id and name', function (): void {
     $user = User::factory()->create([
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -42,10 +42,10 @@ it('shares authenticated user data', function (): void {
 
     $shared = $middleware->share($request);
 
-    expect($shared['auth']['user'])->not->toBeNull()
-        ->and($shared['auth']['user']->id)->toBe($user->id)
-        ->and($shared['auth']['user']->name)->toBe('Test User')
-        ->and($shared['auth']['user']->email)->toBe('test@example.com');
+    expect($shared['auth']['user'])->toBe([
+        'id' => $user->id,
+        'name' => 'Test User',
+    ]);
 });
 
 it('defaults sidebarOpen to true when no cookie', function (): void {

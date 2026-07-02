@@ -33,10 +33,12 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read CarbonInterface $updated_at
  */
 #[Hidden([
+    'email',
     'password',
     'remember_token',
     'two_factor_secret',
     'two_factor_recovery_codes',
+    'two_factor_confirmed_at',
 ])]
 final class User extends Authenticatable implements MustVerifyEmail
 {

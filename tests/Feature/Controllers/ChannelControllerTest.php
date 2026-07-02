@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Channel;
+use App\Models\Message;
 use App\Models\User;
 use App\Models\Workspace;
 use Inertia\Support\SessionKey;
@@ -31,6 +32,26 @@ it('can show a channel', function (): void {
             ->where('workspace.id', $workspace->id)
             ->where('canManage', true)
             ->has('workspace.channels')
+        );
+});
+
+it('does not expose sensitive sender attributes in the channel payload', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+    $channel = Channel::factory()->for($workspace)->create();
+    $sender = User::factory()->create(['name' => 'placktoon']);
+    $workspace->members()->attach($sender);
+    Message::factory()->for($channel)->for($sender, 'sender')->create();
+
+    $this->actingAs($user)->get(route('channel.show', [$workspace, $channel]))
+        ->assertStatus(200)
+        ->assertInertia(fn (Assert $page): Assert => $page
+            ->component('channel/show')
+            ->where('channel', $channel->only('id', 'name', 'slug'))
+            ->where('messages.0.sender', 'placktoon')
+            ->missing('channel.messages')
+            ->missing('messages.0.sender.email')
+            ->where('auth.user', ['id' => $user->id, 'name' => $user->name])
         );
 });
 

@@ -20,11 +20,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Edit({
-    mustVerifyEmail,
     status,
+    email,
+    emailVerified,
 }: {
-    mustVerifyEmail: boolean;
     status?: string;
+    email: string;
+    emailVerified: boolean;
 }) {
     const { auth } = usePage().props;
 
@@ -77,7 +79,7 @@ export default function Edit({
                                         id="email"
                                         type="email"
                                         className="mt-1 block w-full"
-                                        defaultValue={auth.user.email}
+                                        defaultValue={email}
                                         name="email"
                                         required
                                         autoComplete="username"
@@ -90,32 +92,29 @@ export default function Edit({
                                     />
                                 </div>
 
-                                {mustVerifyEmail &&
-                                    auth.user.email_verified_at === null && (
-                                        <div>
-                                            <p className="-mt-4 text-sm text-muted-foreground">
-                                                Your email address is
-                                                unverified.{' '}
-                                                <Link
-                                                    href={send()}
-                                                    as="button"
-                                                    className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                                >
-                                                    Click here to resend the
-                                                    verification email.
-                                                </Link>
-                                            </p>
+                                {!emailVerified && (
+                                    <div>
+                                        <p className="-mt-4 text-sm text-muted-foreground">
+                                            Your email address is unverified.{' '}
+                                            <Link
+                                                href={send()}
+                                                as="button"
+                                                className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                            >
+                                                Click here to resend the
+                                                verification email.
+                                            </Link>
+                                        </p>
 
-                                            {status ===
-                                                'verification-link-sent' && (
-                                                <div className="mt-2 text-sm font-medium text-green">
-                                                    A new verification link has
-                                                    been sent to your email
-                                                    address.
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
+                                        {status ===
+                                            'verification-link-sent' && (
+                                            <div className="mt-2 text-sm font-medium text-green">
+                                                A new verification link has been
+                                                sent to your email address.
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 <div className="flex items-center gap-4">
                                     <Button

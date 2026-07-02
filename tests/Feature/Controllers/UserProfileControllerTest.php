@@ -6,7 +6,7 @@ use App\Models\User;
 use Inertia\Support\SessionKey;
 
 it('renders profile edit page', function (): void {
-    $user = User::factory()->create();
+    $user = User::factory()->create(['email' => 'me@example.com']);
 
     $response = $this->actingAs($user)
         ->fromRoute('workspace.index')
@@ -15,7 +15,20 @@ it('renders profile edit page', function (): void {
     $response->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('user-profile/edit')
-            ->has('status'));
+            ->has('status')
+            ->where('email', 'me@example.com')
+            ->where('emailVerified', true));
+});
+
+it('flags an unverified email on the profile edit page', function (): void {
+    $user = User::factory()->unverified()->create();
+
+    $this->actingAs($user)
+        ->get(route('user-profile.edit'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('user-profile/edit')
+            ->where('emailVerified', false));
 });
 
 it('may update profile information', function (): void {

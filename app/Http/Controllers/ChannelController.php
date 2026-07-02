@@ -18,7 +18,6 @@ use App\Models\Workspace;
 use App\Queries\ListChannels;
 use App\Queries\ListWorkspace;
 use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -35,7 +34,7 @@ final readonly class ChannelController
     ): Response {
         $markChannelAsRead->handle($channel, $user);
 
-        $channel->load(['messages' => fn (HasMany $messages) => $messages->oldest()->with('sender')]);
+        $messages = $channel->messages()->oldest()->with('sender')->get();
 
         return Inertia::render('channel/show', [
             'workspace' => [
@@ -44,8 +43,8 @@ final readonly class ChannelController
                 'slug' => $workspace->slug,
                 'channels' => $listChannels->get($user, $workspace),
             ],
-            'channel' => $channel,
-            'messages' => $channel->messages->map(fn (Message $message): array => [
+            'channel' => $channel->only('id', 'name', 'slug'),
+            'messages' => $messages->map(fn (Message $message): array => [
                 'id' => $message->id,
                 'body' => $message->body,
                 'sender' => $message->sender->name,
