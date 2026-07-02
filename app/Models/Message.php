@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property-read string $id
  * @property-read string $channel_id
+ * @property-read ?string $thread_id
  * @property-read string $user_id
  * @property-read string $body
  * @property-read CarbonInterface $created_at
@@ -47,6 +48,14 @@ final class Message extends Model
     }
 
     /**
+     * @return BelongsTo<Thread, $this>
+     */
+    public function thread(): BelongsTo
+    {
+        return $this->belongsTo(Thread::class);
+    }
+
+    /**
      * @return array<string, string>
      */
     public function casts(): array
@@ -54,6 +63,7 @@ final class Message extends Model
         return [
             'id' => 'string',
             'channel_id' => 'string',
+            'thread_id' => 'string',
             'user_id' => 'string',
             'body' => 'string',
             'created_at' => 'datetime',

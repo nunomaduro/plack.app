@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Message;
+use App\Models\Thread;
 
 test('to array', function (): void {
     $message = Message::factory()->create()->fresh();
@@ -15,5 +16,14 @@ test('to array', function (): void {
             'body',
             'created_at',
             'updated_at',
+            'thread_id',
         ]);
+});
+
+test('belongs to a thread', function (): void {
+    $thread = Thread::factory()->create();
+    $message = Message::factory()->create(['thread_id' => $thread->id]);
+
+    expect($message->thread)->toBeInstanceOf(Thread::class)
+        ->and($message->thread->id)->toBe($thread->id);
 });
