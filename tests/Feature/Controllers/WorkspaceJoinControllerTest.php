@@ -9,6 +9,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 it('stores a pending public join for an authenticated user', function (): void {
     $user = User::factory()->create();
     $workspace = Workspace::factory()->public()->create();
+    $workspace->members()->attach(User::factory()->create());
 
     $this->actingAs($user)->get(route('workspace.join', $workspace->join_code))
         ->assertRedirectToRoute('workspace.index')
@@ -20,6 +21,7 @@ it('stores a pending public join for an authenticated user', function (): void {
             ->where('pendingWorkspaceJoin.code', $workspace->join_code)
             ->where('pendingWorkspaceJoin.workspace.id', $workspace->id)
             ->where('pendingWorkspaceJoin.workspace.name', $workspace->name)
+            ->where('pendingWorkspaceJoin.workspace.memberCount', 2)
         );
 });
 

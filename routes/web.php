@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\AcceptWorkspaceInvitationController;
 use App\Http\Controllers\ChannelController;
+use App\Http\Controllers\ChannelTypingController;
 use App\Http\Controllers\DeclineWorkspaceInvitationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\RegenerateWorkspaceJoinLinkController;
@@ -46,6 +47,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 
             Route::post('workspaces/{workspace}/channels/{channel}/messages', [MessageController::class, 'store'])
                 ->name('messages.store');
+
+            Route::post('workspaces/{workspace}/channels/{channel}/typing', ChannelTypingController::class)
+                ->middleware('throttle:60,1')
+                ->name('channel.typing');
         });
     });
 

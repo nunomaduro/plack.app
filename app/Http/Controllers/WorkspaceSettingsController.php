@@ -8,17 +8,17 @@ use App\Enums\WorkspaceType;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Models\WorkspaceInvitation;
+use App\Queries\ListChannels;
 use App\Queries\ListWorkspace;
 use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final readonly class WorkspaceSettingsController
 {
-    public function __invoke(#[CurrentUser] User $user, Workspace $workspace, ListWorkspace $listWorkspace): Response
+    public function __invoke(#[CurrentUser] User $user, Workspace $workspace, ListWorkspace $listWorkspace, ListChannels $listChannels): Response
     {
-        $workspace->load(['channels' => fn (HasMany $channels) => $channels->latest(), 'owner', 'members', 'invitations']);
+        $workspace->load(['owner', 'members', 'invitations']);
 
         return Inertia::render('workspace/settings', [
             'workspace' => [
@@ -26,7 +26,7 @@ final readonly class WorkspaceSettingsController
                 'name' => $workspace->name,
                 'slug' => $workspace->slug,
                 'type' => $workspace->type->value,
-                'channels' => $workspace->channels->map->only('id', 'name', 'slug')->values(),
+                'channels' => $listChannels->get($user, $workspace),
             ],
             'owner' => $workspace->owner->only('id', 'name', 'email'),
             'members' => $workspace->members->map->only('id', 'name', 'email')->values(),
