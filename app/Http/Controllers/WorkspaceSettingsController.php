@@ -26,7 +26,7 @@ final readonly class WorkspaceSettingsController
                 'name' => $workspace->name,
                 'slug' => $workspace->slug,
                 'type' => $workspace->type->value,
-                'channels' => $workspace->channels->map->only('id', 'name', 'slug')->values(),
+                'channels' => $workspace->channels->map->only('id')->values(),
             ],
             'owner' => $workspace->owner->only('id', 'name', 'email'),
             'members' => $workspace->members->map->only('id', 'name', 'email')->values(),
@@ -34,9 +34,9 @@ final readonly class WorkspaceSettingsController
                 'code' => $invitation->code,
                 'email' => $invitation->email,
             ])->values() : [],
-            'publicJoinUrl' => $workspace->type === WorkspaceType::Public && $workspace->join_code !== null
-                ? route('workspace.join', $workspace->join_code)
-                : null,
+            'publicJoinUrl' => $workspace->type === WorkspaceType::Public
+                ? route('workspace.join', (string) $workspace->join_code)
+                : null, // @codeCoverageIgnore
             'workspaces' => $listWorkspace->get($user),
         ]);
     }

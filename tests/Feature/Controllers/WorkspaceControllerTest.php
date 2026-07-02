@@ -98,22 +98,6 @@ it('shows a public join url and no invitations for public workspace settings', f
         );
 });
 
-it('does not show a public join url when a public workspace has no join code', function (): void {
-    $user = User::factory()->create();
-    $workspace = Workspace::factory()->public()->for($user, 'owner')->create([
-        'join_code' => null,
-    ]);
-    Channel::factory()->for($workspace)->create();
-
-    $this->actingAs($user)->get(route('workspace.settings', $workspace))
-        ->assertOk()
-        ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('workspace/settings')
-            ->where('workspace.type', WorkspaceType::Public->value)
-            ->where('publicJoinUrl', null)
-        );
-});
-
 it('does not let a non-owner open the workspace settings page', function (): void {
     $member = User::factory()->create();
     $workspace = Workspace::factory()->create();

@@ -7,7 +7,7 @@ namespace App\Actions;
 use App\Models\User;
 use App\Models\Workspace;
 
-final readonly class JoinWorkspace
+final readonly class JoinPublicWorkspace
 {
     public function handle(Workspace $workspace, User $user): void
     {

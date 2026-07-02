@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\JoinWorkspace;
+use App\Actions\JoinPublicWorkspace;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Queries\FindPendingWorkspaceJoin;
@@ -37,7 +37,7 @@ final readonly class WorkspaceJoinController
         string $joinCode,
         #[CurrentUser] User $user,
         FindPendingWorkspaceJoin $findPendingWorkspaceJoin,
-        JoinWorkspace $joinWorkspace,
+        JoinPublicWorkspace $joinWorkspace,
     ): RedirectResponse {
         abort_unless($request->session()->get(self::SessionKey) === $joinCode, 404);
 
