@@ -53,6 +53,14 @@ final class Channel extends Model
     }
 
     /**
+     * @return HasMany<Pin, $this>
+     */
+    public function pins(): HasMany
+    {
+        return $this->hasMany(Pin::class);
+    }
+
+    /**
      * @return array<string, string>
      */
     public function casts(): array
