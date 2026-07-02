@@ -12,8 +12,7 @@ import { edit as userProfileEdit } from '@/routes/user-profile';
  * invitations are surfaced here so an invited user can join without one.
  */
 export default function WorkspaceEmpty() {
-    const { auth, pendingInvitations, pendingWorkspaceJoin } =
-        usePage().props;
+    const { auth, pendingInvitations, pendingWorkspaceJoin } = usePage().props;
 
     const handleLogout = () => {
         router.flushAll();

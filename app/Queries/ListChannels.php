@@ -8,8 +8,8 @@ use App\Models\Channel;
 use App\Models\User;
 use App\Models\Workspace;
 use Carbon\CarbonInterface;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 final readonly class ListChannels
@@ -70,7 +70,7 @@ final readonly class ListChannels
             ->value('created_at');
 
         if (is_string($memberSince)) {
-            return Carbon::parse($memberSince);
+            return Date::parse($memberSince);
         }
 
         return $workspace->created_at;
