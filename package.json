@@ -23,7 +23,6 @@
         "vite-plus": "latest"
     },
     "dependencies": {
-        "@fontsource/ibm-plex-mono": "^5.2.7",
         "@headlessui/react": "^2.2.10",
         "@inertiajs/react": "^3.5.0",
         "@inertiajs/vite": "^3.5.0",

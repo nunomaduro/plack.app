@@ -31,6 +31,7 @@ final class MessageCreated implements ShouldBroadcast, ShouldQueue
     {
         return [
             new PrivateChannel('channels.'.$this->message->channel_id),
+            new PrivateChannel('workspaces.'.$this->message->channel->workspace_id),
         ];
     }
 
@@ -46,6 +47,8 @@ final class MessageCreated implements ShouldBroadcast, ShouldQueue
     {
         return [
             'id' => $this->message->id,
+            'channel_id' => $this->message->channel_id,
+            'user_id' => $this->message->user_id,
         ];
     }
 }

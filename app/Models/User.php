@@ -92,6 +92,16 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * The user's per-channel metadata (read markers, mute, ...).
+     *
+     * @return HasMany<UserChannelMetadata, $this>
+     */
+    public function userChannelMetadata(): HasMany
+    {
+        return $this->hasMany(UserChannelMetadata::class);
+    }
+
+    /**
      * Send the email verification notification.
      */
     public function sendEmailVerificationNotification(): void

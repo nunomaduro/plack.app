@@ -23,6 +23,7 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
  * @property-read CarbonInterface $updated_at
  * @property-read Workspace $workspace
  * @property-read Collection<int, Message> $messages
+ * @property-read Collection<int, UserChannelMetadata> $userChannelMetadata
  */
 #[Sluggable(from: 'name', scope: 'workspace_id', onUpdating: true)]
 final class Channel extends Model
@@ -53,6 +54,16 @@ final class Channel extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    /**
+     * The per-user metadata (read markers, mute, ...) for this channel.
+     *
+     * @return HasMany<UserChannelMetadata, $this>
+     */
+    public function userChannelMetadata(): HasMany
+    {
+        return $this->hasMany(UserChannelMetadata::class);
     }
 
     /**

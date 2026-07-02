@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react, {reactCompilerPreset} from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import {defineConfig} from 'vite-plus';
+import {google} from "laravel-vite-plugin/fonts";
 
 export default defineConfig({
     lint: {
@@ -56,6 +57,24 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
+            fonts: [
+                google('IBM Plex Mono', {
+                    alias: 'sans',
+                    weights: [400, 500, 600],
+                    styles: ['normal', 'italic'],
+                    display: 'swap',
+                    preload: [{weight: 400}, {weight: 500}, {weight: 600}],
+                    fallbacks: ['ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+                }),
+                google('IBM Plex Mono', {
+                    alias: 'mono',
+                    weights: [400, 500, 600],
+                    styles: ['normal', 'italic'],
+                    display: 'swap',
+                    preload: [{weight: 400}, {weight: 500}, {weight: 600}],
+                    fallbacks: ['ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+                }),
+            ],
         }),
         react(),
         babel({

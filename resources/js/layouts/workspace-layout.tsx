@@ -1,4 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
+import { useEcho } from '@laravel/echo-react';
 import { type PropsWithChildren, useState } from 'react';
 import CreateWorkspaceDialog from '@/components/create-workspace-dialog';
 import PendingInvitations from '@/components/pending-invitations';
@@ -10,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { UserMenuContent } from '@/components/user-menu-content';
+import { playMessageChime } from '@/lib/sound';
 import { nickColorFor, handleFor, initialsFor } from '@/lib/user';
 import { show as channelShow } from '@/routes/channel';
 import {
@@ -21,6 +23,8 @@ type Channel = {
     id: string;
     name: string;
     slug: string;
+    unread_count: number;
+    muted: boolean;
 };
 
 type WorkspaceSummary = {
@@ -53,6 +57,35 @@ export default function WorkspaceLayout({
     const [createOpen, setCreateOpen] = useState(false);
 
     const others = workspaces.filter((w) => w.slug !== workspace.slug);
+
+    const activeChannelId = workspace.channels.find(
+        (c) => c.slug === activeChannelSlug,
+    )?.id;
+
+    // Ping when a message lands somewhere the user isn't looking — a channel
+    // they aren't viewing, or any channel while the window isn't focused.
+    useEcho<{ id: string; channel_id: string; user_id: string }>(
+        `workspaces.${workspace.id}`,
+        '.MessageCreated',
+        ({ channel_id, user_id }) => {
+            if (String(user_id) === String(user.id)) {
+                return;
+            }
+
+            const target = workspace.channels.find((c) => c.id === channel_id);
+
+            if (target?.muted) {
+                return;
+            }
+
+            const isActive =
+                channel_id === activeChannelId && document.hasFocus();
+
+            if (!isActive) {
+                playMessageChime();
+            }
+        },
+    );
 
     return (
         <div className="flex h-screen bg-ink-900 font-mono text-fg">
@@ -131,6 +164,7 @@ export default function WorkspaceLayout({
                     <div className="flex flex-col gap-[2px] text-[12.5px]">
                         {workspace.channels.map((channel) => {
                             const active = channel.slug === activeChannelSlug;
+                            const unread = !active && channel.unread_count > 0;
 
                             return (
                                 <Link
@@ -141,11 +175,27 @@ export default function WorkspaceLayout({
                                     })}
                                     className={
                                         active
-                                            ? 'border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
-                                            : 'px-2 py-[6px] text-dim transition-colors hover:text-fg'
+                                            ? 'flex items-center gap-2 border-l-2 border-green bg-ink-800 px-2 py-[6px] text-fg'
+                                            : 'flex items-center gap-2 px-2 py-[6px] text-dim transition-colors hover:text-fg'
                                     }
                                 >
-                                    # {channel.name}
+                                    <span
+                                        className={
+                                            unread
+                                                ? 'flex-1 truncate font-semibold text-fg'
+                                                : 'flex-1 truncate'
+                                        }
+                                    >
+                                        # {channel.name}
+                                    </span>
+
+                                    {unread && (
+                                        <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-green px-1 text-[9px] font-semibold text-ink-900">
+                                            {channel.unread_count > 99
+                                                ? '99+'
+                                                : channel.unread_count}
+                                        </span>
+                                    )}
                                 </Link>
                             );
                         })}

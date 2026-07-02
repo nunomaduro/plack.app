@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\CreateChannel;
 use App\Actions\DeleteChannel;
+use App\Actions\MarkChannelAsRead;
 use App\Actions\UpdateChannel;
 use App\Http\Requests\CreateChannelRequest;
 use App\Http\Requests\DeleteChannelRequest;
@@ -14,6 +15,7 @@ use App\Models\Channel;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Workspace;
+use App\Queries\ListChannels;
 use App\Queries\ListWorkspace;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,12 +25,25 @@ use Inertia\Response;
 
 final readonly class ChannelController
 {
-    public function show(#[CurrentUser] User $user, Workspace $workspace, Channel $channel, ListWorkspace $listWorkspace): Response
-    {
+    public function show(
+        #[CurrentUser] User $user,
+        Workspace $workspace,
+        Channel $channel,
+        ListWorkspace $listWorkspace,
+        ListChannels $listChannels,
+        MarkChannelAsRead $markChannelAsRead,
+    ): Response {
+        $markChannelAsRead->handle($channel, $user);
+
         $channel->load(['messages' => fn (HasMany $messages) => $messages->oldest()->with('sender')]);
 
         return Inertia::render('channel/show', [
-            'workspace' => $workspace->load(['channels' => fn (HasMany $channels) => $channels->latest()]),
+            'workspace' => [
+                'id' => $workspace->id,
+                'name' => $workspace->name,
+                'slug' => $workspace->slug,
+                'channels' => $listChannels->get($user, $workspace),
+            ],
             'channel' => $channel,
             'messages' => $channel->messages->map(fn (Message $message): array => [
                 'id' => $message->id,
