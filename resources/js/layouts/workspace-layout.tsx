@@ -30,6 +30,11 @@ import {
     show as workspaceShow,
 } from '@/routes/workspace';
 
+type User = {
+    id: string;
+    name: string;
+};
+
 type Channel = {
     id: string;
     name: string;
@@ -46,6 +51,8 @@ type WorkspaceSummary = {
 
 type Workspace = WorkspaceSummary & {
     channels: Channel[];
+    members: User[];
+    owner: User;
 };
 
 type WorkspaceLayoutProps = PropsWithChildren<{
@@ -371,9 +378,33 @@ export default function WorkspaceLayout({
                     trigger={null}
                 />
 
-                {/* ── main ── */}
-                <main className="flex min-w-0 flex-1 flex-col">{children}</main>
-            </div>
-        </MobileSidebarContext.Provider>
+                {/*── main ── */}
+            <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+
+
+            {/* ── members sidebar ── */}
+            <aside className="flex w-[250px] flex-none flex-col border-r border-line bg-ink-950">
+                <div className="flex-1 px-[14px] py-4">
+                    <div className="mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase">
+                        Members
+                    </div>
+                    <div className="flex flex-col gap-[2px] text-[12.5px]">
+                        <span>
+                            Owner: {workspace.owner.name}
+                        </span>
+                        <hr/>
+                        {workspace.members.map((member) => {
+                            return (
+                                <div
+                                    key={member.id}
+                                >
+                                    <span>{member.name}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </aside>
+        </div></MobileSidebarContext.Provider>
     );
 }
