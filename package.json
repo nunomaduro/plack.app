@@ -2,6 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "postinstall": "playwright install chromium",
         "build": "vp build",
         "build:ssr": "vp build && vp build --ssr",
         "dev": "vp dev",
