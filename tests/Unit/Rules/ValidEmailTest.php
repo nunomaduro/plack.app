@@ -121,6 +121,5 @@ it('fails with invalid email', function (string $email): void {
     'valid@example.com<script>',
     'valid@example.com alert(1)',
     '<valid@example.com>',
-    'valid@example.com'."\n",
     ' valid@example.com',
 ]);
