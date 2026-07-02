@@ -100,7 +100,9 @@ export default function ChannelShow({
                 ) : (
                     messages.map((message) => (
                         <div key={message.id} className="break-words">
-                            <span style={{ color: nickColorFor(message.sender) }}>
+                            <span
+                                style={{ color: nickColorFor(message.sender) }}
+                            >
                                 {message.sender}
                             </span>
                             <span className="mx-2 text-faint">

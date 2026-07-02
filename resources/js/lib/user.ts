@@ -55,4 +55,3 @@ export function nickColorFor(name: string): string {
 
     return `oklch(${NICK_LIGHTNESS} ${NICK_CHROMA} ${hue})`;
 }
-
