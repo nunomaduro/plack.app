@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -20,6 +21,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 /**
  * @property-read string $id
  * @property-read string $name
+ * @property-read string|null $username
  * @property-read string $email
  * @property-read CarbonInterface|null $email_verified_at
  * @property-read string $password
@@ -53,6 +55,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         return [
             'id' => 'string',
             'name' => 'string',
+            'username' => 'string',
             'email' => 'string',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
@@ -79,6 +82,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    /**
+     * @return BelongsToMany<Message, $this>
+     */
+    public function mentionedIn(): BelongsToMany
+    {
+        return $this->belongsToMany(Message::class, 'message_mentions')->using(MessageMention::class);
     }
 
     /**
