@@ -6,7 +6,9 @@ import InputError from '@/components/input-error';
 import InviteMemberDialog from '@/components/invite-member-dialog';
 import RemoveMemberDialog from '@/components/remove-member-dialog';
 import { useClipboard } from '@/hooks/use-clipboard';
-import WorkspaceLayout from '@/layouts/workspace-layout';
+import WorkspaceLayout, {
+    MobileSidebarToggle,
+} from '@/layouts/workspace-layout';
 import { update } from '@/routes/workspace';
 
 type Channel = {
@@ -77,18 +79,21 @@ export default function WorkspaceSettings({
             <Head title={`${workspace.name} — settings`} />
 
             {/* header */}
-            <header className="flex items-center justify-between gap-3 border-b border-line px-6 py-[15px]">
-                <div className="flex items-baseline gap-3">
-                    <span className="text-[15px] font-semibold text-amber">
-                        settings
-                    </span>
-                    <span className="text-[11px] text-mute">
-                        {workspace.name}
-                    </span>
+            <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-[15px] md:px-6">
+                <div className="flex min-w-0 items-center gap-3">
+                    <MobileSidebarToggle />
+                    <div className="flex min-w-0 items-baseline gap-3">
+                        <span className="text-[15px] font-semibold text-amber">
+                            settings
+                        </span>
+                        <span className="truncate text-[11px] text-mute">
+                            {workspace.name}
+                        </span>
+                    </div>
                 </div>
             </header>
 
-            <div className="flex-1 overflow-y-auto px-6 py-7">
+            <div className="flex-1 overflow-y-auto px-4 py-6 md:px-6 md:py-7">
                 <div className="mx-auto flex max-w-[560px] flex-col gap-10">
                     {/* workspace details */}
                     <section>
@@ -293,7 +298,7 @@ export default function WorkspaceSettings({
                     <section>
                         <div className={sectionLabel}>danger zone</div>
 
-                        <div className="flex items-center justify-between border border-destructive/40 bg-destructive/5 px-[14px] py-4">
+                        <div className="flex flex-col gap-4 border border-destructive/40 bg-destructive/5 px-[14px] py-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <p className="text-[13px] text-fg">
                                     Delete workspace

@@ -18,7 +18,7 @@ export default function AuthSimpleLayout({
                 }}
             />
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-10">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
                 <div className="mb-[34px] text-center">
                     <Link
                         href={home()}
@@ -37,7 +37,7 @@ export default function AuthSimpleLayout({
                     )}
                 </div>
 
-                <div className="w-[340px]">{children}</div>
+                <div className="w-full max-w-[340px]">{children}</div>
             </div>
         </div>
     );

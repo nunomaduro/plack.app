@@ -31,7 +31,7 @@ export default function CreateChannelDialog({
                 {trigger ?? (
                     <Button data-test="create-channel-trigger">
                         <Plus />
-                        New channel
+                        <span className="hidden sm:inline">New channel</span>
                     </Button>
                 )}
             </DialogTrigger>
