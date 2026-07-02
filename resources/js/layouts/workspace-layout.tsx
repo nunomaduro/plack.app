@@ -47,7 +47,7 @@ export default function WorkspaceLayout({
     canManage = false,
     children,
 }: WorkspaceLayoutProps) {
-    const { auth, pendingInvitations } = usePage().props;
+    const { auth, pendingInvitations, pendingWorkspaceJoin } = usePage().props;
     const user = auth.user;
 
     const [createOpen, setCreateOpen] = useState(false);
@@ -151,14 +151,16 @@ export default function WorkspaceLayout({
                         })}
                     </div>
 
-                    {pendingInvitations.length > 0 && (
+                    {(pendingInvitations.length > 0 ||
+                        pendingWorkspaceJoin) && (
                         <div className="mt-6">
                             <div className="mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase">
-                                invitations
+                                pending
                             </div>
 
                             <PendingInvitations
                                 invitations={pendingInvitations}
+                                workspaceJoin={pendingWorkspaceJoin}
                             />
                         </div>
                     )}

@@ -1,6 +1,13 @@
 import { Form } from '@inertiajs/react';
 import { Check, X } from 'lucide-react';
-import { accept, decline } from '@/routes/invitations';
+import {
+    accept as acceptInvitation,
+    decline as declineInvitation,
+} from '@/routes/invitations';
+import {
+    accept as acceptWorkspaceJoin,
+    decline as declineWorkspaceJoin,
+} from '@/routes/workspace-joins';
 
 type PendingInvitation = {
     code: string;
@@ -11,12 +18,22 @@ type PendingInvitation = {
     invitedBy: string;
 };
 
+type PendingWorkspaceJoin = {
+    code: string;
+    workspace: {
+        id: string;
+        name: string;
+    };
+};
+
 export default function PendingInvitations({
     invitations,
+    workspaceJoin = null,
 }: {
     invitations: PendingInvitation[];
+    workspaceJoin?: PendingWorkspaceJoin | null;
 }) {
-    if (invitations.length === 0) {
+    if (invitations.length === 0 && workspaceJoin === null) {
         return null;
     }
 
@@ -38,7 +55,7 @@ export default function PendingInvitations({
                     </div>
 
                     <div className="flex flex-none items-center gap-1">
-                        <Form {...accept.form(invitation.code)}>
+                        <Form {...acceptInvitation.form(invitation.code)}>
                             {({ processing }) => (
                                 <button
                                     type="submit"
@@ -52,7 +69,7 @@ export default function PendingInvitations({
                             )}
                         </Form>
 
-                        <Form {...decline.form(invitation.code)}>
+                        <Form {...declineInvitation.form(invitation.code)}>
                             {({ processing }) => (
                                 <button
                                     type="submit"
@@ -68,8 +85,56 @@ export default function PendingInvitations({
                     </div>
                 </div>
             ))}
+
+            {workspaceJoin && (
+                <div
+                    className="flex items-center justify-between gap-2 px-2 py-[6px]"
+                    data-test="pending-workspace-join"
+                >
+                    <div className="flex min-w-0 flex-col">
+                        <span className="truncate text-dim">
+                            {workspaceJoin.workspace.name}
+                        </span>
+                        <span className="truncate text-[10px] text-mute">
+                            public workspace
+                        </span>
+                    </div>
+
+                    <div className="flex flex-none items-center gap-1">
+                        <Form {...acceptWorkspaceJoin.form(workspaceJoin.code)}>
+                            {({ processing }) => (
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    aria-label="Join workspace"
+                                    data-test="accept-workspace-join"
+                                    className="flex h-[22px] w-[22px] items-center justify-center border border-line text-green transition-colors hover:border-green disabled:opacity-50"
+                                >
+                                    <Check className="h-3 w-3" />
+                                </button>
+                            )}
+                        </Form>
+
+                        <Form
+                            {...declineWorkspaceJoin.form(workspaceJoin.code)}
+                        >
+                            {({ processing }) => (
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    aria-label="Decline workspace join"
+                                    data-test="decline-workspace-join"
+                                    className="flex h-[22px] w-[22px] items-center justify-center border border-line text-mute transition-colors hover:border-destructive hover:text-destructive disabled:opacity-50"
+                                >
+                                    <X className="h-3 w-3" />
+                                </button>
+                            )}
+                        </Form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-export type { PendingInvitation };
+export type { PendingInvitation, PendingWorkspaceJoin };

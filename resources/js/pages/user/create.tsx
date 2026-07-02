@@ -9,8 +9,17 @@ type WorkspaceInvitation = {
     workspace: string;
 };
 
+type WorkspaceJoin = {
+    code: string;
+    workspace: {
+        id: string;
+        name: string;
+    };
+};
+
 type Props = {
     workspaceInvitation?: WorkspaceInvitation | null;
+    workspaceJoin?: WorkspaceJoin | null;
 };
 
 const fieldWrap =
@@ -19,12 +28,18 @@ const inputClass =
     'min-w-0 flex-1 bg-transparent text-[13.5px] text-fg caret-green outline-none placeholder:text-faint';
 const labelClass = 'mb-2 text-[9px] uppercase tracking-[.22em] text-mute';
 
-export default function Register({ workspaceInvitation }: Props) {
+export default function Register({
+    workspaceInvitation,
+    workspaceJoin,
+}: Props) {
     const [showPw, setShowPw] = useState(false);
 
-    const loginHref = workspaceInvitation
-        ? login.url({ query: { invitation: workspaceInvitation.code } })
-        : login();
+    const authQuery = workspaceInvitation
+        ? { invitation: workspaceInvitation.code }
+        : workspaceJoin
+          ? { join: workspaceJoin.code }
+          : null;
+    const loginHref = authQuery ? login.url({ query: authQuery }) : login();
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-ink-950 font-mono text-fg">
@@ -70,6 +85,16 @@ export default function Register({ workspaceInvitation }: Props) {
                             {workspaceInvitation.workspace}
                         </span>
                         . Create your account to accept.
+                    </div>
+                )}
+
+                {workspaceJoin && !workspaceInvitation && (
+                    <div className="mb-5 w-[340px] border border-line bg-ink-900 px-[14px] py-3 text-[12px] text-dim">
+                        <span className="text-green">→</span> you're joining{' '}
+                        <span className="font-semibold text-amber">
+                            {workspaceJoin.workspace.name}
+                        </span>
+                        . Create your account to continue.
                     </div>
                 )}
 

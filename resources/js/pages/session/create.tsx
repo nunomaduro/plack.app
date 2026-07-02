@@ -10,11 +10,20 @@ type WorkspaceInvitation = {
     workspace: string;
 };
 
+type WorkspaceJoin = {
+    code: string;
+    workspace: {
+        id: string;
+        name: string;
+    };
+};
+
 type Props = {
     status?: string;
     canResetPassword: boolean;
     canRegister: boolean;
     workspaceInvitation?: WorkspaceInvitation | null;
+    workspaceJoin?: WorkspaceJoin | null;
 };
 
 const fieldWrap =
@@ -28,12 +37,18 @@ export default function Login({
     canResetPassword,
     canRegister,
     workspaceInvitation,
+    workspaceJoin,
 }: Props) {
     const [showPw, setShowPw] = useState(false);
     const [remember, setRemember] = useState(true);
 
-    const registerHref = workspaceInvitation
-        ? register.url({ query: { invitation: workspaceInvitation.code } })
+    const authQuery = workspaceInvitation
+        ? { invitation: workspaceInvitation.code }
+        : workspaceJoin
+          ? { join: workspaceJoin.code }
+          : null;
+    const registerHref = authQuery
+        ? register.url({ query: authQuery })
         : register();
 
     return (
@@ -82,6 +97,16 @@ export default function Login({
                             {workspaceInvitation.workspace}
                         </span>
                         . Log in to accept.
+                    </div>
+                )}
+
+                {workspaceJoin && !workspaceInvitation && (
+                    <div className="mb-5 w-[340px] border border-line bg-ink-900 px-[14px] py-3 text-[12px] text-dim">
+                        <span className="text-green">→</span> you're joining{' '}
+                        <span className="font-semibold text-amber">
+                            {workspaceJoin.workspace.name}
+                        </span>
+                        . Log in to continue.
                     </div>
                 )}
 
