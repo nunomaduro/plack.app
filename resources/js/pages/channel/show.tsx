@@ -8,7 +8,7 @@ import WorkspaceLayout, {
     MobileSidebarToggle,
 } from '@/layouts/workspace-layout';
 import { renderMarkdown } from '@/lib/markdown';
-import { nickColorFor } from '@/lib/user';
+import Username from "@/components/username";
 
 const TYPING_THROTTLE_MS = 2000;
 const TYPING_GRACE_MS = 3500;
@@ -174,13 +174,8 @@ export default function ChannelShow({
                     ) : (
                         messages.map((message) => (
                             <div key={message.id} className="break-words">
-                                <span
-                                    style={{
-                                        color: nickColorFor(message.sender),
-                                    }}
-                                >
-                                    {message.sender}
-                                </span>
+                                <Username name={message.sender} />
+
                                 <span className="mx-2 text-faint">
                                     {messageTime(message.createdAt)}
                                 </span>
