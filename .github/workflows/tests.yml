@@ -1,5 +1,8 @@
 name: tests
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -62,7 +65,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Install Bun Dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Build Assets
         run: bun run build
