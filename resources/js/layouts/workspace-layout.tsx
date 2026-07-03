@@ -30,6 +30,7 @@ import {
     settings as workspaceSettings,
     show as workspaceShow,
 } from '@/routes/workspace';
+import Username from "@/components/username";
 
 type User = {
     id: string;
@@ -390,13 +391,13 @@ export default function WorkspaceLayout({
                         <div className="text-[9px] tracking-[.22em] text-mute uppercase ">
                             Members <span className="p-1 rounded bg-primary text-primary-foreground">{workspace.members.total + 1} </span>
                         </div>
-                        <div>Owner: {workspace.owner.name}</div>
+                        <div>Owner: <Username name={workspace.owner.name} /></div>
                     </div>
                     <hr/>
                     <div className="flex-1 overflow-y-auto">
                         <InfiniteScroll data="workspace.members" preserveUrl className="flex flex-col gap-[2px] text-[12.5px] px-[14px] py-4">
                             {workspace.members.data.map((member) => (
-                                <div key={member.id}>{member.name}</div>
+                                <div key={member.id}><Username name={member.name} /></div>
                             ))}
                         </InfiniteScroll>
                     </div>
