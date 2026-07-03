@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\ChannelVisibility;
 use App\Queries\FindPendingWorkspaceJoin;
 use App\Queries\ListPendingWorkspaceInvitations;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ final class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user()?->only('id', 'name'),
             ],
+            'channelVisibilityOptions' => ChannelVisibility::options(),
             'pendingInvitations' => fn (): array => $request->user() === null
                 ? []
                 : resolve(ListPendingWorkspaceInvitations::class)->get($request->user())->all(),

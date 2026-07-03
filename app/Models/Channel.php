@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ChannelVisibility;
 use Carbon\CarbonInterface;
 use Database\Factories\ChannelFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 
@@ -19,6 +21,7 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
  * @property-read string $workspace_id
  * @property-read string $name
  * @property-read string $slug
+ * @property-read ChannelVisibility $visibility
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  * @property-read Workspace $workspace
@@ -67,6 +70,16 @@ final class Channel extends Model
     }
 
     /**
+     * @return BelongsToMany<User, $this>
+     */
+    public function members(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    /**
      * @return array<string, string>
      */
     public function casts(): array
@@ -76,6 +89,7 @@ final class Channel extends Model
             'workspace_id' => 'string',
             'name' => 'string',
             'slug' => 'string',
+            'visibility' => ChannelVisibility::class,
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

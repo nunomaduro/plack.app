@@ -3,6 +3,7 @@ import type {
     PendingWorkspaceJoin,
 } from '@/components/pending-invitations';
 import type { Auth } from '@/types/auth';
+import type { ChannelVisibilityOption } from '@/types/channel';
 import type { FlashToast } from '@/types/ui';
 
 declare module '@inertiajs/core' {
@@ -13,6 +14,7 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            channelVisibilityOptions: ChannelVisibilityOption[];
             pendingInvitations: PendingInvitation[];
             pendingWorkspaceJoin: PendingWorkspaceJoin | null;
             sidebarOpen: boolean;

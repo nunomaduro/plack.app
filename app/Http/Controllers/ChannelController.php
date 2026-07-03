@@ -8,6 +8,7 @@ use App\Actions\CreateChannel;
 use App\Actions\DeleteChannel;
 use App\Actions\MarkChannelAsRead;
 use App\Actions\UpdateChannel;
+use App\Enums\ChannelVisibility;
 use App\Http\Requests\CreateChannelRequest;
 use App\Http\Requests\DeleteChannelRequest;
 use App\Http\Requests\UpdateChannelRequest;
@@ -61,8 +62,9 @@ final readonly class ChannelController
         CreateChannel $createChannel,
     ): RedirectResponse {
         $name = $request->string('name')->value();
+        $visibility = $request->enum('visibility', ChannelVisibility::class, ChannelVisibility::Public);
 
-        $channel = $createChannel->handle($workspace, $name);
+        $channel = $createChannel->handle($workspace, $name, $visibility);
 
         Inertia::flash('toast', [
             'type' => 'success',
@@ -79,8 +81,9 @@ final readonly class ChannelController
         UpdateChannel $updateChannel,
     ): RedirectResponse {
         $name = $request->string('name')->value();
+        $visibility = $request->enum('visibility', ChannelVisibility::class, ChannelVisibility::Public);
 
-        $updateChannel->handle($channel, $name);
+        $updateChannel->handle($channel, $name, $visibility);
 
         Inertia::flash('toast', [
             'type' => 'success',

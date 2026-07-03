@@ -18,7 +18,7 @@ final readonly class ListChannels
      * The workspace's channels for the sidebar, each carrying the user's
      * unread message count and mute state.
      *
-     * @return Collection<int, array{id: string, name: string, slug: string, unread_count: int<0, max>, muted: bool}>
+     * @return Collection<int, array{id: string, name: string, slug: string, visibility: 'private'|'public', unread_count: int<0, max>, muted: bool}>
      */
     public function get(User $user, Workspace $workspace): Collection
     {
@@ -52,6 +52,7 @@ final readonly class ListChannels
                 'id' => $channel->id,
                 'name' => $channel->name,
                 'slug' => $channel->slug,
+                'visibility' => $channel->visibility->value,
                 'unread_count' => $unreadCount,
                 'muted' => ($mutedAt[$channel->id] ?? null) !== null,
             ];

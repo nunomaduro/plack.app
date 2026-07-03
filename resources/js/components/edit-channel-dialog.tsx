@@ -1,4 +1,4 @@
-import { Form } from '@inertiajs/react';
+import { Form, usePage } from '@inertiajs/react';
 import { Pencil } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import ChannelController from '@/actions/App/Http/Controllers/ChannelController';
@@ -15,11 +15,20 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 type Channel = {
     id: string;
     name: string;
     slug: string;
+    visibility: string;
 };
 
 export default function EditChannelDialog({
@@ -32,6 +41,7 @@ export default function EditChannelDialog({
     trigger?: ReactNode;
 }) {
     const [open, setOpen] = useState(false);
+    const { channelVisibilityOptions } = usePage().props;
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -78,6 +88,38 @@ export default function EditChannelDialog({
                                 />
 
                                 <InputError message={errors.name} />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="visibility">Visibility</Label>
+
+                                <Select
+                                    name="visibility"
+                                    defaultValue={channel.visibility}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            {channelVisibilityOptions.map(
+                                                (option) =>
+                                                    Object.entries(option).map(
+                                                        ([value, label]) => (
+                                                            <SelectItem
+                                                                key={value}
+                                                                value={value}
+                                                            >
+                                                                {label}
+                                                            </SelectItem>
+                                                        ),
+                                                    ),
+                                            )}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+
+                                <InputError message={errors.visibility} />
                             </div>
 
                             <DialogFooter className="gap-2">

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\ChannelVisibility;
 use App\Models\Channel;
 use App\Models\Workspace;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -27,6 +28,10 @@ final class CreateChannelRequest extends FormRequest
                 'min:3',
                 'max:80',
                 Rule::unique(Channel::class, 'name')->where('workspace_id', $workspace->id),
+            ],
+            'visibility' => [
+                'required',
+                Rule::enum(ChannelVisibility::class),
             ],
         ];
     }

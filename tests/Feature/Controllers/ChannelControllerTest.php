@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Enums\ChannelMemberRole;
+use App\Enums\ChannelVisibility;
 use App\Models\Channel;
 use App\Models\Message;
 use App\Models\User;
@@ -97,6 +99,7 @@ it('can create a channel', function (): void {
 
     $response = $this->actingAs($user)->post(route('channel.store', $workspace), [
         'name' => 'general',
+        'visibility' => ChannelVisibility::Public->value,
     ]);
 
     $channels = $workspace->channels;
@@ -121,6 +124,7 @@ it('infers the slug from the name and ignores a provided slug', function (): voi
     $response = $this->actingAs($user)->post(route('channel.store', $workspace), [
         'name' => 'Product Updates',
         'slug' => 'custom-slug',
+        'visibility' => ChannelVisibility::Public->value,
     ]);
 
     $response->assertSessionHasNoErrors();
@@ -151,11 +155,67 @@ it('allows the same channel name in a different workspace', function (): void {
 
     $response = $this->actingAs($user)->post(route('channel.store', $otherWorkspace), [
         'name' => 'general',
+        'visibility' => ChannelVisibility::Public->value,
     ]);
 
     $response->assertSessionHasNoErrors();
 
     expect($otherWorkspace->channels()->where('name', 'general')->count())->toBe(1);
+});
+
+it('only channels admins are allowed to manage channels', function (): void {
+
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+    $channel = Channel::factory()->for($workspace)->private()->create();
+
+    $channel->members()->syncWithoutDetaching([
+        $user->id => ['role' => ChannelMemberRole::Member->value],
+    ]);
+
+    $response = $this->actingAs($user)->patch(route('channel.update', [$workspace, $channel]), [
+        'name' => $channel->name,
+        'visibility' => ChannelVisibility::Public->value,
+    ]);
+
+    $response->assertNotFound();
+
+});
+
+it('can update a channel visibility', function (): void {
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+    $channel = Channel::factory()->for($workspace)->private()->create();
+
+    $channel->members()->syncWithoutDetaching([
+        $user->id => ['role' => ChannelMemberRole::Admin->value],
+    ]);
+
+    $response = $this->actingAs($user)->patch(route('channel.update', [$workspace, $channel]), [
+        'name' => $channel->name,
+        'visibility' => ChannelVisibility::Public->value,
+    ]);
+
+    $response->assertSessionHasNoErrors();
+
+    expect($channel->fresh()->visibility)->toBe(ChannelVisibility::Public);
+
+});
+
+it('validates the channel visibility', function (): void {
+
+    $user = User::factory()->create();
+    $workspace = Workspace::factory()->for($user, 'owner')->create();
+
+    $response = $this->actingAs($user)->post(route('channel.store', $workspace), [
+        'name' => 'general',
+        'visibility' => 'some-invalid-visibility',
+    ]);
+
+    $response->assertSessionHasErrors('visibility');
+
+    expect($workspace->channels()->count())->toBe(0);
+
 });
 
 it('validates the channel name', function (): void {
@@ -176,8 +236,13 @@ it('can update a channel name', function (): void {
     $workspace = Workspace::factory()->for($user, 'owner')->create();
     $channel = Channel::factory()->for($workspace)->create(['name' => 'general']);
 
+    $channel->members()->syncWithoutDetaching([
+        $user->id => ['role' => ChannelMemberRole::Admin->value],
+    ]);
+
     $response = $this->actingAs($user)->patch(route('channel.update', [$workspace, $channel]), [
         'name' => 'random',
+        'visibility' => ChannelVisibility::Public->value,
     ]);
 
     $channel->refresh();
@@ -194,11 +259,15 @@ it('rejects updating a channel to a name already used in the workspace', functio
     Channel::factory()->for($workspace)->create(['name' => 'general', 'slug' => 'general']);
     $channel = Channel::factory()->for($workspace)->create(['name' => 'random', 'slug' => 'random']);
 
+    $channel->members()->syncWithoutDetaching([
+        $user->id => ['role' => ChannelMemberRole::Admin->value],
+    ]);
+
     $response = $this->actingAs($user)->patch(route('channel.update', [$workspace, $channel]), [
         'name' => 'general',
     ]);
 
-    $response->assertSessionHasErrors('name');
+    $response->assertSessionHasErrors(['name', 'visibility']);
 
     expect($channel->refresh()->name)->toBe('random');
 });
