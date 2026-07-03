@@ -170,6 +170,7 @@ export default function Login({
                                     />
                                     <button
                                         type="button"
+                                        tabIndex={-1}
                                         onClick={() => setShowPw((v) => !v)}
                                         className="text-[11px] tracking-[.06em] text-mute transition-colors hover:text-amber"
                                     >
