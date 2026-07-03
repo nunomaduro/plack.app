@@ -1,4 +1,5 @@
-import { Link, router, usePage } from '@inertiajs/react';
+import type { Paginated } from '@/types'
+import { InfiniteScroll, Link, router, usePage } from '@inertiajs/react';
 import { useEcho } from '@laravel/echo-react';
 import { Menu, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
@@ -29,6 +30,12 @@ import {
     settings as workspaceSettings,
     show as workspaceShow,
 } from '@/routes/workspace';
+import Username from "@/components/username";
+
+type User = {
+    id: string;
+    name: string;
+};
 
 type Channel = {
     id: string;
@@ -46,6 +53,8 @@ type WorkspaceSummary = {
 
 type Workspace = WorkspaceSummary & {
     channels: Channel[];
+    members: Paginated<User>;
+    owner: User;
 };
 
 type WorkspaceLayoutProps = PropsWithChildren<{
@@ -371,8 +380,28 @@ export default function WorkspaceLayout({
                     trigger={null}
                 />
 
-                {/* ── main ── */}
+                {/*── main ── */}
                 <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+
+
+                {/* ── members sidebar ── */}
+
+                <aside className="flex w-[250px] flex-none flex-col border-r border-line bg-ink-950">
+                    <div className="flex flex-col gap-[2px] text-[12.5px] px-[14px] py-4">
+                        <div className="text-[9px] tracking-[.22em] text-mute uppercase ">
+                            Members <span className="p-1 rounded bg-primary text-primary-foreground">{workspace.members.total + 1} </span>
+                        </div>
+                        <div>Owner: <Username name={workspace.owner.name} /></div>
+                    </div>
+                    <hr/>
+                    <div className="flex-1 overflow-y-auto">
+                        <InfiniteScroll data="workspace.members" preserveUrl className="flex flex-col gap-[2px] text-[12.5px] px-[14px] py-4">
+                            {workspace.members.data.map((member) => (
+                                <div key={member.id}><Username name={member.name} /></div>
+                            ))}
+                        </InfiniteScroll>
+                    </div>
+                </aside>
             </div>
         </MobileSidebarContext.Provider>
     );

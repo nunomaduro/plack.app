@@ -43,6 +43,8 @@ final readonly class ChannelController
                 'name' => $workspace->name,
                 'slug' => $workspace->slug,
                 'channels' => $listChannels->get($user, $workspace),
+                'owner' => $workspace->owner,
+                'members' => Inertia::scroll(fn () => $workspace->members()->paginate()),
             ],
             'channel' => $channel,
             'messages' => $channel->messages->map(fn (Message $message): array => [
