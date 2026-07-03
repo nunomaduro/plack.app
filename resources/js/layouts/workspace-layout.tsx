@@ -394,7 +394,7 @@ export default function WorkspaceLayout({
                     </div>
                     <hr/>
                     <div className="flex-1 overflow-y-auto">
-                        <InfiniteScroll data="workspace.members" buffer={10} className="flex flex-col gap-[2px] text-[12.5px] px-[14px] py-4">
+                        <InfiniteScroll data="workspace.members" preserveUrl className="flex flex-col gap-[2px] text-[12.5px] px-[14px] py-4">
                             {workspace.members.data.map((member) => (
                                 <div key={member.id}>{member.name}</div>
                             ))}
