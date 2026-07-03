@@ -1,4 +1,5 @@
-import { Link, router, usePage } from '@inertiajs/react';
+import type { Paginated } from '@/types'
+import { InfiniteScroll, Link, router, usePage } from '@inertiajs/react';
 import { useEcho } from '@laravel/echo-react';
 import { Menu, Pencil, Plus, Trash2 } from 'lucide-react';
 import {
@@ -51,7 +52,7 @@ type WorkspaceSummary = {
 
 type Workspace = WorkspaceSummary & {
     channels: Channel[];
-    members: User[];
+    members: Paginated<User>;
     owner: User;
 };
 
@@ -379,32 +380,28 @@ export default function WorkspaceLayout({
                 />
 
                 {/*── main ── */}
-            <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+                <main className="flex min-w-0 flex-1 flex-col">{children}</main>
 
 
-            {/* ── members sidebar ── */}
-            <aside className="flex w-[250px] flex-none flex-col border-r border-line bg-ink-950">
-                <div className="flex-1 px-[14px] py-4">
-                    <div className="mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase">
-                        Members <span className="p-1 rounded bg-primary text-primary-foreground">{workspace.members.length + 1} </span>
+                {/* ── members sidebar ── */}
+
+                <aside className="flex w-[250px] flex-none flex-col border-r border-line bg-ink-950">
+                    <div className="flex flex-col gap-[2px] text-[12.5px] px-[14px] py-4">
+                        <div className="text-[9px] tracking-[.22em] text-mute uppercase ">
+                            Members <span className="p-1 rounded bg-primary text-primary-foreground">{workspace.members.total + 1} </span>
+                        </div>
+                        <div>Owner: {workspace.owner.name}</div>
                     </div>
-                    <div className="flex flex-col gap-[2px] text-[12.5px]">
-                        <span>
-                            Owner: {workspace.owner.name}
-                        </span>
-                        <hr/>
-                        {workspace.members.map((member) => {
-                            return (
-                                <div
-                                    key={member.id}
-                                >
-                                    <span>{member.name}</span>
-                                </div>
-                            );
-                        })}
+                    <hr/>
+                    <div className="flex-1 overflow-y-auto">
+                        <InfiniteScroll data="workspace.members" buffer={10} className="flex flex-col gap-[2px] text-[12.5px] px-[14px] py-4">
+                            {workspace.members.data.map((member) => (
+                                <div key={member.id}>{member.name}</div>
+                            ))}
+                        </InfiniteScroll>
                     </div>
-                </div>
-            </aside>
-        </div></MobileSidebarContext.Provider>
+                </aside>
+            </div>
+        </MobileSidebarContext.Provider>
     );
 }
