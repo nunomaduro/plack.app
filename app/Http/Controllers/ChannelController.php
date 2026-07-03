@@ -66,7 +66,7 @@ final readonly class ChannelController
     ): RedirectResponse {
         $name = $request->string('name')->value();
 
-        $channel = $updateChannel->handle($channel, $name);
+        $updateChannel->handle($channel, $name);
 
         Inertia::flash('toast', [
             'type' => 'success',
