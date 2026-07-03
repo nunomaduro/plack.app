@@ -8,10 +8,12 @@ use App\Models\Channel;
 
 final readonly class UpdateChannel
 {
-    public function handle(Channel $channel, string $name): void
+    public function handle(Channel $channel, string $name): Channel
     {
         $channel->update([
             'name' => $name,
         ]);
+
+        return $channel->refresh();
     }
 }
