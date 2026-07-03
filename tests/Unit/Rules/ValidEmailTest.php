@@ -116,4 +116,10 @@ it('fails with invalid email', function (string $email): void {
     'user@localdomain',
     'user@sub.-domain.com',
     '𝓊𝓃𝒾𝒸ℴ𝒹ℯ@𝒹ℴ𝓂𝒶𝒾𝓃.𝒸ℴ𝓂',
+
+    // Partial / Embedded Matches (should fail, not just match a substring)
+    'valid@example.com<script>',
+    'valid@example.com alert(1)',
+    '<valid@example.com>',
+    ' valid@example.com',
 ]);
