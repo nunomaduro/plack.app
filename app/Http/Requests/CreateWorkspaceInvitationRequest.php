@@ -8,6 +8,7 @@ use App\Enums\WorkspaceType;
 use App\Models\Workspace;
 use App\Rules\UniqueWorkspaceInvitation;
 use App\Rules\ValidEmail;
+use Illuminate\Container\Attributes\RouteParameter;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -15,11 +16,8 @@ use Illuminate\Validation\Rules\ProhibitedIf;
 
 final class CreateWorkspaceInvitationRequest extends FormRequest
 {
-    public function authorize(): bool
+    public function authorize(#[RouteParameter('workspace')] Workspace $workspace): bool
     {
-        $workspace = $this->route('workspace');
-        assert($workspace instanceof Workspace);
-
         return $workspace->user_id === $this->user()?->id;
     }
 
