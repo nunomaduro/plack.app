@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use App\Models\WorkspaceInvitation;
+use Illuminate\Container\Attributes\RouteParameter;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class RespondToWorkspaceInvitationRequest extends FormRequest
 {
-    public function authorize(): bool
+    public function authorize(#[RouteParameter('invitation')] WorkspaceInvitation $invitation): bool
     {
-        $invitation = $this->route('invitation');
-        assert($invitation instanceof WorkspaceInvitation);
-
         return $this->user()?->email === $invitation->email && ! $invitation->isExpired();
     }
 
