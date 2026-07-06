@@ -3,6 +3,7 @@
 /node_modules
 /public/build
 /public/hot
+/public/fonts-manifest.dev.json
 /public/storage
 /resources/js/actions
 /resources/js/routes
