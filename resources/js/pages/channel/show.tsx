@@ -152,13 +152,13 @@ export default function ChannelShow({
             <Head title={channel.name} />
 
             {/* header */}
-            <header className="flex items-center gap-3 border-b border-line px-4 py-[15px] md:px-6">
+            <header className="flex items-center gap-3 border-b border-border px-4 py-[15px] md:px-6">
                 <MobileSidebarToggle />
                 <div className="flex min-w-0 items-baseline gap-3">
-                    <span className="truncate text-[15px] font-semibold text-amber">
+                    <span className="truncate text-[15px] font-semibold text-primary">
                         # {channel.name}
                     </span>
-                    <span className="hidden text-[11px] text-mute sm:inline">
+                    <span className="hidden text-[11px] text-muted-foreground sm:inline">
                         {workspace.name}
                     </span>
                 </div>
@@ -168,7 +168,7 @@ export default function ChannelShow({
             <div ref={logRef} className="flex-1 overflow-y-auto">
                 <div className="flex min-h-full flex-col justify-end gap-[14px] px-4 py-[18px] text-[12.5px] leading-[1.55] md:px-6">
                     {messages.length === 0 ? (
-                        <div className="text-faint">
+                        <div className="text-muted-foreground">
                             # no messages yet — say hello
                         </div>
                     ) : (
@@ -181,10 +181,10 @@ export default function ChannelShow({
                                 >
                                     {message.sender}
                                 </span>
-                                <span className="mx-2 text-faint">
+                                <span className="mx-2 text-muted-foreground/60">
                                     {messageTime(message.createdAt)}
                                 </span>
-                                <span className="text-fg">
+                                <span className="text-foreground">
                                     {renderMarkdown(message.body)}
                                 </span>
                             </div>
@@ -195,7 +195,7 @@ export default function ChannelShow({
 
             {/* typing indicator */}
             <div
-                className="mx-6 mb-1 h-4 text-[11px] text-mute"
+                className="mx-6 mb-1 h-4 text-[11px] text-muted-foreground"
                 aria-live="polite"
             >
                 {typingNames.length > 0 &&
@@ -215,8 +215,8 @@ export default function ChannelShow({
             >
                 {({ errors, processing }) => (
                     <>
-                        <div className="flex items-center gap-2 border border-line px-[14px] py-[11px] text-[12.5px]">
-                            <span className="text-green">&gt;</span>
+                        <div className="flex items-center gap-2 border border-border px-[14px] py-[11px] text-[12.5px]">
+                            <span className="text-primary">&gt;</span>
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -225,7 +225,7 @@ export default function ChannelShow({
                                 autoComplete="off"
                                 disabled={processing}
                                 onChange={sendTyping}
-                                className="min-w-0 flex-1 bg-transparent text-fg caret-green outline-none placeholder:text-faint"
+                                className="min-w-0 flex-1 bg-transparent text-foreground caret-primary outline-none placeholder:text-muted-foreground"
                             />
                         </div>
 

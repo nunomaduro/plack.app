@@ -29,15 +29,26 @@ const getStoredAppearance = (): Appearance => {
     return (localStorage.getItem('appearance') as Appearance) || 'system';
 };
 
-const applyTheme = (_appearance: Appearance): void => {
+const getResolvedTheme = (appearance: Appearance): ResolvedAppearance => {
+    if (appearance === 'system') {
+        return mediaQuery()?.matches ? 'dark' : 'light';
+    }
+    return appearance;
+};
+
+const applyTheme = (appearance: Appearance): void => {
     if (typeof document === 'undefined') {
         return;
     }
 
-    // Plack is a dark-only terminal theme — always render dark so native
-    // controls (scrollbars, autofill, form widgets) match the surfaces.
-    document.documentElement.classList.add('dark');
-    document.documentElement.style.colorScheme = 'dark';
+    const resolved = getResolvedTheme(appearance);
+
+    if (resolved === 'dark') {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+    document.documentElement.style.colorScheme = resolved;
 };
 
 const subscribe = (callback: () => void) => {
@@ -82,8 +93,7 @@ export function useAppearance(): UseAppearanceReturn {
         () => 'system',
     );
 
-    // Plack is a dark-only terminal theme.
-    const resolvedAppearance: ResolvedAppearance = 'dark';
+    const resolvedAppearance: ResolvedAppearance = getResolvedTheme(appearance);
 
     const updateAppearance = (mode: Appearance): void => {
         currentAppearance = mode;

@@ -66,7 +66,7 @@ export function MobileSidebarToggle() {
             onClick={() => setOpen(true)}
             aria-label="Open navigation"
             data-test="mobile-sidebar-toggle"
-            className="flex-none text-dim transition-colors hover:text-fg md:hidden"
+            className="flex-none text-muted-foreground transition-colors hover:text-foreground md:hidden"
         >
             <Menu className="h-[18px] w-[18px]" />
         </button>
@@ -94,25 +94,25 @@ function SidebarContent({
     return (
         <>
             {/* workspace selector */}
-            <div className="border-b border-line px-[18px] pt-4 pb-[15px]">
-                <div className="text-[9px] tracking-[.22em] text-mute uppercase">
+            <div className="border-b border-border px-[18px] pt-4 pb-[15px]">
+                <div className="text-[9px] tracking-[.22em] text-muted-foreground uppercase">
                     workspace
                 </div>
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger className="mt-[7px] flex items-center gap-2 text-[13px] font-semibold text-amber outline-none">
+                    <DropdownMenuTrigger className="mt-[7px] flex items-center gap-2 text-[13px] font-semibold text-primary outline-none">
                         {workspace.name}{' '}
-                        <span className="font-normal text-mute">▾</span>
+                        <span className="font-normal text-muted-foreground">▾</span>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                         align="start"
-                        className="min-w-[214px] rounded-none border-line bg-ink-950 font-mono"
+                        className="min-w-[214px] rounded-none border-border bg-popover font-mono"
                     >
                         {others.map((w) => (
                             <DropdownMenuItem
                                 key={w.id}
                                 asChild
-                                className="rounded-none text-[12.5px] text-dim focus:bg-ink-800 focus:text-fg"
+                                className="rounded-none text-[12.5px] text-muted-foreground focus:bg-accent focus:text-foreground"
                             >
                                 <Link href={workspaceShow(w.slug)}>
                                     {w.name}
@@ -121,13 +121,13 @@ function SidebarContent({
                         ))}
 
                         {(others.length > 0 || canManage) && (
-                            <DropdownMenuSeparator className="bg-line" />
+                            <DropdownMenuSeparator className="bg-border" />
                         )}
 
                         {canManage && (
                             <DropdownMenuItem
                                 asChild
-                                className="rounded-none text-[12.5px] text-dim focus:bg-ink-800 focus:text-fg"
+                                className="rounded-none text-[12.5px] text-muted-foreground focus:bg-accent focus:text-foreground"
                             >
                                 <Link
                                     href={workspaceSettings(workspace.slug)}
@@ -143,7 +143,7 @@ function SidebarContent({
                                 e.preventDefault();
                                 onCreateWorkspace();
                             }}
-                            className="rounded-none text-[12.5px] text-amber focus:bg-ink-800 focus:text-amber"
+                            className="rounded-none text-[12.5px] text-primary focus:bg-accent focus:text-primary"
                         >
                             + create workspace
                         </DropdownMenuItem>
@@ -154,7 +154,7 @@ function SidebarContent({
             {/* channel list */}
             <nav className="flex-1 overflow-y-auto px-[14px] py-4">
                 <div className="mb-[10px] flex items-center justify-between">
-                    <div className="text-[9px] tracking-[.22em] text-mute uppercase">
+                    <div className="text-[9px] tracking-[.22em] text-muted-foreground uppercase">
                         channels
                     </div>
 
@@ -166,7 +166,7 @@ function SidebarContent({
                                     type="button"
                                     aria-label="New channel"
                                     data-test="create-channel-trigger"
-                                    className="text-mute transition-colors hover:text-amber"
+                                    className="text-muted-foreground transition-colors hover:text-primary"
                                 >
                                     <Plus className="size-3.5" />
                                 </button>
@@ -185,7 +185,7 @@ function SidebarContent({
                                 key={channel.id}
                                 className={
                                     active
-                                        ? 'group flex items-center gap-1 border-l-2 border-green bg-ink-800 px-2 py-[6px]'
+                                        ? 'group flex items-center gap-1 border-l-2 border-primary bg-accent px-2 py-[6px]'
                                         : 'group flex items-center gap-1 px-2 py-[6px]'
                                 }
                             >
@@ -197,17 +197,17 @@ function SidebarContent({
                                     data-test={`${variant}-channel-${channel.slug}`}
                                     className={
                                         active
-                                            ? 'min-w-0 flex-1 truncate text-fg'
+                                            ? 'min-w-0 flex-1 truncate text-foreground'
                                             : unread
-                                              ? 'min-w-0 flex-1 truncate font-semibold text-fg'
-                                              : 'min-w-0 flex-1 truncate text-dim transition-colors hover:text-fg'
+                                              ? 'min-w-0 flex-1 truncate font-semibold text-foreground'
+                                              : 'min-w-0 flex-1 truncate text-muted-foreground transition-colors hover:text-foreground'
                                     }
                                 >
                                     # {channel.name}
                                 </Link>
 
                                 {unread && (
-                                    <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-green px-1 text-[9px] font-semibold text-ink-900">
+                                    <span className="flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-green px-1 text-[9px] font-semibold text-primary-foreground">
                                         {channel.unread_count > 99
                                             ? '99+'
                                             : channel.unread_count}
@@ -224,7 +224,7 @@ function SidebarContent({
                                                     type="button"
                                                     aria-label={`Edit #${channel.name}`}
                                                     data-test={`edit-channel-trigger-${channel.slug}`}
-                                                    className="text-mute transition-colors hover:text-fg"
+                                                    className="text-muted-foreground transition-colors hover:text-foreground"
                                                 >
                                                     <Pencil className="size-3" />
                                                 </button>
@@ -239,7 +239,7 @@ function SidebarContent({
                                                     type="button"
                                                     aria-label={`Delete #${channel.name}`}
                                                     data-test={`delete-channel-trigger-${channel.slug}`}
-                                                    className="text-mute transition-colors hover:text-destructive"
+                                                    className="text-muted-foreground transition-colors hover:text-destructive"
                                                 >
                                                     <Trash2 className="size-3" />
                                                 </button>
@@ -254,7 +254,7 @@ function SidebarContent({
 
                 {(pendingInvitations.length > 0 || pendingWorkspaceJoin) && (
                     <div className="mt-6">
-                        <div className="mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase">
+                        <div className="mb-[10px] text-[9px] tracking-[.22em] text-muted-foreground uppercase">
                             pending
                         </div>
 
@@ -268,9 +268,9 @@ function SidebarContent({
 
             {/* current user */}
             <DropdownMenu>
-                <DropdownMenuTrigger className="flex w-full items-center gap-[9px] border-t border-line px-4 py-3 text-xs text-dim transition-colors outline-none hover:text-fg data-[state=open]:bg-ink-800 data-[state=open]:text-fg">
+                <DropdownMenuTrigger className="flex w-full items-center gap-[9px] border-t border-border px-4 py-3 text-xs text-muted-foreground transition-colors outline-none hover:text-foreground data-[state=open]:bg-accent data-[state=open]:text-foreground">
                     <span
-                        className="flex h-[22px] w-[22px] items-center justify-center text-[10px] font-semibold text-ink-900"
+                        className="flex h-[22px] w-[22px] items-center justify-center text-[10px] font-semibold text-primary-foreground"
                         style={{ backgroundColor: nickColorFor(user.name) }}
                     >
                         {initialsFor(user.name)}
@@ -281,7 +281,7 @@ function SidebarContent({
                 <DropdownMenuContent
                     align="start"
                     side="top"
-                    className="min-w-[218px] rounded-none border-line bg-ink-950 font-mono"
+                    className="min-w-[218px] rounded-none border-border bg-popover font-mono"
                 >
                     <UserMenuContent user={user} />
                 </DropdownMenuContent>
@@ -346,9 +346,9 @@ export default function WorkspaceLayout({
 
     return (
         <MobileSidebarContext.Provider value={setMobileOpen}>
-            <div className="flex h-screen bg-ink-900 font-mono text-fg">
+            <div className="flex h-screen bg-background font-mono text-foreground">
                 {/* ── sidebar (desktop) ── */}
-                <aside className="hidden w-[250px] flex-none flex-col border-r border-line bg-ink-950 md:flex">
+                <aside className="hidden w-[250px] flex-none flex-col border-r border-border bg-sidebar md:flex">
                     <SidebarContent {...sidebarProps} variant="desktop" />
                 </aside>
 
@@ -358,7 +358,7 @@ export default function WorkspaceLayout({
                         side="left"
                         aria-describedby={undefined}
                         data-test="mobile-sidebar"
-                        className="flex w-[280px] flex-col gap-0 rounded-none border-line bg-ink-950 p-0 font-mono text-fg md:hidden"
+                        className="flex w-[280px] flex-col gap-0 rounded-none border-border bg-sidebar p-0 font-mono text-foreground md:hidden"
                     >
                         <SheetTitle className="sr-only">navigation</SheetTitle>
                         <SidebarContent {...sidebarProps} variant="mobile" />

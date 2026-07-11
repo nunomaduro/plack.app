@@ -45,12 +45,12 @@ type Invitation = {
 };
 
 const fieldWrap =
-    'flex h-[46px] items-center gap-[9px] border border-line bg-ink-950 px-[14px] transition-colors focus-within:border-amber';
+    'flex h-[46px] items-center gap-[9px] border border-border bg-card px-[14px] transition-colors focus-within:border-primary';
 const inputClass =
-    'min-w-0 flex-1 bg-transparent text-[13.5px] text-fg caret-green outline-none placeholder:text-faint';
-const labelClass = 'mb-2 text-[9px] uppercase tracking-[.22em] text-mute';
+    'min-w-0 flex-1 bg-transparent text-[13.5px] text-foreground caret-primary outline-none placeholder:text-muted-foreground';
+const labelClass = 'mb-2 text-[9px] uppercase tracking-[.22em] text-muted-foreground';
 const sectionLabel =
-    'mb-[10px] text-[9px] tracking-[.22em] text-mute uppercase';
+    'mb-[10px] text-[9px] tracking-[.22em] text-muted-foreground uppercase';
 
 export default function WorkspaceSettings({
     workspace,
@@ -79,14 +79,14 @@ export default function WorkspaceSettings({
             <Head title={`${workspace.name} — settings`} />
 
             {/* header */}
-            <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-[15px] md:px-6">
+            <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-[15px] md:px-6">
                 <div className="flex min-w-0 items-center gap-3">
                     <MobileSidebarToggle />
                     <div className="flex min-w-0 items-baseline gap-3">
-                        <span className="text-[15px] font-semibold text-amber">
+                        <span className="text-[15px] font-semibold text-primary">
                             settings
                         </span>
-                        <span className="truncate text-[11px] text-mute">
+                        <span className="truncate text-[11px] text-muted-foreground">
                             {workspace.name}
                         </span>
                     </div>
@@ -109,7 +109,7 @@ export default function WorkspaceSettings({
                                     <div>
                                         <div className={labelClass}>name</div>
                                         <div className={fieldWrap}>
-                                            <span className="text-[13px] text-green">
+                                            <span className="text-[13px] text-primary">
                                                 &gt;
                                             </span>
                                             <input
@@ -128,7 +128,7 @@ export default function WorkspaceSettings({
                                     <div>
                                         <div className={labelClass}>slug</div>
                                         <div className={fieldWrap}>
-                                            <span className="text-[13px] text-green">
+                                            <span className="text-[13px] text-primary">
                                                 &gt;
                                             </span>
                                             <input
@@ -148,7 +148,7 @@ export default function WorkspaceSettings({
                                         type="submit"
                                         disabled={processing}
                                         data-test="update-workspace-submit"
-                                        className="flex h-11 items-center justify-center gap-2 self-start border border-amber px-6 text-[13px] font-medium tracking-[.04em] text-amber transition-colors hover:bg-amber hover:text-ink-950 disabled:opacity-60"
+                                        className="flex h-11 items-center justify-center gap-2 self-start border border-primary px-6 text-[13px] font-medium tracking-[.04em] text-primary transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-60"
                                     >
                                         save
                                     </button>
@@ -161,15 +161,15 @@ export default function WorkspaceSettings({
                         <section>
                             <div className={sectionLabel}>public join link</div>
 
-                            <div className="flex flex-col gap-3 border border-line bg-ink-950 px-[14px] py-4">
-                                <p className="text-[12px] leading-relaxed text-mute">
+                            <div className="flex flex-col gap-3 border border-border bg-card px-[14px] py-4">
+                                <p className="text-[12px] leading-relaxed text-muted-foreground">
                                     Anyone with this link can request to join
                                     this workspace. Regenerating it invalidates
                                     the previous link.
                                 </p>
 
-                                <div className="flex h-[46px] items-center gap-[9px] border border-line bg-ink-900 px-[14px]">
-                                    <span className="text-[13px] text-green">
+                                <div className="flex h-[46px] items-center gap-[9px] border border-border bg-background px-[14px]">
+                                    <span className="text-[13px] text-primary">
                                         &gt;
                                     </span>
                                     <input
@@ -187,7 +187,7 @@ export default function WorkspaceSettings({
                                         onClick={() =>
                                             copyPublicJoinUrl(publicJoinUrl)
                                         }
-                                        className="flex h-10 items-center justify-center border border-line px-4 text-[12px] text-dim transition-colors hover:border-amber hover:text-amber"
+                                        className="flex h-10 items-center justify-center border border-border px-4 text-[12px] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                                     >
                                         {copiedPublicJoinUrl === publicJoinUrl
                                             ? 'copied'
@@ -205,7 +205,7 @@ export default function WorkspaceSettings({
                                                 type="submit"
                                                 disabled={processing}
                                                 data-test="regenerate-public-join-link"
-                                                className="flex h-10 items-center justify-center border border-amber px-4 text-[12px] text-amber transition-colors hover:bg-amber hover:text-ink-950 disabled:opacity-60"
+                                                className="flex h-10 items-center justify-center border border-primary px-4 text-[12px] text-primary transition-colors hover:bg-primary hover:text-primary-foreground disabled:opacity-60"
                                             >
                                                 regenerate link
                                             </button>
@@ -230,16 +230,16 @@ export default function WorkspaceSettings({
                         </div>
 
                         <ul className="flex flex-col gap-[2px]">
-                            <li className="flex items-center justify-between border border-line bg-ink-950 px-[14px] py-3">
+                            <li className="flex items-center justify-between border border-border bg-card px-[14px] py-3">
                                 <div className="flex min-w-0 flex-col">
-                                    <span className="truncate text-[13px] text-fg">
+                                    <span className="truncate text-[13px] text-foreground">
                                         {owner.name}
                                     </span>
-                                    <span className="truncate text-[11px] text-mute">
+                                    <span className="truncate text-[11px] text-muted-foreground">
                                         {owner.email}
                                     </span>
                                 </div>
-                                <span className="text-[9px] tracking-[.22em] text-amber uppercase">
+                                <span className="text-[9px] tracking-[.22em] text-primary uppercase">
                                     owner
                                 </span>
                             </li>
@@ -247,13 +247,13 @@ export default function WorkspaceSettings({
                             {members.map((member) => (
                                 <li
                                     key={member.id}
-                                    className="flex items-center justify-between border border-line bg-ink-950 px-[14px] py-3"
+                                    className="flex items-center justify-between border border-border bg-card px-[14px] py-3"
                                 >
                                     <div className="flex min-w-0 flex-col">
-                                        <span className="truncate text-[13px] text-fg">
+                                        <span className="truncate text-[13px] text-foreground">
                                             {member.name}
                                         </span>
-                                        <span className="truncate text-[11px] text-mute">
+                                        <span className="truncate text-[11px] text-muted-foreground">
                                             {member.email}
                                         </span>
                                     </div>
@@ -278,9 +278,9 @@ export default function WorkspaceSettings({
                                 {invitations.map((invitation) => (
                                     <li
                                         key={invitation.code}
-                                        className="flex items-center justify-between border border-line bg-ink-950 px-[14px] py-3"
+                                        className="flex items-center justify-between border border-border bg-card px-[14px] py-3"
                                     >
-                                        <span className="truncate text-[12.5px] text-dim">
+                                        <span className="truncate text-[12.5px] text-muted-foreground">
                                             {invitation.email}
                                         </span>
 
@@ -300,10 +300,10 @@ export default function WorkspaceSettings({
 
                         <div className="flex flex-col gap-4 border border-destructive/40 bg-destructive/5 px-[14px] py-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <p className="text-[13px] text-fg">
+                                <p className="text-[13px] text-foreground">
                                     Delete workspace
                                 </p>
-                                <p className="mt-1 text-[11px] text-mute">
+                                <p className="mt-1 text-[11px] text-muted-foreground">
                                     Permanently delete this workspace and all of
                                     its data.
                                 </p>

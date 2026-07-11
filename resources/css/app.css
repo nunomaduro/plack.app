@@ -99,10 +99,47 @@
 }
 
 /*
- | Dark-only: :root and .dark resolve to the same terminal palette, so the app
- | renders the terminal theme regardless of the stored appearance preference.
+ | Light mode: warm paper surfaces with the same amber accent.
  */
-:root,
+:root {
+    --background: #faf8f5;
+    --foreground: #1c1710;
+    --card: #ffffff;
+    --card-foreground: #1c1710;
+    --popover: #ffffff;
+    --popover-foreground: #1c1710;
+    --primary: #b87d1a;
+    --primary-foreground: #ffffff;
+    --secondary: #f0ebe3;
+    --secondary-foreground: #1c1710;
+    --muted: #f0ebe3;
+    --muted-foreground: #6b6353;
+    --accent: #f0ebe3;
+    --accent-foreground: #1c1710;
+    --destructive: #c0513a;
+    --destructive-foreground: #ffffff;
+    --border: #e2ddd4;
+    --input: #e2ddd4;
+    --ring: #b87d1a;
+    --chart-1: #b87d1a;
+    --chart-2: #5a8c3e;
+    --chart-3: #3d7ab8;
+    --chart-4: #9c5ea6;
+    --chart-5: #b87d1a;
+    --radius: 0px;
+    --sidebar: #f5f2ed;
+    --sidebar-foreground: #6b6353;
+    --sidebar-primary: #b87d1a;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #ebe6dc;
+    --sidebar-accent-foreground: #1c1710;
+    --sidebar-border: #e2ddd4;
+    --sidebar-ring: #b87d1a;
+}
+
+/*
+ | Dark mode: the original terminal palette.
+ */
 .dark {
     --background: #14110c;
     --foreground: #e8e0cf;
