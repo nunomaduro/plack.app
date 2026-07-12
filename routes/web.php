@@ -111,6 +111,7 @@ Route::middleware(['local', 'auth', 'verified'])->group(function (): void {
 
     Route::delete('workspace-joins/{joinCode}', [WorkspaceJoinController::class, 'destroy'])
         ->name('workspace-joins.decline');
+
 });
 
 Route::middleware(['local', 'auth'])->group(function (): void {

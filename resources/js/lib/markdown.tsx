@@ -20,7 +20,7 @@ export function renderMarkdown(text: string): ReactNode {
     // A fresh regex per call: it is stateful (`g`) and this function recurses,
     // so a shared instance would corrupt the outer scan's position.
     const pattern =
-        /`([^`]+)`|\*\*([\s\S]+?)\*\*|\*([^*]+?)\*|_([^_]+?)_|(https?:\/\/[^\s<]+)/g;
+        /`([^`]+)`|\*\*([\s\S]+?)\*\*|\*([^*]+?)\*|_([^_]+?)_|(https?:\/\/[^\s<]+)|(@\w+)/g;
 
     const nodes: ReactNode[] = [];
     let lastIndex = 0;
@@ -32,7 +32,7 @@ export function renderMarkdown(text: string): ReactNode {
             nodes.push(text.slice(lastIndex, match.index));
         }
 
-        const [, code, bold, italicStar, italicUnderscore, url] = match;
+        const [, code, bold, italicStar, italicUnderscore, url, mention] = match;
 
         if (code !== undefined) {
             nodes.push(
@@ -75,6 +75,15 @@ export function renderMarkdown(text: string): ReactNode {
             if (trailing !== '') {
                 nodes.push(trailing);
             }
+        } else if (mention !== undefined) {
+            nodes.push(
+                <span
+                    key={key++}
+                    className="font-medium text-amber"
+                >
+                    {mention}
+                </span>,
+            );
         } else {
             const italic = italicStar ?? italicUnderscore ?? '';
             nodes.push(<em key={key++}>{renderMarkdown(italic)}</em>);

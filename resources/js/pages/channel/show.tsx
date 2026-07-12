@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import ChannelTypingController from '@/actions/App/Http/Controllers/ChannelTypingController';
 import MessageController from '@/actions/App/Http/Controllers/MessageController';
 import InputError from '@/components/input-error';
+import MentionInput from '@/components/mention-input';
 import WorkspaceLayout, {
     MobileSidebarToggle,
 } from '@/layouts/workspace-layout';
@@ -39,6 +40,11 @@ type Message = {
     createdAt: string;
 };
 
+type Member = {
+    name: string;
+    email: string;
+};
+
 type WorkspaceSummary = {
     id: string;
     name: string;
@@ -53,12 +59,14 @@ export default function ChannelShow({
     workspace,
     channel,
     messages,
+    members = [],
     workspaces,
     canManage = false,
 }: {
     workspace: Workspace;
     channel: Channel;
     messages: Message[];
+    members?: Member[];
     workspaces?: WorkspaceSummary[];
     canManage?: boolean;
 }) {
@@ -217,13 +225,12 @@ export default function ChannelShow({
                     <>
                         <div className="flex items-center gap-2 border border-border px-[14px] py-[11px] text-[12.5px]">
                             <span className="text-primary">&gt;</span>
-                            <input
+                            <MentionInput
                                 ref={inputRef}
-                                type="text"
                                 name="body"
                                 placeholder={`message #${channel.name}`}
-                                autoComplete="off"
                                 disabled={processing}
+                                members={members}
                                 onChange={sendTyping}
                                 className="min-w-0 flex-1 bg-transparent text-foreground caret-primary outline-none placeholder:text-muted-foreground"
                             />

@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Enums\WorkspaceType;
 use App\Models\User;
 use App\Models\Workspace;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -18,7 +19,7 @@ final readonly class CreateWorkspace
 
     public function handle(User $user, string $name, WorkspaceType $type = WorkspaceType::Private): Workspace
     {
-        return DB::transaction(function () use ($user, $name, $type): Workspace {
+        $workspace = DB::transaction(function () use ($user, $name, $type): Workspace {
             $workspace = $user->ownedWorkspaces()->create([
                 'name' => $name,
                 'type' => $type,
@@ -29,5 +30,9 @@ final readonly class CreateWorkspace
 
             return $workspace;
         });
+
+        Cache::forget("workspace:{$workspace->id}:mentionable_users");
+
+        return $workspace;
     }
 }

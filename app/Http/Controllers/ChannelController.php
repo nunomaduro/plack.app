@@ -19,6 +19,7 @@ use App\Queries\ListChannels;
 use App\Queries\ListWorkspace;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,6 +37,19 @@ final readonly class ChannelController
 
         $messages = $channel->messages()->oldest()->with('sender')->get();
 
+        $members = Cache::remember(
+            "workspace:{$workspace->id}:mentionable_users",
+            3600,
+            fn () => $workspace->members()
+                ->select(['users.id', 'name', 'email'])
+                ->get()
+                ->push($workspace->owner)
+                ->unique('id')
+                ->map(fn (User $user): array => $user->only(['name', 'email']))
+                ->values()
+                ->all(),
+        );
+
         return Inertia::render('channel/show', [
             'workspace' => [
                 'id' => $workspace->id,
@@ -50,6 +64,7 @@ final readonly class ChannelController
                 'sender' => $message->sender->name,
                 'createdAt' => $message->created_at->toIso8601String(),
             ]),
+            'members' => $members,
             'workspaces' => $listWorkspace->get($user),
             'canManage' => $user->is($workspace->owner),
         ]);

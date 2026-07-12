@@ -94,6 +94,14 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * @return BelongsToMany<Message, $this>
+     */
+    public function mentionedIn(): BelongsToMany
+    {
+        return $this->belongsToMany(Message::class, 'message_mentions')->using(MessageMention::class);
+    }
+
+    /**
      * The user's per-channel metadata (read markers, mute, ...).
      *
      * @return HasMany<UserChannelMetadata, $this>

@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Models\User;
 use App\Models\WorkspaceInvitation;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 final readonly class AcceptPrivateWorkspaceInvitation
@@ -16,5 +17,7 @@ final readonly class AcceptPrivateWorkspaceInvitation
             $invitation->workspace->members()->syncWithoutDetaching([$user->id]);
             $invitation->delete();
         });
+
+        Cache::forget("workspace:{$invitation->workspace->id}:mentionable_users");
     }
 }
